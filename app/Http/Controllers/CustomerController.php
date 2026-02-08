@@ -35,14 +35,52 @@ class CustomerController extends Controller
             $query->where('type', $request->type);
         }
 
+        // Balance Status Filter (Subquery for efficiency)
+        if ($request->filled('balance_status')) {
+            $query->whereHas('ledgerEntries', function ($q) use ($request) {
+                // This is a bit tricky with whereHas if we need the SUM
+                // Better to use whereRaw or a subquery if performance matters
+            });
+
+            // Simplified approach: Filter in collection or use a more complex query
+            // Let's use a subquery to calculate balance
+            $query->addSelect([
+                'balance' => \App\Models\LedgerEntry::selectRaw('SUM(CASE WHEN type = "debit" THEN amount ELSE -amount END)')
+                    ->whereColumn('customer_id', 'customers.id')
+            ]);
+
+            if ($request->balance_status === 'debit') {
+                $query->having('balance', '>', 0);
+            } elseif ($request->balance_status === 'credit') {
+                $query->having('balance', '<', 0);
+            } elseif ($request->balance_status === 'balanced') {
+                $query->having('balance', '=', 0);
+            }
+        }
+
         // Get customers with pagination
-        $customers = $query->latest()->paginate(20)->withQueryString();
+        $customers = $query->withCount('services')->latest()->paginate(20)->withQueryString();
 
         // KPIs
         $totalCustomers = Customer::count();
         $activeCustomers = Customer::active()->count();
-        $totalReceivable = 0; // Placeholder
-        $totalPayable = 0; // Placeholder
+
+        // Actual calculations for KPIs
+        $totalReceivable = \App\Models\LedgerEntry::where('type', 'debit')
+            ->whereHas('customer', function ($q) {
+                $q->whereNull('deleted_at');
+            })
+            ->sum('amount') - \App\Models\LedgerEntry::where('type', 'credit')
+                ->whereHas('customer', function ($q) {
+                    $q->whereNull('deleted_at');
+                })
+                ->sum('amount');
+
+        // This is a global balance. Let's refine it to separate positive and negative totals if needed
+        // For now, let's keep it simple or follow the KPI card titles: "Toplam Alacak" / "Toplam Borç"
+        $customerBalances = Customer::all()->map(fn($c) => $c->balance);
+        $totalReceivable = $customerBalances->filter(fn($b) => $b > 0)->sum();
+        $totalPayable = abs($customerBalances->filter(fn($b) => $b < 0)->sum());
 
         return view('customers.index', compact(
             'customers',

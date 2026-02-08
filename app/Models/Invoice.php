@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\LogsActivity;
+
 class Invoice extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'customer_id',
@@ -49,6 +51,11 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function quote()
     {
         return $this->belongsTo(Quote::class);
@@ -61,9 +68,9 @@ class Invoice extends Model
 
     public function calculateTotals()
     {
-        $this->subtotal = $this->items->sum('line_subtotal');
-        $this->tax_total = $this->items->sum('line_tax');
-        $this->grand_total = $this->subtotal + $this->tax_total - $this->discount_total;
+        $this->subtotal = (string) $this->items->sum('line_subtotal');
+        $this->tax_total = (string) $this->items->sum('line_tax');
+        $this->grand_total = (string) ((float) $this->subtotal + (float) $this->tax_total - (float) $this->discount_total);
         $this->save();
     }
 

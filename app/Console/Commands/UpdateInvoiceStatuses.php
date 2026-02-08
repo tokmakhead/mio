@@ -38,6 +38,7 @@ class UpdateInvoiceStatuses extends Command
             if ($invoice->status !== 'overdue') {
                 $invoice->status = 'overdue';
                 $invoice->save();
+                $invoice->logActivity('overdue');
                 $overdueCount++;
             }
         }

@@ -211,6 +211,8 @@ class InvoiceController extends Controller
             'sent_at' => now()
         ]);
 
+        $invoice->logActivity('sent');
+
         return back()->with('success', 'Fatura müşteriye gönderildi olarak işaretlendi.');
     }
 

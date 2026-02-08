@@ -16,7 +16,7 @@ class PreventDemoWrites
     public function handle(Request $request, Closure $next): Response
     {
         // Check if user is authenticated and has demo_readonly flag
-        if (auth()->check() && auth()->user()->demo_readonly) {
+        if (\Illuminate\Support\Facades\Schema::hasTable('users') && auth()->check() && auth()->user()->demo_readonly) {
             // Allow logout
             if ($request->routeIs('logout')) {
                 return $next($request);

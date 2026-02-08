@@ -8,18 +8,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'MIOLY') }}</title>
+    <title>{{ $siteSettings->site_name ?? config('app.name', 'MIOLY') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <!-- Dynamic Favicon -->
+    @if(isset($brandSettings['favicon_path']))
+        <link rel="icon" href="{{ $brandSettings['favicon_path'] }}" type="image/x-icon" />
+    @endif
+
+    <!-- Dynamic Colors -->
+    @if(isset($brandSettings['primary_color']))
+        @php
+            $hex = $brandSettings['primary_color'];
+            list($r, $g, $b) = sscanf($hex, "#%02x%02x%02x");
+            $rgb = "$r $g $b";
+        @endphp
+        <style>
+            :root {
+                --color-primary-500:
+                    {{ $rgb }}
+                ;
+                --color-primary-600:
+                    {{ $rgb }}
+                ;
+                /* Using same for simplicity, or darken slightly */
+                /* For a full palette we would need a sophisticated generator, 
+                       but overriding 500/600 covers buttons and main accents */
+                --color-primary-50:
+                    {{ $r }}
+                    {{ $g }}
+                    {{ $b }}
+                    / 0.1;
+            }
+        </style>
+    @endif
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
         <x-topnav />
 
         <!-- Page Heading -->
@@ -32,9 +64,11 @@
         @endisset
 
         <!-- Page Content -->
-        <main>
+        <main class="flex-grow">
             {{ $slot }}
         </main>
+
+        <x-footer />
     </div>
 
     <!-- Toast Notifications -->

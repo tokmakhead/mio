@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class,
             ProviderSeeder::class,
             ServiceSeeder::class,
+            QuoteSeeder::class,
+            InvoiceSeeder::class,
         ]);
     }
 }

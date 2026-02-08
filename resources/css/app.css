@@ -1,3 +1,33 @@
+:root {
+    /* Primary Color Palette (Default: MIONEX Red) */
+    --color-primary-50: 253 242 244;
+    --color-primary-100: 252 231 235;
+    --color-primary-200: 249 208 217;
+    --color-primary-300: 244 168 184;
+    --color-primary-400: 236 117 145;
+    --color-primary-500: 222 73 104;
+    --color-primary-600: 199 45 82;
+    --color-primary-700: 168 34 68;
+    --color-primary-800: 125 26 56;
+    --color-primary-900: 90 19 41;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+.animate-blink {
+    animation: blink 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

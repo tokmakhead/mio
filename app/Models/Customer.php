@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\Traits\LogsActivity;
+
 class Customer extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'type',
@@ -69,20 +71,37 @@ class Customer extends Model
     }
 
     /**
-     * Relations (will be added later)
+     * Relations
      */
-    // public function services()
-    // {
-    //     return $this->hasMany(Service::class);
-    // }
+    public function services()
+    {
+        return $this->hasMany(Service::class);
+    }
 
-    // public function invoices()
-    // {
-    //     return $this->hasMany(Invoice::class);
-    // }
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
 
-    // public function payments()
-    // {
-    //     return $this->hasMany(Payment::class);
-    // }
+    public function quotes()
+    {
+        return $this->hasMany(Quote::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function ledgerEntries()
+    {
+        return $this->hasMany(LedgerEntry::class);
+    }
+
+    public function getBalanceAttribute()
+    {
+        $debits = $this->ledgerEntries()->where('type', 'debit')->sum('amount');
+        $credits = $this->ledgerEntries()->where('type', 'credit')->sum('amount');
+        return $debits - $credits;
+    }
 }

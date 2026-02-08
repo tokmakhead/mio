@@ -203,6 +203,8 @@ class QuoteController extends Controller
             'sent_at' => now(),
         ]);
 
+        $quote->logActivity('sent');
+
         return back()->with('success', 'Teklif başarıyla gönderildi olarak işaretlendi.');
     }
 
@@ -215,6 +217,8 @@ class QuoteController extends Controller
             'status' => 'accepted',
             'accepted_at' => now(),
         ]);
+
+        $quote->logActivity('accepted');
 
         return back()->with('success', 'Teklif kabul edildi.');
     }
@@ -269,6 +273,8 @@ class QuoteController extends Controller
                     'line_total' => $item->line_total,
                 ]);
             }
+
+            $quote->logActivity('converted', ['invoice_id' => $invoice->id]);
 
             return redirect()->route('invoices.show', $invoice)
                 ->with('success', 'Teklif başarıyla faturaya dönüştürüldü.');

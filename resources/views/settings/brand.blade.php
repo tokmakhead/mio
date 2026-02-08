@@ -1,0 +1,166 @@
+<x-app-layout>
+    <x-page-banner title="Marka ve Görünüm" subtitle="Sitenizin logosunu, renklerini ve giriş ekranı görselini özelleştirin." />
+    <x-settings-tabs />
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+
+            <form method="post" action="{{ route('settings.brand.update') }}" enctype="multipart/form-data">
+                @csrf
+
+                <!-- Brand Identity Section -->
+                <div class="md:grid md:grid-cols-3 md:gap-6">
+                    <div class="md:col-span-1">
+                        <div class="px-4 sm:px-0">
+                            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Marka Kimliği</h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                Sitenizin başlığı ve ana renk tercihi.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-5 md:mt-0 md:col-span-2">
+                        <div class="shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:overflow-hidden bg-white dark:bg-gray-800">
+                            <div class="px-4 py-5 space-y-6 sm:p-6">
+                                <div class="grid grid-cols-1 gap-6">
+                                    
+                                    <!-- Site Title -->
+                                    <div>
+                                        <x-input-label for="site_title" :value="__('Site Başlığı')" />
+                                        <x-text-input id="site_title" name="site_title" type="text" class="mt-1 block w-full" 
+                                            :value="old('site_title', $settings['site_title'] ?? config('app.name'))" />
+                                        <x-input-error class="mt-2" :messages="$errors->get('site_title')" />
+                                    </div>
+
+                                    <!-- Primary Color -->
+                                    <div>
+                                        <x-input-label for="primary_color" :value="__('Ana Renk (Primary Color)')" />
+                                        <div class="flex items-center gap-4 mt-1">
+                                            <div class="relative">
+                                                <input type="color" id="primary_color_picker" 
+                                                    class="h-10 w-16 opacity-0 absolute inset-0 cursor-pointer"
+                                                    value="{{ old('primary_color', $settings['primary_color'] ?? '#4f46e5') }}"
+                                                    onchange="document.getElementById('primary_color').value = this.value; document.getElementById('color_preview').style.backgroundColor = this.value">
+                                                <div id="color_preview" class="h-10 w-16 rounded border border-gray-300 dark:border-gray-700 shadow-sm" 
+                                                     style="background-color: {{ old('primary_color', $settings['primary_color'] ?? '#4f46e5') }}"></div>
+                                            </div>
+                                            
+                                            <x-text-input id="primary_color" name="primary_color" type="text" class="block w-full sm:w-48 font-mono" 
+                                                :value="old('primary_color', $settings['primary_color'] ?? '#4f46e5')" 
+                                                placeholder="#4f46e5" />
+                                        </div>
+                                        <p class="mt-2 text-xs text-gray-500">Sistem genelindeki butonlar ve vurgular bu rengi kullanacaktır.</p>
+                                        <x-input-error class="mt-2" :messages="$errors->get('primary_color')" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden sm:block" aria-hidden="true">
+                    <div class="py-5">
+                        <div class="border-t border-gray-200 dark:border-gray-700"></div>
+                    </div>
+                </div>
+
+                <!-- Visual Assets Section -->
+                <div class="md:grid md:grid-cols-3 md:gap-6">
+                    <div class="md:col-span-1">
+                        <div class="px-4 sm:px-0">
+                            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Görseller</h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                Logo, favicon ve arka plan görselleri.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-5 md:mt-0 md:col-span-2">
+                        <div class="shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:overflow-hidden bg-white dark:bg-gray-800">
+                            <div class="px-4 py-5 space-y-6 sm:p-6">
+                                <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+
+                                    <!-- Logo -->
+                                    <div class="col-span-2 sm:col-span-1">
+                                        <x-input-label for="logo" :value="__('Logo')" />
+                                        <div class="mt-2 flex items-center justify-center rounded-lg border border-dashed border-gray-900/25 dark:border-gray-700 px-6 py-10">
+                                            <div class="text-center">
+                                                @if(isset($settings['logo_path']))
+                                                    <div class="mx-auto mb-4 h-16 flex items-center justify-center">
+                                                        <img src="{{ $settings['logo_path'] }}" alt="Current Logo" class="max-h-full object-contain">
+                                                    </div>
+                                                @else
+                                                    <svg class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
+                                                    </svg>
+                                                @endif
+                                                <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400 justify-center">
+                                                    <label for="logo" class="relative cursor-pointer rounded-md bg-white dark:bg-gray-800 font-semibold text-primary-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-2 hover:text-primary-500">
+                                                        <span>Dosya Seç</span>
+                                                        <input id="logo" name="logo" type="file" accept="image/*" class="sr-only">
+                                                    </label>
+                                                </div>
+                                                <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">PNG, JPG, SVG (Max 2MB)</p>
+                                            </div>
+                                        </div>
+                                        <x-input-error class="mt-2" :messages="$errors->get('logo')" />
+                                    </div>
+
+                                    <!-- Favicon -->
+                                    <div class="col-span-2 sm:col-span-1">
+                                        <x-input-label for="favicon" :value="__('Favicon')" />
+                                        <div class="mt-2 flex items-center justify-center rounded-lg border border-dashed border-gray-900/25 dark:border-gray-700 px-6 py-10">
+                                            <div class="text-center">
+                                                @if(isset($settings['favicon_path']))
+                                                    <div class="mx-auto mb-4 h-8 w-8">
+                                                        <img src="{{ $settings['favicon_path'] }}" alt="Favicon" class="h-full w-full object-contain">
+                                                    </div>
+                                                @else
+                                                    <div class="mx-auto h-8 w-8 rounded bg-gray-200 dark:bg-gray-700"></div>
+                                                @endif
+                                                <div class="mt-12 flex text-sm leading-6 text-gray-600 dark:text-gray-400 justify-center">
+                                                    <label for="favicon" class="relative cursor-pointer rounded-md bg-white dark:bg-gray-800 font-semibold text-primary-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-2 hover:text-primary-500">
+                                                        <span>Dosya Seç</span>
+                                                        <input id="favicon" name="favicon" type="file" accept="image/x-icon,image/png" class="sr-only">
+                                                    </label>
+                                                </div>
+                                                <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">ICO, PNG (Max 1MB)</p>
+                                            </div>
+                                        </div>
+                                        <x-input-error class="mt-2" :messages="$errors->get('favicon')" />
+                                    </div>
+
+                                    <!-- Login Background -->
+                                    <div class="col-span-2">
+                                        <x-input-label for="login_image" :value="__('Giriş Ekranı Görseli (Sol Taraf)')" />
+                                        <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 dark:border-gray-700 px-6 py-10">
+                                            <div class="text-center w-full">
+                                                @if(isset($settings['login_image_path']))
+                                                    <div class="mx-auto mb-4 relative h-32 w-full max-w-md overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-900">
+                                                        <img src="{{ $settings['login_image_path'] }}" alt="Login Image" class="h-full w-full object-cover">
+                                                    </div>
+                                                @endif
+                                                <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400 justify-center">
+                                                    <label for="login_image" class="relative cursor-pointer rounded-md bg-white dark:bg-gray-800 font-semibold text-primary-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-2 hover:text-primary-500">
+                                                        <span>Yeni Görsel Yükle</span>
+                                                        <input id="login_image" name="login_image" type="file" accept="image/*" class="sr-only">
+                                                    </label>
+                                                </div>
+                                                <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">Yüksek çözünürlüklü dikey/yatay (Max 4MB)</p>
+                                            </div>
+                                        </div>
+                                        <x-input-error class="mt-2" :messages="$errors->get('login_image')" />
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 text-right sm:px-6">
+                                <x-primary-button>
+                                    {{ __('Değişiklikleri Kaydet') }}
+                                </x-primary-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</x-app-layout>

@@ -38,7 +38,23 @@
                                         d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
                                     </path>
                                 </svg>
-                                <span>Gönderildi İşaretle</span>
+                                <span>Müşteriye Gönder</span>
+                            </button>
+                        </form>
+                    @endif
+
+                    @if($quote->status === 'sent')
+                        <form action="{{ route('quotes.send', $quote) }}" method="POST">
+                            @csrf
+                            <button type="submit"
+                                class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2">
+                                <svg class="w-5 h-5 text-gray-400 font-bold" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                                <span>Tekrar Gönder</span>
                             </button>
                         </form>
                     @endif
@@ -128,20 +144,25 @@
                                         <tr class="text-sm">
                                             <td class="py-4">
                                                 <div class="font-medium text-gray-900 dark:text-white">
-                                                    {{ $item->description }}</div>
+                                                    {{ $item->description }}
+                                                </div>
                                                 @if($item->service)
                                                     <div class="text-xs text-primary-600">{{ $item->service->identifier_code }}
                                                     </div>
                                                 @endif
                                             </td>
                                             <td class="py-4 text-center text-gray-600 dark:text-gray-400">
-                                                {{ number_format($item->qty, 2) }}</td>
+                                                {{ number_format($item->qty, 2) }}
+                                            </td>
                                             <td class="py-4 text-right text-gray-600 dark:text-gray-400">
-                                                {{ number_format($item->unit_price, 2) }} {{ $quote->currency }}</td>
+                                                {{ number_format($item->unit_price, 2) }} {{ $quote->currency }}
+                                            </td>
                                             <td class="py-4 text-right text-gray-600 dark:text-gray-400">
-                                                {{ $item->vat_rate }}%</td>
+                                                {{ $item->vat_rate }}%
+                                            </td>
                                             <td class="py-4 text-right font-semibold text-gray-900 dark:text-white">
-                                                {{ number_format($item->line_total, 2) }} {{ $quote->currency }}</td>
+                                                {{ number_format($item->line_total, 2) }} {{ $quote->currency }}
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

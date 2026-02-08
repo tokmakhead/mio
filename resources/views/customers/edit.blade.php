@@ -181,6 +181,67 @@
                         </div>
                     </div>
 
+                    <!-- Invoice Address Information -->
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Fatura Adresi</h3>
+                            <label class="flex items-center space-x-2 cursor-pointer group">
+                                <input type="checkbox" id="copy_address"
+                                    class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                <span
+                                    class="text-sm text-gray-600 dark:text-gray-400 group-hover:text-primary-600 transition-colors">Adres
+                                    bilgilerini kopyala</span>
+                            </label>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Invoice Address -->
+                            <div class="md:col-span-2">
+                                <label for="invoice_address_text"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fatura
+                                    Adresi</label>
+                                <textarea name="invoice_address[address]" id="invoice_address_text" rows="3"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">{{ old('invoice_address.address', $customer->invoice_address['address'] ?? '') }}</textarea>
+                            </div>
+
+                            <!-- Invoice City -->
+                            <div>
+                                <label for="invoice_city"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Şehir</label>
+                                <input type="text" name="invoice_address[city]" id="invoice_city"
+                                    value="{{ old('invoice_address.city', $customer->invoice_address['city'] ?? '') }}"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+
+                            <!-- Invoice District -->
+                            <div>
+                                <label for="invoice_district"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">İlçe</label>
+                                <input type="text" name="invoice_address[district]" id="invoice_district"
+                                    value="{{ old('invoice_address.district', $customer->invoice_address['district'] ?? '') }}"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+
+                            <!-- Invoice Postal Code -->
+                            <div>
+                                <label for="invoice_postal_code"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Posta
+                                    Kodu</label>
+                                <input type="text" name="invoice_address[postal_code]" id="invoice_postal_code"
+                                    value="{{ old('invoice_address.postal_code', $customer->invoice_address['postal_code'] ?? '') }}"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+
+                            <!-- Invoice Country -->
+                            <div>
+                                <label for="invoice_country"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ülke</label>
+                                <input type="text" name="invoice_address[country]" id="invoice_country"
+                                    value="{{ old('invoice_address.country', $customer->invoice_address['country'] ?? 'TR') }}"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Other Information -->
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Diğer Bilgiler</h3>

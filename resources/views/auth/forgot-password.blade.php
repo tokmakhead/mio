@@ -1,25 +1,58 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+<x-layouts.auth-split>
+    <!-- Header -->
+    <div class="mb-10">
+        <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
+            Şifrenizi mi Unuttunuz?
+        </h2>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Sorun değil. E-posta adresinizi girin, size şifre sıfırlama bağlantısı gönderelim.
+        </p>
     </div>
 
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('password.email') }}">
+    <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
         @csrf
 
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                E-posta Adresi
+            </label>
+            <div class="mt-1">
+                <input id="email" name="email" type="email" autocomplete="email" required autofocus
+                    class="appearance-none block w-full px-3 py-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-gray-800 dark:text-white transition duration-150 ease-in-out"
+                    value="{{ old('email') }}">
+            </div>
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
+        <div>
+            <button type="submit"
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 transform hover:-translate-y-0.5">
+                Sıfırlama Linki Gönder
+            </button>
+        </div>
+
+        <div class="mt-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300 dark:border-gray-700"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-white dark:bg-gray-900 text-gray-500">
+                        Hatırladınız mı?
+                    </span>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <a href="{{ route('login') }}"
+                    class="w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    Giriş Yap
+                </a>
+            </div>
         </div>
     </form>
-</x-guest-layout>
+</x-layouts.auth-split>

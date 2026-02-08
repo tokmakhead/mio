@@ -27,7 +27,8 @@
                                 <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Fatura
                                     Adresi</h4>
                                 <div class="text-sm font-bold text-gray-900 dark:text-white">
-                                    {{ $invoice->customer->name }}</div>
+                                    {{ $invoice->customer->name }}
+                                </div>
                                 <div class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
                                     {{ $invoice->customer->address }}
                                 </div>
@@ -64,10 +65,12 @@
                                         <tr>
                                             <td class="py-4">
                                                 <div class="text-sm font-bold text-gray-900 dark:text-white">
-                                                    {{ $item->description }}</div>
+                                                    {{ $item->description }}
+                                                </div>
                                                 @if($item->service)
                                                     <div class="text-xs text-gray-500 mt-0.5">Hizmet Kod:
-                                                        {{ $item->service->identifier_code }}</div>
+                                                        {{ $item->service->identifier_code }}
+                                                    </div>
                                                 @endif
                                             </td>
                                             <td class="py-4 text-center text-sm text-gray-600 dark:text-gray-400">
@@ -140,7 +143,7 @@
                                 PDF İndir
                             </a>
 
-                            @if($invoice->status !== 'paid' && $invoice->status !== 'cancelled')
+                            @if($invoice->status === 'draft')
                                 <form action="{{ route('invoices.send', $invoice) }}" method="POST">
                                     @csrf
                                     <button type="submit"
@@ -151,6 +154,20 @@
                                             </path>
                                         </svg>
                                         Müşteriye Gönder
+                                    </button>
+                                </form>
+                            @elseif($invoice->status === 'sent' || $invoice->status === 'overdue')
+                                <form action="{{ route('invoices.send', $invoice) }}" method="POST">
+                                    @csrf
+                                    <button type="submit"
+                                        class="flex items-center justify-center w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <svg class="w-5 h-5 mr-2 text-gray-400 font-bold" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
+                                        Tekrar Gönder
                                     </button>
                                 </form>
                             @endif
