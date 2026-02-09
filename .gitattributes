@@ -1,11 +1,30 @@
-* text=auto eol=lf
+# Exclude development and Master Panel files from git archive (distribution)
+.gitattributes export-ignore
+.gitignore export-ignore
+phpunit.xml export-ignore
+tests/ export-ignore
+*.md export-ignore
+.env.* export-ignore
 
-*.blade.php diff=html
-*.css diff=css
-*.html diff=html
-*.md diff=markdown
-*.php diff=php
+# Master Panel Exclusions
+app/Http/Controllers/MasterController.php export-ignore
+app/Models/MasterLicense.php export-ignore
+app/Models/MasterRelease.php export-ignore
+app/Models/MasterAnnouncement.php export-ignore
+resources/views/master/ export-ignore
+database/migrations/*_create_master_*.php export-ignore
 
-/.github export-ignore
-CHANGELOG.md export-ignore
-.styleci.yml export-ignore
+# Frontend build tools
+node_modules/ export-ignore
+package.json export-ignore
+package-lock.json export-ignore
+tailwind.config.js export-ignore
+vite.config.js export-ignore
+resources/css/ export-ignore
+resources/js/ export-ignore
+
+# Storage cleanup
+storage/logs/*.log export-ignore
+storage/framework/views/*.php export-ignore
+storage/framework/cache/data/* export-ignore
+storage/framework/sessions/* export-ignore

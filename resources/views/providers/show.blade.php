@@ -110,9 +110,58 @@
                 <div class="lg:col-span-2">
                     <x-card>
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Hizmetler</h3>
-                        <x-empty-state title="Henüz hizmet yok"
-                            message="Bu sağlayıcıya ait henüz bir hizmet kaydı bulunmuyor." cta="Hizmet Ekle"
-                            href="#" />
+                        @if($provider->services->count() > 0)
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr
+                                            class="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
+                                            <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Hizmet</th>
+                                            <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Müşteri</th>
+                                            <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Durum</th>
+                                            <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Vade</th>
+                                            <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase text-right">Tutar
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                        @foreach($provider->services as $service)
+                                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                                <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+                                                    {{ $service->name }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                                                    <a href="{{ route('customers.show', $service->customer) }}"
+                                                        class="hover:text-primary-600">
+                                                        {{ $service->customer->name }}
+                                                    </a>
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <div class="flex items-center space-x-1.5">
+                                                        <span
+                                                            class="w-2 h-2 rounded-full {{ \App\Models\Service::getStatusDotColor($service->status) }}"></span>
+                                                        <span class="text-xs text-gray-600 dark:text-gray-400">
+                                                            {{ \App\Models\Service::getStatusLabel($service->status) }}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-3 text-xs text-gray-600 dark:text-gray-400">
+                                                    {{ $service->end_date->format('d.m.Y') }}
+                                                </td>
+                                                <td
+                                                    class="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white text-right">
+                                                    {{ number_format($service->price, 2) }} {{ $service->currency }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <x-empty-state title="Henüz hizmet yok"
+                                message="Bu sağlayıcıya ait henüz bir hizmet kaydı bulunmuyor." cta="Hizmet Ekle"
+                                href="{{ route('services.create') }}" />
+                        @endif
                     </x-card>
                 </div>
             </div>

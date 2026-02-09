@@ -74,16 +74,14 @@
 
             <!-- Content -->
             <div class="relative z-10">
-                <div class="flex items-center gap-3">
-                    <!-- Logo Placeholder -->
-                    <div
-                        class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
+                <div class="flex items-center gap-3 group">
+                    <img src="{{ asset('assets/img/nexwhite.png') }}" alt="MIONEX Logo" class="h-10 w-auto">
+                    <div class="relative pr-10">
+                        <span
+                            class="text-2xl font-black tracking-tighter text-white leading-none uppercase">MIONEX</span>
+                        <span
+                            class="absolute -top-2 -right-0 bg-[#C72D52] text-[8px] font-black text-white px-1.5 py-0.5 rounded-md leading-none">BETA</span>
                     </div>
-                    <span class="text-2xl font-bold tracking-tight text-white">{{ config('app.name') }}</span>
                 </div>
             </div>
 

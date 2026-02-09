@@ -21,8 +21,10 @@
     <div class="min-h-screen flex">
         <!-- Sidebar -->
         <aside class="w-64 bg-gray-900 text-white flex-shrink-0 hidden md:flex flex-col">
-            <div class="h-16 flex items-center px-6 bg-gray-950">
-                <span class="text-xl font-bold tracking-wider">MIONEX<span class="text-blue-500">MASTER</span></span>
+            <div class="h-16 flex items-center px-6 bg-gray-950 gap-3 group">
+                <img src="{{ asset('assets/img/nexwhite.png') }}" alt="MIONEX Logo" class="h-8 w-auto">
+                <span class="text-xl font-black tracking-tighter text-white leading-none uppercase">MIONEX <span
+                        class="text-blue-500 font-bold ml-1">MASTER</span></span>
             </div>
 
             <nav class="flex-1 px-4 py-6 space-y-2">

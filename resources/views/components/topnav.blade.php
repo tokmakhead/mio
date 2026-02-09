@@ -5,17 +5,14 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-2">
-                        @if(isset($brandSettings['logo_path']))
-                            <img src="{{ $brandSettings['logo_path'] }}" alt="Logo" class="w-8 h-8 object-contain">
-                        @else
-                            <div
-                                class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center">
-                                <span class="text-white font-bold text-lg">M</span>
-                            </div>
-                        @endif
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
+                        <div class="flex items-center">
+                            <img src="{{ asset('assets/img/nexblack.png') }}" alt="Logo" class="h-8 w-auto dark:hidden">
+                            <img src="{{ asset('assets/img/nexwhite.png') }}" alt="Logo"
+                                class="h-8 w-auto hidden dark:block">
+                        </div>
                         <span
-                            class="text-xl font-bold bg-gradient-to-r from-primary-700 to-primary-900 dark:from-accent-300 dark:to-accent-500 bg-clip-text text-transparent">{{ $siteSettings->site_name ?? config('app.name', 'MIOLY') }}</span>
+                            class="text-xl font-black tracking-tighter text-gray-900 dark:text-white leading-none uppercase">MIONEX</span>
                     </a>
                 </div>
 

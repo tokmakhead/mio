@@ -36,7 +36,7 @@
                 ;
                 /* Using same for simplicity, or darken slightly */
                 /* For a full palette we would need a sophisticated generator, 
-                       but overriding 500/600 covers buttons and main accents */
+                               but overriding 500/600 covers buttons and main accents */
                 --color-primary-50:
                     {{ $r }}
                     {{ $g }}
@@ -48,6 +48,32 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <script>
+        window.Mionex = {
+            isDemo: {{ auth()->check() && (auth()->user()->demo_readonly ? 'true' : 'false') }}
+        };
+        
+        window.showDemoAlert = function() {
+            window.dispatchEvent(new CustomEvent('show-demo-alert', { 
+                bubbles: true,
+                cancelable: true,
+                detail: {} 
+            }));
+        };
+
+        // Global Form Protection for Demo
+        document.addEventListener('submit', function(e) {
+            if (window.Mionex.isDemo) {
+                // Ignore logout
+                if (e.target.action.includes('logout')) return;
+
+                e.preventDefault();
+                window.showDemoAlert();
+                return false;
+            }
+        }, true); // Use capture phase to be ahead of other listeners
+    </script>
 </head>
 
 <body class="font-sans antialiased">
@@ -70,6 +96,9 @@
 
         <x-footer />
     </div>
+
+    <!-- Demo Alert Modal -->
+    <x-demo-alert />
 
     <!-- Toast Notifications -->
     @if(session('success'))

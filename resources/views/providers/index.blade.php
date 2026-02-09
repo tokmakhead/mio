@@ -118,7 +118,8 @@
 
                                         <!-- Services Count -->
                                         <td class="px-4 py-4">
-                                            <span class="text-sm text-gray-700 dark:text-gray-300">0</span>
+                                            <span
+                                                class="text-sm text-gray-700 dark:text-gray-300">{{ $provider->services_count }}</span>
                                         </td>
 
                                         <!-- Actions -->

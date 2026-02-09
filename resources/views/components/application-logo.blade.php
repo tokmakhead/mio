@@ -1,8 +1,5 @@
-@if(isset($brandSettings['logo_path']))
-    <img src="{{ $brandSettings['logo_path'] }}" alt="{{ config('app.name') }}" {{ $attributes }}>
-@else
-    <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" {{ $attributes }}>
-        <rect width="50" height="50" rx="10" fill="currentColor" class="text-primary-600 dark:text-primary-500" />
-        <path d="M15 35V15L25 25L35 15V35" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-@endif
+<div class="flex items-center gap-2 group">
+    <img src="{{ asset('assets/img/nexblack.png') }}" alt="{{ config('app.name') }}" {{ $attributes->merge(['class' => 'h-8 w-auto dark:hidden']) }}>
+    <img src="{{ asset('assets/img/nexwhite.png') }}" alt="{{ config('app.name') }}" {{ $attributes->merge(['class' => 'h-8 w-auto hidden dark:block']) }}>
+    <span class="text-xl font-black tracking-tighter text-gray-900 dark:text-white leading-none uppercase">MIONEX</span>
+</div>

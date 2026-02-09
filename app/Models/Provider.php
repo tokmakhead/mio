@@ -75,6 +75,6 @@ class Provider extends Model
      */
     public function services()
     {
-        return $this->hasMany(\App\Models\Service::class); // Placeholder
+        return $this->hasMany(\App\Models\Service::class);
     }
 }

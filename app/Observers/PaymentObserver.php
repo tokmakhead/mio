@@ -35,17 +35,65 @@ class PaymentObserver
     /**
      * Handle the Payment "updated" event.
      */
-    public function updated(Payment $payment): void
+    public function updated(\App\Models\Payment $payment): void
     {
-        //
+        // 1. Update Ledger Entry
+        $ledgerEntry = $payment->customer->ledgerEntries()
+            ->where('ref_type', \App\Models\Payment::class)
+            ->where('ref_id', $payment->id)
+            ->first();
+
+        if ($ledgerEntry) {
+            $ledgerEntry->update([
+                'amount' => $payment->amount,
+                'currency' => $payment->currency,
+                'occurred_at' => $payment->paid_at ?? now(),
+                'description' => "Ödeme (Fatura #{$payment->invoice->number}) [Güncellendi]",
+            ]);
+        }
+
+        // 2. Adjust Invoices if amount or invoice_id changed
+        if ($payment->wasChanged(['amount', 'invoice_id'])) {
+            $oldAmount = $payment->getOriginal('amount');
+            $oldInvoiceId = $payment->getOriginal('invoice_id');
+
+            if ($oldInvoiceId == $payment->invoice_id) {
+                // Same invoice, just amount changed
+                $invoice = $payment->invoice;
+                $invoice->paid_amount = ($invoice->paid_amount - $oldAmount) + $payment->amount;
+                $invoice->updateStatus();
+            } else {
+                // Moved to a different invoice
+                $oldInvoice = \App\Models\Invoice::find($oldInvoiceId);
+                if ($oldInvoice) {
+                    $oldInvoice->paid_amount -= $oldAmount;
+                    $oldInvoice->updateStatus();
+                }
+
+                $newInvoice = $payment->invoice;
+                $newInvoice->paid_amount += $payment->amount;
+                $newInvoice->updateStatus();
+            }
+        }
     }
 
     /**
      * Handle the Payment "deleted" event.
      */
-    public function deleted(Payment $payment): void
+    public function deleted(\App\Models\Payment $payment): void
     {
-        //
+        // 1. Delete Ledger Entry
+        $payment->customer->ledgerEntries()
+            ->where('ref_type', \App\Models\Payment::class)
+            ->where('ref_id', $payment->id)
+            ->delete();
+
+        // 2. Decrement Invoice Paid Amount
+        $invoice = $payment->invoice;
+        if ($invoice) {
+            $invoice->paid_amount -= $payment->amount;
+            $invoice->updateStatus();
+        }
     }
 
     /**

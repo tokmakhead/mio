@@ -25,13 +25,13 @@ class ProviderController extends Controller
             });
         }
 
-        $providers = $query->latest()->paginate(20);
+        $providers = $query->withCount('services')->latest()->paginate(20);
 
         // KPIs
         $totalProviders = Provider::count();
         $uniqueTypes = Provider::all()->pluck('types')->flatten()->unique()->count();
         $withWebsite = Provider::whereNotNull('website')->count();
-        $activeServices = 0; // Placeholder
+        $activeServices = \App\Models\Service::where('status', 'active')->count();
 
         return view('providers.index', compact(
             'providers',

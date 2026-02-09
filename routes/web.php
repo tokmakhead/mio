@@ -31,8 +31,21 @@ Route::get('/', function () {
     if (!file_exists(storage_path('installed'))) {
         return redirect()->route('install.welcome');
     }
-    return view('welcome');
+    return view('mionex_landing');
 });
+
+Route::get('/hub', function () {
+    return view('mioly_hub');
+})->name('hub');
+
+Route::get('/demo', function () {
+    $user = \App\Models\User::where('email', 'admin@mioly.app')->first();
+    if ($user) {
+        Auth::login($user);
+        return redirect()->route('dashboard')->with('success', 'Demo sistemine hoş geldiniz!');
+    }
+    return redirect()->route('login')->with('error', 'Demo kullanıcısı bulunamadı.');
+})->name('demo');
 
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
