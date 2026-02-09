@@ -19,3 +19,9 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# MIONEX distribution and standalone
+mionex-v1.0-dist.zip
+/hub_standalone/
+/launch_package/
+/mionex_sales_standalone/
