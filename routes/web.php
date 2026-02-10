@@ -28,7 +28,7 @@ Route::get('license', [App\Http\Controllers\LicenseController::class, 'show'])->
 Route::post('license', [App\Http\Controllers\LicenseController::class, 'activate'])->name('license.activate.action');
 
 Route::get('/', function () {
-    if (!file_exists(storage_path('installed'))) {
+    if (!app()->environment('local') && !file_exists(storage_path('installed'))) {
         return redirect()->route('install.welcome');
     }
     return view('mionex_landing');

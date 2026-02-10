@@ -34,7 +34,7 @@ return new class extends Migration {
 
         Schema::create('system_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('site_name')->default('Mioly');
+            $table->string('site_name')->default('MIONEX');
             $table->string('logo_path')->nullable();
             $table->string('favicon_path')->nullable();
             $table->string('default_currency')->default('TRY');

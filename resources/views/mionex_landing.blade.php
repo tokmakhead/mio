@@ -86,6 +86,20 @@
             color: var(--text-dark);
         }
 
+            /* Code Typing Cursor */
+            .typing-cursor::after {
+                content: '|';
+                animation: blink 1s step-end infinite;
+                margin-left: 2px;
+                color: #C72D52;
+                font-weight: bold;
+            }
+
+            @keyframes blink {
+                from, to { opacity: 1; }
+                50% { opacity: 0; }
+            }
+
         .glass-mionex {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
@@ -185,8 +199,10 @@
                 <img :src="darkMode ? '{{ asset('assets/img/nexwhite.png') }}' : '{{ asset('assets/img/nexblack.png') }}'"
                     alt="MIONEX Logo" class="h-8 w-auto">
                 <div class="relative pr-10">
-                    <span class="text-xl font-black tracking-tighter text-brand-light-text dark:text-white leading-none uppercase">MIONEX</span>
-                    <span class="absolute -top-2 -right-0 bg-[#C72D52] text-[8px] font-black text-white px-1.5 py-0.5 rounded-md leading-none">BETA</span>
+                    <span
+                        class="text-xl font-black tracking-tighter text-brand-light-text dark:text-white leading-none uppercase">MIONEX</span>
+                    <span
+                        class="absolute -top-2 -right-0 bg-[#C72D52] text-[8px] font-black text-white px-1.5 py-0.5 rounded-md leading-none">BETA</span>
                 </div>
             </a>
 
@@ -214,7 +230,7 @@
                 </button>
                 <a href="{{ route('login') }}"
                     class="bg-[#C72D52] hover:bg-[#A82244] px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-[#C72D52]/20 transition-all active:scale-95 whitespace-nowrap">
-                    Demo Gör
+                    Ücretsiz Dene
                 </a>
             </div>
         </div>
@@ -234,30 +250,30 @@
                         <span class="h-2 w-2 rounded-full bg-[#C72D52] animate-pulse"></span>
                         <span
                             class="text-[10px] font-bold uppercase tracking-widest text-brand-light-text/60 dark:text-white/60">MIONEX
-                            v1.0 BETA</span>
+                            v1.0 PREMIUM BETA</span>
                     </div>
 
                     <h1
                         class="text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] tracking-tighter mb-4 reveal active text-brand-light-text dark:text-white min-h-[2.1em]">
                         FİNANSAL <br>
-                        <span id="typed-text" class="text-[#C72D52] inline-block">MODERNİTE.</span>
+                        <span id="typed-text" class="text-[#C72D52] inline-block">MİMARİ.</span>
                     </h1>
 
                     <p
                         class="text-base md:text-lg text-brand-light-text/60 dark:text-[#E8E8E8]/80 leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0 reveal active [transition-delay:200ms]">
-                        İş süreçlerinizi modernize eden, finansal akışınızı hızlandıran ve müşteri ilişkilerinizi
-                        güçlendiren yeni nesil yönetim platformu.
+                        Kurumsal finans süreçlerinizi optimize eden, yüksek performanslı ve güvenli yönetim altyapısı.
+                        Modern mühendislik ile finansal hassasiyeti birleştirin.
                     </p>
 
                     <div
                         class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 reveal active [transition-delay:400ms]">
                         <a href="{{ route('login') }}"
                             class="w-full sm:w-auto bg-[#C72D52] hover:bg-[#A82244] px-10 py-4 rounded-xl text-sm font-black uppercase tracking-widest text-white transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#C72D52]/20">
-                            Demo Gör
+                            Ücretsiz Demoyu İncele
                         </a>
-                        <a href="#process"
+                        <a href="#features"
                             class="w-full sm:w-auto px-10 py-4 rounded-xl text-sm font-black uppercase tracking-widest text-brand-light-text dark:text-white border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-center">
-                            İncele
+                            Özellikleri Keşfet
                         </a>
                     </div>
                 </div>
@@ -280,84 +296,276 @@
             </div>
         </section>
 
-        <!-- Section 2: Özellikler (Split-screen) -->
-        <section id="features"
-            class="relative py-32 overflow-hidden bg-brand-light-surface/50 dark:bg-brand-nebula-dark/40">
-            <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                <!-- Left: Mockup -->
-                <div class="reveal">
-                    <div class="relative group">
-                        <div
-                            class="absolute -inset-4 bg-brand-gold/10 blur-2xl group-hover:bg-brand-gold/20 transition-all rounded-[3rem]">
+        <!-- Section 2: Technical Infrastructure -->
+        <section id="technical" class="py-32 relative overflow-hidden bg-white/50 dark:bg-black/20">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                    <div class="reveal">
+                        <h2
+                            class="text-4xl md:text-5xl font-black tracking-tighter mb-8 text-brand-light-text dark:text-white">
+                            İHTİYAÇTAN DOĞAN <br> <span class="text-[#C72D52]">SADELİK.</span>
+                        </h2>
+                        <p class="text-base text-brand-light-text/60 dark:text-white/60 leading-relaxed mb-10">
+                            MIONEX, karmaşık ve gereksiz özelliklerden arındırılmış, tamamen işletme sahiplerinin günlük 
+                            ihtiyaçları gözlemlenerek geliştirilmiş sade bir yönetim yapısı sunar.
+                        </p>
+
+                        <div class="space-y-8">
+                            <div class="flex gap-4">
+                                <div
+                                    class="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#C72D52]/10 flex items-center justify-center border border-[#C72D52]/20">
+                                    <svg class="h-6 w-6 text-[#C72D52]" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-brand-light-text dark:text-white">Double-Entry Ledger</h4>
+                                    <p class="text-sm text-brand-light-text/50 dark:text-white/40">Global finans standartlarında çift kayıtlı defter mimarisi ile %100 mutabakat garantisi.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div
+                                    class="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#C72D52]/10 flex items-center justify-center border border-[#C72D52]/20">
+                                    <svg class="h-6 w-6 text-[#C72D52]" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-brand-light-text dark:text-white">Audit Log & İzlenebilirlik</h4>
+                                    <p class="text-sm text-brand-light-text/50 dark:text-white/40">Sistemdeki her bir veri değişimi `ActivityLog` katmanında zaman damgası ve IP kaydı ile arşivlenir.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div
+                                    class="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#C72D52]/10 flex items-center justify-center border border-[#C72D52]/20">
+                                    <svg class="h-6 w-6 text-[#C72D52]" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-brand-light-text dark:text-white">Asenkron Görev Yönetimi</h4>
+                                    <p class="text-sm text-brand-light-text/50 dark:text-white/40">Yüksek hacimli veri işlemleri `Jobs` kuyruk yapısı ile arka planda, sistem performansını etkilemeden işlenir.</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="relative glass-mionex p-3 rounded-[3rem] shadow-2xl overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
-                                alt="Analytics View"
-                                class="rounded-[2.5rem] opacity-80 group-hover:opacity-100 transition-opacity">
+                    </div>
+
+                    <div class="reveal relative [transition-delay:200ms]">
+                        <div class="absolute -inset-4 bg-[#C72D52]/5 blur-3xl rounded-[3rem]"></div>
+                        <div
+                            class="relative glass-mionex p-8 rounded-[2.5rem] border border-black/5 dark:border-white/10 shadow-3xl bg-white/70 dark:bg-black/40">
+                            <pre
+                                class="text-[10px] md:text-xs font-mono text-[#C72D52]/80 dark:text-white leading-relaxed overflow-x-auto">
+<code id="code-snippet" class="typing-cursor">// MIONEX Financial Architecture Content Loading...</code></pre>
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <!-- Right: List -->
-                <div class="reveal">
+
+        <!-- Section 3: Platform Modülleri (Detailed Grid) -->
+        <section id="features" class="py-32 relative border-b border-black/5 dark:border-white/5">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-24">
                     <h2
-                        class="text-4xl md:text-5xl font-black leading-tight mb-12 tracking-tighter text-brand-light-text dark:text-white">
-                        ELİT VERİ <br> <span class="text-brand-gold">GÖRÜNÜRLÜĞÜ.</span>
+                        class="text-4xl md:text-6xl font-black tracking-tighter reveal text-brand-light-text dark:text-white">
+                        SİSTEM <span class="text-[#C72D52]">MODÜLLERİ.</span>
                     </h2>
+                    <p class="mt-4 text-brand-light-text/50 dark:text-white/50 reveal [transition-delay:200ms]">
+                        Finansal operasyonlarınızı uçtan uca yöneten bağımsız ve entegre katmanlar.
+                    </p>
+                </div>
 
-                    <div class="space-y-10">
-                        <!-- Item 1 -->
-                        <div class="group flex items-start gap-6 hover:translate-x-4 transition-transform duration-500">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Cari Yönetim -->
+                    <div class="reveal group">
+                        <div
+                            class="h-full glass-mionex p-10 rounded-[2.5rem] hover:-translate-y-4 transition-all duration-500 shadow-2xl group-hover:shadow-[#C72D52]/10">
                             <div
-                                class="mt-1 bg-brand-electric/10 p-3 rounded-2xl group-hover:bg-brand-electric group-hover:text-white text-brand-electric transition-all shadow-lg shadow-brand-electric/0 group-hover:shadow-brand-electric/20">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                class="bg-[#C72D52]/20 p-4 rounded-2xl w-fit mb-8 group-hover:bg-[#C72D52] transition-colors">
+                                <svg class="h-8 w-8 text-[#C72D52] group-hover:text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                             </div>
-                            <div>
-                                <h4 class="text-xl font-bold text-brand-light-text dark:text-white mb-2">Ultra-Hızlı
-                                    Cari Takip</h4>
-                                <p class="text-sm text-brand-light-text/60 dark:text-white/60 leading-relaxed">Müşteri
-                                    borç ve alacak dengelerini tek
-                                    ekranda, milisaniyelik hızla görüntüleyin.</p>
-                            </div>
+                            <h3 class="text-2xl font-bold mb-4 text-brand-light-text dark:text-white">Cari Yönetim</h3>
+                            <p class="text-sm text-brand-light-text/60 dark:text-white/40 leading-relaxed mb-6">
+                                Müşteri yaşam döngüsü ve risk analizi. Borç/alacak limit kontrolü ve otomatik mutabakat
+                                algoritmaları ile ticari ilişkilerinizi dijitalleştirin.
+                            </p>
+                            <ul class="space-y-3 text-xs text-brand-light-text/50 dark:text-white/30">
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Bakiye Yaşlandırma Analizi
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Dinamik Limit Tanımlama
+                                </li>
+                            </ul>
                         </div>
+                    </div>
 
-                        <!-- Item 2 -->
-                        <div class="group flex items-start gap-6 hover:translate-x-4 transition-transform duration-500">
+                    <!-- Tedarikçiler -->
+                    <div class="reveal group [transition-delay:100ms]">
+                        <div
+                            class="h-full glass-mionex p-10 rounded-[2.5rem] hover:-translate-y-4 transition-all duration-500 shadow-2xl group-hover:shadow-[#C72D52]/10">
                             <div
-                                class="mt-1 bg-brand-gold/10 p-3 rounded-2xl group-hover:bg-brand-gold group-hover:text-brand-nebula-dark text-brand-gold transition-all">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                class="bg-[#C72D52]/20 p-4 rounded-2xl w-fit mb-8 group-hover:bg-[#C72D52] transition-colors">
+                                <svg class="h-8 w-8 text-[#C72D52] group-hover:text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
                             </div>
-                            <div>
-                                <h4 class="text-xl font-bold text-brand-light-text dark:text-white mb-2">Güvenli
-                                    Arşivleme</h4>
-                                <p class="text-sm text-brand-light-text/60 dark:text-white/60 leading-relaxed">Tüm
-                                    finansal verileriniz askeri düzeyde
-                                    şifreleme ile koruma altında, her an erişilebilir.</p>
-                            </div>
+                            <h3 class="text-2xl font-bold mb-4 text-brand-light-text dark:text-white">Tedarikçiler</h3>
+                            <p class="text-sm text-brand-light-text/60 dark:text-white/40 leading-relaxed mb-6">
+                                Tedarik zinciri ve alım yönetimi. Tedarikçi performans skalası ve alacak takibi ile
+                                operasyonel verimliliği en üst düzeye çıkarın.
+                            </p>
+                            <ul class="space-y-3 text-xs text-brand-light-text/50 dark:text-white/30">
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Vade ve Ödeme Optimizasyonu
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Tedarikçi Risk Skorlaması
+                                </li>
+                            </ul>
                         </div>
+                    </div>
 
-                        <!-- Item 3 -->
-                        <div class="group flex items-start gap-6 hover:translate-x-4 transition-transform duration-500">
+                    <!-- Hizmet Yönetimi -->
+                    <div class="reveal group [transition-delay:200ms]">
+                        <div
+                            class="h-full glass-mionex p-10 rounded-[2.5rem] hover:-translate-y-4 transition-all duration-500 shadow-2xl group-hover:shadow-[#C72D52]/10">
                             <div
-                                class="mt-1 bg-black/5 dark:bg-white/5 p-3 rounded-2xl border border-black/10 dark:border-white/10 group-hover:bg-brand-light-text dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black transition-all">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                class="bg-[#C72D52]/20 p-4 rounded-2xl w-fit mb-8 group-hover:bg-[#C72D52] transition-colors">
+                                <svg class="h-8 w-8 text-[#C72D52] group-hover:text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <div>
-                                <h4 class="text-xl font-bold text-brand-light-text dark:text-white mb-2">Akıllı
-                                    Raporlama</h4>
-                                <p class="text-sm text-brand-light-text/60 dark:text-white/60 leading-relaxed">Yapay
-                                    zeka destekli analizlerle
-                                    gelecekteki nakit akışınızı bugünden planlayın.</p>
+                            <h3 class="text-2xl font-bold mb-4 text-brand-light-text dark:text-white">Hizmet Yönetimi
+                            </h3>
+                            <p class="text-sm text-brand-light-text/60 dark:text-white/40 leading-relaxed mb-6">
+                                Hizmet kataloglama ve maliyet analizi. Belirlenen hizmetlerin karlılık oranlarını anlık
+                                olarak izleyin ve iş süreçlerinizi kurgulayın.
+                            </p>
+                            <ul class="space-y-3 text-xs text-brand-light-text/50 dark:text-white/30">
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Marj ve Karlılık Takibi
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Operasyonel İş Emirleri
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Finans Merkezi -->
+                    <div class="reveal group [transition-delay:300ms]">
+                        <div
+                            class="h-full glass-mionex p-10 rounded-[2.5rem] hover:-translate-y-4 transition-all duration-500 shadow-2xl group-hover:shadow-[#C72D52]/10">
+                            <div
+                                class="bg-[#C72D52]/20 p-4 rounded-2xl w-fit mb-8 group-hover:bg-[#C72D52] transition-colors">
+                                <svg class="h-8 w-8 text-[#C72D52] group-hover:text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
                             </div>
+                            <h3 class="text-2xl font-bold mb-4 text-brand-light-text dark:text-white">Finans Merkezi
+                            </h3>
+                            <p class="text-sm text-brand-light-text/60 dark:text-white/40 leading-relaxed mb-6">
+                                Merkezi nakit akışı ve hazine yönetimi. Kasa, banka ve pos hareketlerini entegre bir
+                                şekilde izleyerek likidite kontrolünü elinizde tutun.
+                            </p>
+                            <ul class="space-y-3 text-xs text-brand-light-text/50 dark:text-white/30">
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Anlık Nakit Akış İzleme
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Banka & POS Entegrasyonu
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Teklif Havuzu -->
+                    <div class="reveal group [transition-delay:400ms]">
+                        <div
+                            class="h-full glass-mionex p-10 rounded-[2.5rem] hover:-translate-y-4 transition-all duration-500 shadow-2xl group-hover:shadow-[#C72D52]/10">
+                            <div
+                                class="bg-[#C72D52]/20 p-4 rounded-2xl w-fit mb-8 group-hover:bg-[#C72D52] transition-colors">
+                                <svg class="h-8 w-8 text-[#C72D52] group-hover:text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4 text-brand-light-text dark:text-white">Teklif Havuzu</h3>
+                            <p class="text-sm text-brand-light-text/60 dark:text-white/40 leading-relaxed mb-6">
+                                Satış pipeline ve teklif yaşam döngüsü. Hazırlanan tekliflerin durumunu takip edin ve
+                                onay süreçlerini otomatikleştirin.
+                            </p>
+                            <ul class="space-y-3 text-xs text-brand-light-text/50 dark:text-white/30">
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Revizyon ve Versiyon Takibi
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Tekliften Faturaya Dönüşüm
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Analiz Merkezi -->
+                    <div class="reveal group [transition-delay:500ms]">
+                        <div
+                            class="h-full glass-mionex p-10 rounded-[2.5rem] hover:-translate-y-4 transition-all duration-500 shadow-2xl group-hover:shadow-[#C72D52]/10">
+                            <div
+                                class="bg-[#C72D52]/20 p-4 rounded-2xl w-fit mb-8 group-hover:bg-[#C72D52] transition-colors">
+                                <svg class="h-8 w-8 text-[#C72D52] group-hover:text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4 text-brand-light-text dark:text-white">Analiz Merkezi
+                            </h3>
+                            <p class="text-sm text-brand-light-text/60 dark:text-white/40 leading-relaxed mb-6">
+                                Veri odaklı karar destek sistemi. Özelleştirilebilir dashboardlar ve gelişmiş raporlama
+                                motoru ile finansal geleceğinizi öngörün.
+                            </p>
+                            <ul class="space-y-3 text-xs text-brand-light-text/50 dark:text-white/30">
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Görsel KPI Takip Ekranları
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1 w-1 rounded-full bg-[#C72D52]"></span>
+                                    Gerçek Zamanlı BI Raporları
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -389,9 +597,9 @@
                     <div class="reveal text-center group">
                         <div class="relative inline-block mb-10">
                             <span
-                                class="stylistic-num absolute -top-8 left-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform">01</span>
+                                class="stylistic-num absolute -top-8 left-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform dark:text-white/20">01</span>
                             <div
-                                class="relative z-10 bg-white dark:bg-brand-nebula-dark p-6 rounded-3xl border border-black/5 dark:border-white/10 group-hover:border-brand-electric transition-colors shadow-2xl">
+                                class="relative z-10 bg-white dark:bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-black/5 dark:border-white/10 group-hover:border-brand-electric transition-colors shadow-2xl">
                                 <svg class="h-10 w-10 text-brand-electric" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -404,7 +612,7 @@
                             Entegrasyon
                         </h3>
                         <p
-                            class="text-xs text-brand-light-text/50 dark:text-white/50 leading-relaxed font-medium uppercase tracking-widest">
+                            class="text-xs text-brand-light-text/50 dark:text-white/40 leading-relaxed font-medium uppercase tracking-widest">
                             Hızlı
                             kayıt ve sistem entegrasyonu.</p>
                     </div>
@@ -413,9 +621,9 @@
                     <div class="reveal text-center group [transition-delay:100ms]">
                         <div class="relative inline-block mb-10">
                             <span
-                                class="stylistic-num absolute -top-8 left-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform">02</span>
+                                class="stylistic-num absolute -top-8 left-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform dark:text-white/20">02</span>
                             <div
-                                class="relative z-10 bg-white dark:bg-brand-nebula-dark p-6 rounded-3xl border border-black/5 dark:border-white/10 group-hover:border-brand-gold transition-colors shadow-2xl">
+                                class="relative z-10 bg-white dark:bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-black/5 dark:border-white/10 group-hover:border-brand-gold transition-colors shadow-2xl">
                                 <svg class="h-10 w-10 text-brand-gold" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -427,7 +635,7 @@
                             class="text-xl font-bold mb-4 group-hover:text-brand-gold transition-colors text-brand-light-text dark:text-white">
                             Veri Girişi</h3>
                         <p
-                            class="text-xs text-brand-light-text/50 dark:text-white/50 leading-relaxed font-medium uppercase tracking-widest">
+                            class="text-xs text-brand-light-text/50 dark:text-white/40 leading-relaxed font-medium uppercase tracking-widest">
                             Varlık ve
                             borç kalemlerinin aktarımı.</p>
                     </div>
@@ -436,9 +644,9 @@
                     <div class="reveal text-center group [transition-delay:200ms]">
                         <div class="relative inline-block mb-10">
                             <span
-                                class="stylistic-num absolute -top-8 left-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform">03</span>
+                                class="stylistic-num absolute -top-8 left-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform dark:text-white/20">03</span>
                             <div
-                                class="relative z-10 bg-white dark:bg-brand-nebula-dark p-6 rounded-3xl border border-black/5 dark:border-white/10 group-hover:border-brand-electric transition-colors shadow-2xl">
+                                class="relative z-10 bg-white dark:bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-black/5 dark:border-white/10 group-hover:border-brand-electric transition-colors shadow-2xl">
                                 <svg class="h-10 w-10 text-brand-electric" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -451,7 +659,7 @@
                             Otomasyon
                         </h3>
                         <p
-                            class="text-xs text-brand-light-text/50 dark:text-white/50 leading-relaxed font-medium uppercase tracking-widest">
+                            class="text-xs text-brand-light-text/50 dark:text-white/40 leading-relaxed font-medium uppercase tracking-widest">
                             Finansal
                             motorun devreye girmesi.</p>
                     </div>
@@ -460,9 +668,9 @@
                     <div class="reveal text-center group [transition-delay:300ms]">
                         <div class="relative inline-block mb-10">
                             <span
-                                class="stylistic-num absolute -top-8 left-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform">04</span>
+                                class="stylistic-num absolute -top-8 left-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform dark:text-white/20">04</span>
                             <div
-                                class="relative z-10 bg-white dark:bg-brand-nebula-dark p-6 rounded-3xl border border-black/5 dark:border-white/10 group-hover:border-brand-gold transition-colors shadow-2xl">
+                                class="relative z-10 bg-white dark:bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-black/5 dark:border-white/10 group-hover:border-brand-gold transition-colors shadow-2xl">
                                 <svg class="h-10 w-10 text-brand-gold" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -474,7 +682,7 @@
                             class="text-xl font-bold mb-4 group-hover:text-brand-gold transition-colors text-brand-light-text dark:text-white">
                             Analiz</h3>
                         <p
-                            class="text-xs text-brand-light-text/50 dark:text-white/50 leading-relaxed font-medium uppercase tracking-widest">
+                            class="text-xs text-brand-light-text/50 dark:text-white/40 leading-relaxed font-medium uppercase tracking-widest">
                             Raporların ve içgörülerin oluşumu.</p>
                     </div>
 
@@ -482,9 +690,9 @@
                     <div class="reveal text-center group [transition-delay:400ms]">
                         <div class="relative inline-block mb-10">
                             <span
-                                class="stylistic-num absolute -top-8 left-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform">05</span>
+                                class="stylistic-num absolute -top-8 left-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform dark:text-white/20">05</span>
                             <div
-                                class="relative z-10 bg-white dark:bg-brand-nebula-dark p-6 rounded-3xl border border-black/5 dark:border-white/10 group-hover:border-brand-electric transition-colors shadow-2xl">
+                                class="relative z-10 bg-white dark:bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-black/5 dark:border-white/10 group-hover:border-brand-electric transition-colors shadow-2xl">
                                 <svg class="h-10 w-10 text-brand-electric" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -496,7 +704,7 @@
                             class="text-xl font-bold mb-4 group-hover:text-brand-electric transition-colors text-brand-light-text dark:text-white">
                             Büyüme</h3>
                         <p
-                            class="text-xs text-brand-light-text/50 dark:text-white/50 leading-relaxed font-medium uppercase tracking-widest">
+                            class="text-xs text-brand-light-text/50 dark:text-white/40 leading-relaxed font-medium uppercase tracking-widest">
                             Sürdürülebilir finansal büyüme.</p>
                     </div>
                 </div>
@@ -510,8 +718,7 @@
                         class="text-4xl md:text-6xl font-black tracking-tighter reveal text-brand-light-text dark:text-white">
                         PLATFORM <span class="text-brand-gold">ÇEKİRDEĞİ.</span>
                     </h2>
-                    <p class="mt-4 text-brand-light-text/50 dark:text-white/50 reveal [transition-delay:200ms]">Yüksek
-                        performanslı ekipler için gelişmiş fintech modülleri.</p>
+                    <p class="mt-4 text-brand-light-text/50 dark:text-white/50 reveal [transition-delay:200ms]">Gerçek işletme ihtiyaçları için geliştirilmiş, karmaşadan arındırılmış yönetim katmanları.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -609,82 +816,6 @@
             </div>
         </section>
 
-        <!-- Section 5: İstatistikler (Veri Merkezi) -->
-        <section id="stats"
-            class="py-24 bg-brand-light-surface dark:bg-brand-nebula-dark overflow-hidden border-y border-black/5 dark:border-white/5 transition-colors">
-            <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                <!-- Stat 1 -->
-                <div class="reveal text-center">
-                    <div
-                        class="bg-brand-electric/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="h-8 w-8 text-brand-electric" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </div>
-                    <div class="text-5xl font-black mb-2 tracking-tighter text-brand-light-text dark:text-white"
-                        x-data="{ count: 0 }"
-                        x-intersect.once="let target = 500; let current = 0; let step = target / 50; let interval = setInterval(() => { current += step; if(current >= target) { count = target + '+'; clearInterval(interval); } else { count = Math.floor(current); } }, 20)">
-                        <span x-text="count">0</span>
-                    </div>
-                    <p class="text-xs font-bold uppercase tracking-widest text-brand-light-text/40 dark:text-white/40">
-                        Aktif Kullanıcı</p>
-                </div>
-
-                <!-- Stat 2 -->
-                <div class="reveal text-center [transition-delay:100ms]">
-                    <div class="bg-[#C72D52]/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="h-8 w-8 text-[#C72D52]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                        </svg>
-                    </div>
-                    <div class="text-5xl font-black mb-2 tracking-tighter text-brand-light-text dark:text-white"
-                        x-data="{ count: 0 }"
-                        x-intersect.once="let target = 10; let current = 0; let step = target / 50; let interval = setInterval(() => { current += step; if(current >= target) { count = target + 'M+'; clearInterval(interval); } else { count = Math.floor(current); } }, 20)">
-                        <span x-text="count">0</span>
-                    </div>
-                    <p class="text-xs font-bold uppercase tracking-widest text-brand-light-text/40 dark:text-white/40">
-                        İşlem Hacmi</p>
-                </div>
-
-                <!-- Stat 3 -->
-                <div class="reveal text-center [transition-delay:200ms]">
-                    <div
-                        class="bg-black/5 dark:bg-white/5 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 border border-black/10 dark:border-white/10">
-                        <svg class="h-8 w-8 text-brand-light-text dark:text-white" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-                    <div class="text-5xl font-black mb-2 tracking-tighter text-brand-light-text dark:text-white"
-                        x-data="{ count: 0 }"
-                        x-intersect.once="let target = 99.9; let current = 0; let step = target / 50; let interval = setInterval(() => { current += step; if(current >= target) { count = '99.9%'; clearInterval(interval); } else { count = current.toFixed(1) + '%'; } }, 20)">
-                        <span x-text="count">0</span>
-                    </div>
-                    <p class="text-xs font-bold uppercase tracking-widest text-brand-light-text/40 dark:text-white/40">
-                        Uptime Oranı</p>
-                </div>
-
-                <!-- Stat 4 -->
-                <div class="reveal text-center [transition-delay:300ms]">
-                    <div
-                        class="bg-brand-electric/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="h-8 w-8 text-brand-electric" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </div>
-                    <div class="text-5xl font-black mb-2 tracking-tighter text-brand-light-text dark:text-white"
-                        x-data="{ count: 0 }"
-                        x-intersect.once="let target = 24; let current = 0; let step = target / 50; let interval = setInterval(() => { current += step; if(current >= target) { count = '24/7'; clearInterval(interval); } else { count = Math.floor(current) + '/7'; } }, 20)">
-                        <span x-text="count">0</span>
-                    </div>
-                    <p class="text-xs font-bold uppercase tracking-widest text-brand-light-text/40 dark:text-white/40">
-                        Canlı Destek</p>
-                </div>
-            </div>
-        </section>
 
         <!-- Section 6: Fiyatlandırma (Pricing) -->
         <section id="pricing" class="py-32 relative overflow-hidden bg-brand-light-surface/30 dark:bg-transparent">
@@ -707,10 +838,8 @@
                                 class="text-xs font-bold uppercase tracking-[0.3em] text-brand-light-text/30 dark:text-white/30 mb-4">Bireysel</span>
                             <h3 class="text-3xl font-black mb-2 text-brand-light-text dark:text-white">Starter</h3>
                             <div
-                                class="text-5xl font-black mb-10 tracking-tighter text-brand-light-text dark:text-white">
-                                $149 <span
-                                    class="text-sm font-medium text-brand-light-text/40 dark:text-white/40 tracking-normal">/
-                                    bir kez</span>
+                                class="text-3xl font-black mb-10 tracking-tighter text-brand-light-text dark:text-white uppercase">
+                                Hazırlanıyor
                             </div>
                             <ul class="space-y-4 mb-12 flex-grow">
                                 <li class="flex items-center gap-3 text-sm text-brand-light-text/60 dark:text-white/60">
@@ -740,8 +869,7 @@
                                 </li>
                             </ul>
                             <a href="{{ route('login') }}"
-                                class="block text-center py-4 rounded-2xl border border-black/10 dark:border-white/10 hover:bg-[#C72D52] hover:text-white text-xs font-bold uppercase tracking-widest transition-all text-brand-light-text dark:text-white">Demo
-                                Gör</a>
+                                class="block text-center py-4 rounded-2xl border border-black/10 dark:border-white/10 hover:bg-[#C72D52] hover:text-white text-xs font-bold uppercase tracking-widest transition-all text-brand-light-text dark:text-white">Düzenli Kullanım İçin İncele</a>
                         </div>
                     </div>
 
@@ -763,10 +891,8 @@
                                 Büyüme</span>
                             <h3 class="text-4xl font-black mb-2 text-brand-light-text dark:text-white">Professional</h3>
                             <div
-                                class="text-6xl font-black mb-12 tracking-tighter text-brand-light-text dark:text-white">
-                                $299 <span
-                                    class="text-sm font-medium text-brand-light-text/40 dark:text-white/40 tracking-normal">/
-                                    bir kez</span>
+                                class="text-4xl font-black mb-12 tracking-tighter text-brand-light-text dark:text-white uppercase">
+                                Hazırlanıyor
                             </div>
                             <ul class="space-y-6 mb-12 flex-grow">
                                 <li
@@ -799,7 +925,7 @@
                             </ul>
                             <a href="{{ route('login') }}"
                                 class="block text-center py-5 rounded-2xl bg-[#C72D52] hover:bg-[#A82244] text-sm font-black uppercase tracking-widest text-white transition-all scale-105 shadow-xl shadow-[#C72D52]/20 active:scale-95">
-                                Demo Gör
+                                Tek Seferlik, Kalıcı Çözüm
                             </a>
                         </div>
                     </div>
@@ -813,10 +939,8 @@
                                 Güç</span>
                             <h3 class="text-3xl font-black mb-2 text-brand-light-text dark:text-white">Enterprise</h3>
                             <div
-                                class="text-5xl font-black mb-10 tracking-tighter text-brand-light-text dark:text-white">
-                                $599 <span
-                                    class="text-sm font-medium text-brand-light-text/40 dark:text-white/40 tracking-normal">/
-                                    bir kez</span>
+                                class="text-3xl font-black mb-10 tracking-tighter text-brand-light-text dark:text-white uppercase">
+                                Hazırlanıyor
                             </div>
                             <ul class="space-y-4 mb-12 flex-grow text-sm text-brand-light-text/60 dark:text-white/60">
                                 <li class="flex items-center gap-3">
@@ -833,7 +957,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                             d="M5 13l4 4L19 7" />
                                     </svg>
-                                    Master Yönetim Yetkisi
+                                    Gelişmiş API ve Entegrasyon
                                 </li>
                                 <li class="flex items-center gap-3">
                                     <svg class="h-4 w-4 text-brand-gold" fill="none" viewBox="0 0 24 24"
@@ -855,9 +979,9 @@
 
 
         <!-- Final CTA & Footer -->
-        <footer class="pt-24 pb-12 bg-[#000000] relative overflow-hidden transition-colors">
+        <footer class="pt-16 pb-8 bg-[#000000] relative overflow-hidden transition-colors">
             <div class="max-w-7xl mx-auto px-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     <!-- Brand -->
                     <div class="reveal">
                         <div class="flex items-center gap-3 mb-8">
@@ -869,11 +993,10 @@
                                     class="absolute -top-2 -right-0 bg-[#C72D52] text-[8px] font-black text-white px-1.5 py-0.5 rounded-md leading-none">BETA</span>
                             </div>
                         </div>
-                        <p class="text-sm text-white/40 leading-relaxed mb-8">Yeni nesil finansal yönetim ve cari takip
-                            platformu. İşinizi modernize edin, geleceği kontrol altına alın.</p>
+                        <p class="text-sm text-white/80 leading-relaxed mb-8">Küçük işletmeler için geliştirilmiş sade, hızlı ve güvenli finansal yönetim platformu. Karışık Excel tablolarından ve karmaşık sistemlerden bugün kurtulun.</p>
                         <div class="flex items-center gap-4">
                             <a href="#"
-                                class="h-10 w-10 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-[#C72D52] hover:border-[#C72D52] transition-all">
+                                class="h-10 w-10 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-white/80 hover:text-[#C72D52] hover:border-[#C72D52] hover:bg-transparent transition-all">
                                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path
                                         d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
@@ -900,16 +1023,13 @@
                     <div class="reveal [transition-delay:100ms]">
                         <h4 class="text-xs font-black uppercase tracking-[0.3em] text-white mb-8">Ürün</h4>
                         <ul class="space-y-4">
+                            <li><a href="#hero" class="text-sm text-white hover:text-[#C72D52] transition-colors">Ana
+                                    Sayfa</a></li>
                             <li><a href="#features"
-                                    class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">Özellikler</a>
-                            </li>
-                            <li><a href="#process"
-                                    class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">Yol
-                                    Haritası</a></li>
+                                    class="text-sm text-white hover:text-[#C72D52] transition-colors">Modüller</a></li>
                             <li><a href="#pricing"
-                                    class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">Fiyatlandırma</a>
-                            </li>
-                            <li><a href="#" class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">Sıkça
+                                    class="text-sm text-white hover:text-[#C72D52] transition-colors">Fiyatlandırma</a></li>
+                            <li><a href="#" class="text-sm text-white hover:text-[#C72D52] transition-colors">Sıkça
                                     Sorulanlar</a></li>
                         </ul>
                     </div>
@@ -918,17 +1038,13 @@
                     <div class="reveal [transition-delay:200ms]">
                         <h4 class="text-xs font-black uppercase tracking-[0.3em] text-white mb-8">Şirket</h4>
                         <ul class="space-y-4">
-                            <li><a href="#"
-                                    class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">Hakkımızda</a>
+                            <li><a href="#" class="text-sm text-white hover:text-[#C72D52] transition-colors">Hakkımızda</a>
                             </li>
-                            <li><a href="#"
-                                    class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">Kariyer</a>
+                            <li><a href="#" class="text-sm text-white hover:text-[#C72D52] transition-colors">Kariyer</a>
                             </li>
-                            <li><a href="#"
-                                    class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">İletişim</a>
+                            <li><a href="#" class="text-sm text-white hover:text-[#C72D52] transition-colors">Blog</a></li>
+                            <li><a href="#" class="text-sm text-white hover:text-[#C72D52] transition-colors">İletişim</a>
                             </li>
-                            <li><a href="#"
-                                    class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">Blog</a></li>
                         </ul>
                     </div>
 
@@ -937,33 +1053,45 @@
                         <h4 class="text-xs font-black uppercase tracking-[0.3em] text-white mb-8">Yasal</h4>
                         <ul class="space-y-4">
                             <li><a href="#"
-                                    class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">Gizlilik
+                                    class="text-sm text-white hover:text-[#C72D52] transition-colors">Gizlilik
                                     Politikası</a></li>
                             <li><a href="#"
-                                    class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">Kullanım
+                                    class="text-sm text-white hover:text-[#C72D52] transition-colors">Kullanım
                                     Şartları</a></li>
-                            <li><a href="#" class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">Çerez
+                            <li><a href="#" class="text-sm text-white hover:text-[#C72D52] transition-colors">Çerez
                                     Politikası</a></li>
                             <li><a href="#"
-                                    class="text-sm text-white/40 hover:text-[#C72D52] transition-colors">KVKK</a></li>
+                                    class="text-sm text-white hover:text-[#C72D52] transition-colors">KVKK</a></li>
                         </ul>
                     </div>
                 </div>
 
                 <div
                     class="pt-12 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-white/20">© 2024 MIONEX FINANSAL
-                        TEKNOLOJİLER. TÜM HAKLARI SAKLIDIR.</p>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-white">© 2024 MIONEX . TÜM HAKLARI SAKLIDIR.</p>
                     <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/20">SİSTEM DURUMU:
-                            AKTİF</span>
+                        <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white">SİSTEM DURUMU: AKTİF</span>
                     </div>
                 </div>
             </div>
         </footer>
 
 
+
+        <!-- Scroll to Top Button -->
+        <div x-data="{ show: false }" x-on:scroll.window="show = window.pageYOffset > 500">
+            <button x-show="show" x-on:click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+                x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4"
+                x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4"
+                class="fixed bottom-8 right-8 z-50 p-4 rounded-2xl glass-mionex border border-[#C72D52]/20 bg-[#C72D52] text-white shadow-2xl dark:shadow-[#C72D52]/20 hover:bg-white hover:text-[#C72D52] transition-all group scale-100 active:scale-95">
+                <svg class="h-6 w-6 transform group-hover:-translate-y-1 transition-transform" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" />
+                </svg>
+            </button>
+        </div>
 
         <script>
             // Reveal on Scroll
@@ -982,7 +1110,7 @@
 
             // Typing Animation
             const textElement = document.getElementById("typed-text");
-            const words = ["MODERNİTE.", "VERİMLİLİK.", "GÜVENLİK.", "HASSASİYET."];
+            const words = ["MİMARİ.", "VERİMLİLİK.", "GÜVENLİK.", "HASSASİYET."];
             let wordIndex = 0;
             let charIndex = 0;
             let isDeleting = false;
@@ -1023,6 +1151,47 @@
                     });
                 });
             }
+            // Live Code Typing Animation
+            const codeSnippet = document.getElementById("code-snippet");
+            const codeToType = `// MIONEX Core Financial Module
+public function processLedger(Amount $value) 
+{
+    return DB::transaction(function() use ($value) {
+        $this->traceActivity('ledger_process');
+        $this->ledger->push($value);
+        return $this->reconcile();
+    });
+}
+
+# _`;
+
+            let i = 0;
+            const typingSpeed = 15; // Fast typing
+
+            function typeCode() {
+                if (i < codeToType.length) {
+                    if (codeToType.charAt(i) === '#') {
+                        codeSnippet.innerHTML = codeToType.substring(0, i) + '<span class="animate-pulse">█</span>';
+                        codeSnippet.classList.remove('typing-cursor');
+                    } else if (codeToType.charAt(i) === '_') {
+                        // Keep cursor active
+                    } else {
+                        codeSnippet.textContent = codeToType.substring(0, i + 1);
+                        i++;
+                        setTimeout(typeCode, typingSpeed);
+                    }
+                }
+            }
+
+            const codeObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    codeSnippet.textContent = "";
+                    typeCode();
+                    codeObserver.unobserve(codeSnippet);
+                }
+            }, { threshold: 0.5 });
+
+            if (codeSnippet) codeObserver.observe(codeSnippet);
         </script>
 </body>
 

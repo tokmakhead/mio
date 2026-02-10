@@ -133,9 +133,18 @@ class ReportController extends Controller
             $current->addMonth();
         }
 
+        $driver = DB::connection()->getDriverName();
+        $invoiceMonthFormat = $driver === 'sqlite'
+            ? "strftime('%Y-%m', issue_date)"
+            : "DATE_FORMAT(issue_date, '%Y-%m')";
+
+        $paymentMonthFormat = $driver === 'sqlite'
+            ? "strftime('%Y-%m', paid_at)"
+            : "DATE_FORMAT(paid_at, '%Y-%m')";
+
         // Fetch Invoiced Data
         $invoices = Invoice::whereBetween('issue_date', [$startDate, $endDate])
-            ->selectRaw("DATE_FORMAT(issue_date, '%Y-%m') as month, SUM(grand_total) as total, COUNT(*) as count, SUM(grand_total - paid_amount) as pending")
+            ->selectRaw("$invoiceMonthFormat as month, SUM(grand_total) as total, COUNT(*) as count, SUM(grand_total - paid_amount) as pending")
             ->groupBy('month')
             ->get();
 
@@ -143,15 +152,13 @@ class ReportController extends Controller
             if (isset($months[$inv->month])) {
                 $months[$inv->month]['invoiced'] = $inv->total;
                 $months[$inv->month]['invoice_count'] = $inv->count;
-                // Pending based on issue date logic (simplification)
-                // Actually pending should be grand_total - paid_amount for invoices issued in that month
                 $months[$inv->month]['pending'] = $inv->pending;
             }
         }
 
         // Fetch Collected Data (Payments)
         $payments = Payment::whereBetween('paid_at', [$startDate, $endDate])
-            ->selectRaw("DATE_FORMAT(paid_at, '%Y-%m') as month, SUM(amount) as total")
+            ->selectRaw("$paymentMonthFormat as month, SUM(amount) as total")
             ->groupBy('month')
             ->get();
 

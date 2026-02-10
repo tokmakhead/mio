@@ -18,6 +18,7 @@ class EnsureAppIsLicensed
     {
         // Exclude license routes, assets, and install routes
         if (
+            app()->environment('local') ||
             $request->routeIs('license.*') ||
             $request->routeIs('install.*') ||
             $request->is('storage/*') ||

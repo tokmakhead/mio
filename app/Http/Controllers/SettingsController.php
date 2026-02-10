@@ -375,6 +375,12 @@ class SettingsController extends Controller
                     ['key' => $field],
                     ['value' => $request->input($field)]
                 );
+
+                // Sync site_title with SystemSetting
+                if ($field === 'site_title') {
+                    $systemSettings = SystemSetting::firstOrCreate(['id' => 1]);
+                    $systemSettings->update(['site_name' => $request->input($field)]);
+                }
             }
         }
 
@@ -398,7 +404,8 @@ class SettingsController extends Controller
             }
         }
 
-        // Clear view cache to reflect changes immediately (especially for shared view data)
+        // Clear cache and view cache to reflect changes immediately
+        \Illuminate\Support\Facades\Cache::forget('brand_settings');
         Artisan::call('view:clear');
 
         return back()->with('success', 'Marka ayarları güncellendi.');

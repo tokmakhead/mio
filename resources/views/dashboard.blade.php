@@ -18,41 +18,61 @@
                 <div class="space-y-4 mb-8">
                     @foreach($announcements as $announcement)
                         <div class="rounded-md p-4 border-l-4 shadow-sm
-                            @if($announcement['type'] == 'info') bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500
-                            @elseif($announcement['type'] == 'success') bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-500
-                            @elseif($announcement['type'] == 'warning') bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500
-                            @elseif($announcement['type'] == 'danger') bg-red-50 border-red-400 dark:bg-red-900/20 dark:border-red-500
-                            @else bg-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-500 @endif
-                        ">
+                                    @if($announcement['type'] == 'info') bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500
+                                    @elseif($announcement['type'] == 'success') bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-500
+                                    @elseif($announcement['type'] == 'warning') bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500
+                                    @elseif($announcement['type'] == 'danger') bg-red-50 border-red-400 dark:bg-red-900/20 dark:border-red-500
+                                    @else bg-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-500 @endif
+                                ">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     @if($announcement['type'] == 'info')
-                                        <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                                        <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                clip-rule="evenodd" />
+                                        </svg>
                                     @elseif($announcement['type'] == 'success')
-                                        <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                                        <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
                                     @elseif($announcement['type'] == 'warning')
-                                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                                clip-rule="evenodd" />
+                                        </svg>
                                     @elseif($announcement['type'] == 'danger')
-                                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd" />
+                                        </svg>
                                     @endif
                                 </div>
                                 <div class="ml-3">
                                     <h3 class="text-sm font-medium 
-                                        @if($announcement['type'] == 'info') text-blue-800 dark:text-blue-200
-                                        @elseif($announcement['type'] == 'success') text-green-800 dark:text-green-200
-                                        @elseif($announcement['type'] == 'warning') text-yellow-800 dark:text-yellow-200
-                                        @elseif($announcement['type'] == 'danger') text-red-800 dark:text-red-200
-                                        @else text-gray-800 dark:text-gray-200 @endif
-                                    ">
+                                                @if($announcement['type'] == 'info') text-blue-800 dark:text-blue-200
+                                                @elseif($announcement['type'] == 'success') text-green-800 dark:text-green-200
+                                                @elseif($announcement['type'] == 'warning') text-yellow-800 dark:text-yellow-200
+                                                @elseif($announcement['type'] == 'danger') text-red-800 dark:text-red-200
+                                                @else text-gray-800 dark:text-gray-200 @endif
+                                            ">
                                         {{ $announcement['title'] }}
                                     </h3>
                                     <div class="mt-2 text-sm 
-                                        @if($announcement['type'] == 'info') text-blue-700 dark:text-blue-300
-                                        @elseif($announcement['type'] == 'success') text-green-700 dark:text-green-300
-                                        @elseif($announcement['type'] == 'warning') text-yellow-700 dark:text-yellow-300
-                                        @elseif($announcement['type'] == 'danger') text-red-700 dark:text-red-300
-                                        @else text-gray-700 dark:text-gray-300 @endif
-                                    ">
+                                                @if($announcement['type'] == 'info') text-blue-700 dark:text-blue-300
+                                                @elseif($announcement['type'] == 'success') text-green-700 dark:text-green-300
+                                                @elseif($announcement['type'] == 'warning') text-yellow-700 dark:text-yellow-300
+                                                @elseif($announcement['type'] == 'danger') text-red-700 dark:text-red-300
+                                                @else text-gray-700 dark:text-gray-300 @endif
+                                            ">
                                         <p>{{ $announcement['message'] }}</p>
                                     </div>
                                 </div>
@@ -73,7 +93,7 @@
                 <x-kpi-card title="Bu Ay Gelir" value="{{ number_format($thisMonthRevenue, 2) }}₺" tone="warning"
                     icon='<svg class="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
 
-                <x-kpi-card title="Vadesi Geçen Faturalar" value="{{ $overdueInvoices }}" tone="danger"
+                <x-kpi-card title="Vadesi Geçen" value="{{ $overdueInvoices }}" tone="danger"
                     icon='<svg class="w-6 h-6 text-danger-600 dark:text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
             </div>
 
@@ -169,9 +189,9 @@
                                         <td class="px-6 py-4 text-right">
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                                                                                @if($service->days_until_expiry < 30) bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400
-                                                                                @elseif($service->days_until_expiry < 60) bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400
-                                                                                @else bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400 @endif">
+                                                                                    @if($service->days_until_expiry < 30) bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400
+                                                                                    @elseif($service->days_until_expiry < 60) bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400
+                                                                                    @else bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400 @endif">
                                                 {{ $service->days_until_expiry < 30 ? 'Acil' : ($service->days_until_expiry < 60 ? 'Yarım' : 'Normal') }}
                                             </span>
                                         </td>
@@ -205,20 +225,20 @@
                                             <div class="relative flex space-x-3">
                                                 <div>
                                                     <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-800 
-                                                                                        @php
-                                                                                            $color = 'bg-gray-400';
-                                                                                            if (str_contains($activity->action, 'created'))
-                                                                                                $color = 'bg-green-500';
-                                                                                            if (str_contains($activity->action, 'updated'))
-                                                                                                $color = 'bg-blue-500';
-                                                                                            if (str_contains($activity->action, 'deleted'))
-                                                                                                $color = 'bg-red-500';
-                                                                                            if (str_contains($activity->action, 'sent'))
-                                                                                                $color = 'bg-indigo-500';
-                                                                                            if (str_contains($activity->action, 'login'))
-                                                                                                $color = 'bg-primary-500';
-                                                                                        @endphp
-                                                                                        {{ $color }}">
+                                                                                            @php
+                                                                                                $color = 'bg-gray-400';
+                                                                                                if (str_contains($activity->action, 'created'))
+                                                                                                    $color = 'bg-green-500';
+                                                                                                if (str_contains($activity->action, 'updated'))
+                                                                                                    $color = 'bg-blue-500';
+                                                                                                if (str_contains($activity->action, 'deleted'))
+                                                                                                    $color = 'bg-red-500';
+                                                                                                if (str_contains($activity->action, 'sent'))
+                                                                                                    $color = 'bg-indigo-500';
+                                                                                                if (str_contains($activity->action, 'login'))
+                                                                                                    $color = 'bg-primary-500';
+                                                                                            @endphp
+                                                                                            {{ $color }}">
                                                         @php
                                                             $icon = 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z';
                                                             if (str_contains($activity->action, 'invoice'))

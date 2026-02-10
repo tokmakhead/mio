@@ -220,10 +220,21 @@ class InvoiceController extends Controller
     {
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0.01|max:' . ($invoice->grand_total - $invoice->paid_amount),
+            'method' => 'nullable|string',
+            'note' => 'nullable|string',
         ]);
 
-        $invoice->paid_amount += $validated['amount'];
-        $invoice->updateStatus();
+        \App\Models\Payment::create([
+            'invoice_id' => $invoice->id,
+            'customer_id' => $invoice->customer_id,
+            'amount' => $validated['amount'],
+            'currency' => $invoice->currency,
+            'method' => $validated['method'] ?? 'cash',
+            'paid_at' => now(),
+            'note' => $validated['note'] ?? null,
+        ]);
+
+        // Note: PaymentObserver handles updating $invoice->paid_amount and status
 
         return back()->with('success', 'Ödeme başarıyla kaydedildi.');
     }

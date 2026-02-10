@@ -36,7 +36,7 @@
                 ;
                 /* Using same for simplicity, or darken slightly */
                 /* For a full palette we would need a sophisticated generator, 
-                               but overriding 500/600 covers buttons and main accents */
+                                           but overriding 500/600 covers buttons and main accents */
                 --color-primary-50:
                     {{ $r }}
                     {{ $g }}
@@ -51,28 +51,44 @@
 
     <script>
         window.Mionex = {
-            isDemo: {{ auth()->check() && (auth()->user()->demo_readonly ? 'true' : 'false') }}
+            isDemo: {{ auth() -> check() && auth() -> user() -> demo_readonly && !in_array(auth() -> user() -> email, ['admin@mioly.test', 'admin@mionex.com']) ? 'true' : 'false' }}
         };
-        
-        window.showDemoAlert = function() {
-            window.dispatchEvent(new CustomEvent('show-demo-alert', { 
+
+        window.showDemoAlert = function () {
+            window.dispatchEvent(new CustomEvent('show-demo-alert', {
                 bubbles: true,
                 cancelable: true,
-                detail: {} 
+                detail: {}
             }));
         };
 
         // Global Form Protection for Demo
-        document.addEventListener('submit', function(e) {
+        document.addEventListener('submit', function (e) {
             if (window.Mionex.isDemo) {
                 // Ignore logout
-                if (e.target.action.includes('logout')) return;
+                if (e.target.getAttribute('action') && e.target.getAttribute('action').includes('logout')) return;
 
                 e.preventDefault();
+                e.stopPropagation();
                 window.showDemoAlert();
                 return false;
             }
-        }, true); // Use capture phase to be ahead of other listeners
+        }, true);
+
+        // Specific Alert for Demo Restrict (links that perform actions but aren't forms)
+        document.addEventListener('click', function (e) {
+            if (window.Mionex.isDemo) {
+                const target = e.target.closest('.demo-restrict');
+                // Only intercept if it's NOT a submit button (those are handled by the submit listener)
+                // AND it's not a form itself
+                if (target && target.tagName !== 'FORM' && target.getAttribute('type') !== 'submit') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.showDemoAlert();
+                    return false;
+                }
+            }
+        }, true);
     </script>
 </head>
 

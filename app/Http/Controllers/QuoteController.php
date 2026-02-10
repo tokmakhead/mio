@@ -249,7 +249,7 @@ class QuoteController extends Controller
                 'customer_id' => $quote->customer_id,
                 'quote_id' => $quote->id,
                 'number' => $number,
-                'status' => 'unpaid',
+                'status' => 'sent',
                 'currency' => $quote->currency,
                 'discount_total' => $quote->discount_total,
                 'subtotal' => $quote->subtotal,

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'MIONEX') }}</title>
+    <title>{{ $brandSettings['site_title'] ?? ($siteSettings->site_name ?? 'MIONEX') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -75,12 +75,19 @@
             <!-- Content -->
             <div class="relative z-10">
                 <div class="flex items-center gap-3 group">
-                    <img src="{{ asset('assets/img/nexwhite.png') }}" alt="MIONEX Logo" class="h-10 w-auto">
+                    @if(isset($brandSettings['logo_path']))
+                        <img src="{{ $brandSettings['logo_path'] }}" alt="Logo" class="h-10 w-auto">
+                    @else
+                        <img src="{{ asset('assets/img/nexwhite.png') }}" alt="MIONEX Logo" class="h-10 w-auto">
+                    @endif
                     <div class="relative pr-10">
-                        <span
-                            class="text-2xl font-black tracking-tighter text-white leading-none uppercase">MIONEX</span>
-                        <span
-                            class="absolute -top-2 -right-0 bg-[#C72D52] text-[8px] font-black text-white px-1.5 py-0.5 rounded-md leading-none">BETA</span>
+                        <span class="text-2xl font-black tracking-tighter text-white leading-none uppercase">
+                            {{ $brandSettings['site_title'] ?? ($siteSettings->site_name ?? 'MIONEX') }}
+                        </span>
+                        @if(!isset($brandSettings['site_title']))
+                            <span
+                                class="absolute -top-2 -right-0 bg-[#C72D52] text-[8px] font-black text-white px-1.5 py-0.5 rounded-md leading-none">BETA</span>
+                        @endif
                     </div>
                 </div>
             </div>

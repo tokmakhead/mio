@@ -39,14 +39,20 @@
                                                 <input type="color" id="primary_color_picker" 
                                                     class="h-10 w-16 opacity-0 absolute inset-0 cursor-pointer"
                                                     value="{{ old('primary_color', $settings['primary_color'] ?? '#4f46e5') }}"
-                                                    onchange="document.getElementById('primary_color').value = this.value; document.getElementById('color_preview').style.backgroundColor = this.value">
+                                                    onchange="updatePrimaryColor(this.value)">
                                                 <div id="color_preview" class="h-10 w-16 rounded border border-gray-300 dark:border-gray-700 shadow-sm" 
                                                      style="background-color: {{ old('primary_color', $settings['primary_color'] ?? '#4f46e5') }}"></div>
                                             </div>
                                             
                                             <x-text-input id="primary_color" name="primary_color" type="text" class="block w-full sm:w-48 font-mono" 
                                                 :value="old('primary_color', $settings['primary_color'] ?? '#4f46e5')" 
-                                                placeholder="#4f46e5" />
+                                                placeholder="#4f46e5"
+                                                oninput="updatePrimaryColor(this.value)" />
+                                            
+                                            <button type="button" onclick="resetToOriginal()" 
+                                                class="px-3 py-2 text-xs font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 whitespace-nowrap">
+                                                Orijinale Dön
+                                            </button>
                                         </div>
                                         <p class="mt-2 text-xs text-gray-500">Sistem genelindeki butonlar ve vurgular bu rengi kullanacaktır.</p>
                                         <x-input-error class="mt-2" :messages="$errors->get('primary_color')" />
@@ -163,4 +169,68 @@
             </form>
         </div>
     </div>
+    @push('scripts')
+    <script>
+        const ORIGINAL_COLOR = '#de4968';
+
+        function updatePrimaryColor(hex) {
+            if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex)) return;
+            
+            const rgb = hexToRgb(hex);
+            if (!rgb) return;
+
+            // Helper to set variable
+            const setVar = (level, r, g, b) => {
+                document.documentElement.style.setProperty(`--color-primary-${level}`, `${r} ${g} ${b}`);
+            };
+
+            // Helper to blend color
+            const blend = (c1, c2, ratio) => {
+                return [
+                    Math.round(c1.r * (1 - ratio) + c2.r * ratio),
+                    Math.round(c1.g * (1 - ratio) + c2.g * ratio),
+                    Math.round(c1.b * (1 - ratio) + c2.b * ratio)
+                ];
+            };
+
+            // Set all shades to ensure hero and button effects work
+            setVar(500, rgb.r, rgb.g, rgb.b);
+            
+            // Lighter shades
+            setVar(50, ...blend(rgb, {r:255, g:255, b:255}, 0.95));
+            setVar(100, ...blend(rgb, {r:255, g:255, b:255}, 0.85));
+            setVar(200, ...blend(rgb, {r:255, g:255, b:255}, 0.7));
+            setVar(300, ...blend(rgb, {r:255, g:255, b:255}, 0.5));
+            setVar(400, ...blend(rgb, {r:255, g:255, b:255}, 0.3));
+
+            // Darker shades
+            setVar(600, ...blend(rgb, {r:0, g:0, b:0}, 0.15));
+            setVar(700, ...blend(rgb, {r:0, g:0, b:0}, 0.3));
+            setVar(800, ...blend(rgb, {r:0, g:0, b:0}, 0.45));
+            setVar(900, ...blend(rgb, {r:0, g:0, b:0}, 0.6));
+            
+            // Update Previews
+            document.getElementById('primary_color_picker').value = hex;
+            document.getElementById('primary_color').value = hex;
+            document.getElementById('color_preview').style.backgroundColor = hex;
+        }
+
+        function hexToRgb(hex) {
+            var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+            hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+                return r + r + g + g + b + b;
+            });
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function resetToOriginal() {
+            updatePrimaryColor(ORIGINAL_COLOR);
+        }
+    </script>
+    @endpush
 </x-app-layout>

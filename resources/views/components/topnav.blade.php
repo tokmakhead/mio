@@ -7,12 +7,18 @@
                 <div class="flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
                         <div class="flex items-center">
-                            <img src="{{ asset('assets/img/nexblack.png') }}" alt="Logo" class="h-8 w-auto dark:hidden">
-                            <img src="{{ asset('assets/img/nexwhite.png') }}" alt="Logo"
-                                class="h-8 w-auto hidden dark:block">
+                            @if(isset($brandSettings['logo_path']))
+                                <img src="{{ $brandSettings['logo_path'] }}" alt="Logo" class="h-8 w-auto">
+                            @else
+                                <img src="{{ asset('assets/img/nexblack.png') }}" alt="Logo" class="h-8 w-auto dark:hidden">
+                                <img src="{{ asset('assets/img/nexwhite.png') }}" alt="Logo"
+                                    class="h-8 w-auto hidden dark:block">
+                            @endif
                         </div>
                         <span
-                            class="text-xl font-black tracking-tighter text-gray-900 dark:text-white leading-none uppercase">MIONEX</span>
+                            class="text-xl font-black tracking-tighter text-gray-900 dark:text-white leading-none uppercase">
+                            {{ $brandSettings['site_title'] ?? ($siteSettings->site_name ?? 'MIONEX') }}
+                        </span>
                     </a>
                 </div>
 
@@ -40,8 +46,8 @@
                 <!-- Right Side: Theme Toggle + User Dropdown -->
                 <div class="flex items-center space-x-4">
                     <!-- Language Switcher -->
-                    <div x-data="{ open: false }" class="relative">
-                        <button @click="open = !open"
+                    <div x-data="{ langOpen: false }" class="relative" x-cloak>
+                        <button @click.stop="langOpen = !langOpen"
                             class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-1">
                             @if(app()->getLocale() == 'tr')
                                 <svg class="w-6 h-6 rounded-sm shadow-sm" xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +82,7 @@
                                     d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
-                        <div x-show="open" @click.away="open = false" x-transition
+                        <div x-show="langOpen" @click.away="langOpen = false" x-transition
                             class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
                             <a href="{{ route('lang.switch', 'tr') }}"
                                 class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 {{ app()->getLocale() == 'tr' ? 'bg-gray-50 dark:bg-gray-700' : '' }}">
@@ -137,8 +143,8 @@
                     </button>
 
                     <!-- User Dropdown -->
-                    <div x-data="{ open: false }" class="relative">
-                        <button @click="open = !open"
+                    <div x-data="{ userOpen: false }" class="relative" x-cloak>
+                        <button @click.stop="userOpen = !userOpen"
                             class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                             <div
                                 class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center text-white font-semibold text-sm">
@@ -153,7 +159,7 @@
                         </button>
 
                         <!-- Dropdown Menu -->
-                        <div x-show="open" @click.away="open = false" x-transition
+                        <div x-show="userOpen" @click.away="userOpen = false" x-transition
                             class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1">
                             <a href="{{ route('profile.edit') }}"
                                 class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>

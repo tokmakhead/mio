@@ -5,7 +5,7 @@
             <!-- Left Side: App Name & Copyright -->
             <div class="flex items-center space-x-2">
                 <span class="text-xl font-black tracking-tighter text-primary-600">
-                    {{ $siteSettings->site_name ?? config('app.name', 'MIOLY') }}
+                    {{ $brandSettings['site_title'] ?? ($siteSettings->site_name ?? 'MIONEX') }}
                 </span>
                 <span class="text-sm text-gray-500 dark:text-gray-400">
                     &copy; {{ date('Y') }} Tüm hakları saklıdır.
