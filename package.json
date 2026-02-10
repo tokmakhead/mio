@@ -2,7 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
+        "build": "mkdir -p public/build",
         "dev": "vite"
     },
     "devDependencies": {
