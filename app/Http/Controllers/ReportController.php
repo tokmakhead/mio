@@ -134,13 +134,17 @@ class ReportController extends Controller
         }
 
         $driver = DB::connection()->getDriverName();
-        $invoiceMonthFormat = $driver === 'sqlite'
-            ? "strftime('%Y-%m', issue_date)"
-            : "DATE_FORMAT(issue_date, '%Y-%m')";
+        $invoiceMonthFormat = match ($driver) {
+            'sqlite' => "strftime('%Y-%m', issue_date)",
+            'pgsql' => "TO_CHAR(issue_date, 'YYYY-MM')",
+            default => "DATE_FORMAT(issue_date, '%Y-%m')",
+        };
 
-        $paymentMonthFormat = $driver === 'sqlite'
-            ? "strftime('%Y-%m', paid_at)"
-            : "DATE_FORMAT(paid_at, '%Y-%m')";
+        $paymentMonthFormat = match ($driver) {
+            'sqlite' => "strftime('%Y-%m', paid_at)",
+            'pgsql' => "TO_CHAR(paid_at, 'YYYY-MM')",
+            default => "DATE_FORMAT(paid_at, '%Y-%m')",
+        };
 
         // Fetch Invoiced Data
         $invoices = Invoice::whereBetween('issue_date', [$startDate, $endDate])
