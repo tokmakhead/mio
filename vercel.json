@@ -2,9 +2,15 @@
     "version": 2,
     "framework": null,
     "functions": {
-        "api/index.php": { "runtime": "vercel-php@0.7.2" }
+        "api/index.php": {
+            "runtime": "vercel-php@0.7.2"
+        }
     },
     "routes": [
+        {
+            "src": "/(build|assets|css|js|images|storage)/(.*)",
+            "dest": "/public/$1/$2"
+        },
         {
             "src": "/(.*)",
             "dest": "/api/index.php"
@@ -24,6 +30,6 @@
         "LOG_CHANNEL": "stderr",
         "SESSION_DRIVER": "cookie",
         "DB_CONNECTION": "sqlite",
-        "DB_DATABASE": ":memory:"
+        "DB_DATABASE": "/tmp/database.sqlite"
     }
 }
