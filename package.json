@@ -2,7 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "mkdir -p public/build",
+        "build": "echo 'Build skipped - serving root'",
         "dev": "vite"
     },
     "devDependencies": {
