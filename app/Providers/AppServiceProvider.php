@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Force HTTPS in production (Railway)
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // Model Observers
         \App\Models\Invoice::observe(\App\Observers\InvoiceObserver::class);
         \App\Models\Payment::observe(\App\Observers\PaymentObserver::class);
