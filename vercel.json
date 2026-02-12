@@ -1,6 +1,5 @@
 {
     "version": 2,
-    "outputDirectory": ".",
     "framework": null,
     "functions": {
         "api/index.php": {
