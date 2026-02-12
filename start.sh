@@ -15,5 +15,12 @@ chmod -R 775 storage bootstrap/cache
 # Clear config cache to pick up new APP_URL
 php artisan config:clear
 
+# Run migrations and seeders
+echo "Running migrations..."
+php artisan migrate --force
+
+echo "Seeding database..."
+php artisan db:seed --force
+
 # Start the application
 php artisan serve --host=0.0.0.0 --port=$PORT
