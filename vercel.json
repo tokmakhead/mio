@@ -8,15 +8,7 @@
     },
     "routes": [
         {
-            "src": "/build/(.*)",
-            "dest": "/public/build/$1"
-        },
-        {
-            "src": "/(assets|css|js|images|storage|favicon.ico|robots.txt)/(.*)",
-            "dest": "/public/$1/$2"
-        },
-        {
-            "src": "/(.*)",
+            "src": "/((?!build|assets|css|js|images|storage|favicon.ico|robots.txt).*)",
             "dest": "/api/index.php"
         }
     ],
