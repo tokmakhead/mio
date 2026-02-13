@@ -25,9 +25,7 @@ class ProductionDemoSeeder extends Seeder
         // 1. Reset all data (ORDER MATTERS due to foreign keys)
         $this->command->info('Resetting database...');
 
-        // Disable foreign key checks for truncation (PostgreSQL compatible)
-        DB::statement('SET session_replication_role = replica;');
-
+        // No need to disable foreign keys since migrate:fresh already dropped all tables
         Payment::truncate();
         LedgerEntry::truncate();
         InvoiceItem::truncate();
@@ -39,8 +37,6 @@ class ProductionDemoSeeder extends Seeder
         Customer::truncate();
         License::truncate();
         User::truncate();
-
-        DB::statement('SET session_replication_role = DEFAULT;');
 
         // 2. Create Users & License
         $this->command->info('Creating license...');
