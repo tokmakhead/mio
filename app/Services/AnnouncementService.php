@@ -15,7 +15,7 @@ class AnnouncementService
         $masterApiUrl = config('app.master_api_url', url('/api/master/announcements'));
 
         try {
-            $response = Http::timeout(5)->get($masterApiUrl);
+            $response = Http::timeout(2)->get($masterApiUrl);
 
             if ($response->successful()) {
                 return $response->json();
