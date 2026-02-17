@@ -399,7 +399,7 @@ class SettingsController extends Controller
                 $systemSettings->update(['logo_path' => $path]);
 
                 // Also store in BrandSetting for consistency
-                BrandSetting::updateOrCreate(['key' => 'logo_path'], ['value' => Storage::url($path)]);
+                BrandSetting::updateOrCreate(['key' => 'logo_path'], ['value' => Storage::disk('public')->url($path)]);
             }
         }
 
@@ -416,7 +416,7 @@ class SettingsController extends Controller
                 $systemSettings->update(['favicon_path' => $path]);
 
                 // Also store in BrandSetting for consistency
-                BrandSetting::updateOrCreate(['key' => 'favicon_path'], ['value' => Storage::url($path)]);
+                BrandSetting::updateOrCreate(['key' => 'favicon_path'], ['value' => Storage::disk('public')->url($path)]);
             }
         }
 
@@ -427,7 +427,7 @@ class SettingsController extends Controller
                 $path = $file->store('brand', 'public');
                 BrandSetting::updateOrCreate(
                     ['key' => 'login_image_path'],
-                    ['value' => Storage::url($path)]
+                    ['value' => Storage::disk('public')->url($path)]
                 );
             }
         }
