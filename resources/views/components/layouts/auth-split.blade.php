@@ -94,10 +94,8 @@
                         <span class="text-2xl font-black tracking-tighter text-white leading-none uppercase">
                             {{ $brandSettings['site_title'] ?? ($siteSettings->site_name ?? 'MIONEX') }}
                         </span>
-                        @if(!isset($brandSettings['site_title']))
-                            <span
-                                class="absolute -top-2 -right-0 bg-[#C72D52] text-[8px] font-black text-white px-1.5 py-0.5 rounded-md leading-none">BETA</span>
-                        @endif
+                        <span
+                            class="absolute -top-3 -right-2 bg-[#C72D52] text-[8px] font-black text-white px-1.5 py-0.5 rounded-md leading-none transform rotate-12 shadow-sm border border-white/10">BETA</span>
                     </div>
                 </div>
             </div>

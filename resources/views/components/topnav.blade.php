@@ -8,9 +8,11 @@
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
                         <div class="flex items-center">
                             @if(isset($brandSettings['logo_path']))
-                                <img src="{{ $brandSettings['logo_path'] }}" alt="Logo" class="h-8 w-auto">
+                                <img src="{{ $brandSettings['logo_path'] }}" alt="Logo"
+                                    class="h-8 w-auto dark:brightness-0 dark:invert">
                             @elseif(isset($siteSettings->logo_path) && $siteSettings->logo_path)
-                                <img src="{{ asset('storage/' . $siteSettings->logo_path) }}" alt="Logo" class="h-8 w-auto">
+                                <img src="{{ asset('storage/' . $siteSettings->logo_path) }}" alt="Logo"
+                                    class="h-8 w-auto dark:brightness-0 dark:invert">
                             @else
                                 <img src="{{ asset('assets/img/nexblack.png') }}" alt="Logo" class="h-8 w-auto dark:hidden">
                                 <img src="{{ asset('assets/img/nexwhite.png') }}" alt="Logo"
