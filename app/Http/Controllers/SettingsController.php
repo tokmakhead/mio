@@ -355,13 +355,9 @@ class SettingsController extends Controller
     // Brand Settings
     public function brand()
     {
-        try {
-            $settings = BrandSetting::all()->pluck('value', 'key');
-            $systemSettings = SystemSetting::firstOrCreate(['id' => 1]);
-            return view('settings.brand', compact('settings', 'systemSettings'))->render();
-        } catch (\Throwable $e) {
-            dd($e->getMessage(), $e->getTraceAsString());
-        }
+        $settings = BrandSetting::all()->pluck('value', 'key');
+        $systemSettings = SystemSetting::firstOrCreate(['id' => 1]);
+        return view('settings.brand', compact('settings', 'systemSettings'));
     }
 
     public function updateBrand(Request $request)
