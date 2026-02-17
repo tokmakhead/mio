@@ -281,4 +281,37 @@
             </x-card>
         </div>
     </div>
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const copyCheckbox = document.getElementById('copy_address');
+
+                if (!copyCheckbox) return;
+
+                // Source fields
+                const address = document.getElementById('address');
+                const city = document.getElementById('city');
+                const district = document.getElementById('district');
+                const postalCode = document.getElementById('postal_code');
+                const country = document.getElementById('country');
+
+                // Target fields
+                const invoiceAddress = document.getElementById('invoice_address_text');
+                const invoiceCity = document.getElementById('invoice_city');
+                const invoiceDistrict = document.getElementById('invoice_district');
+                const invoicePostalCode = document.getElementById('invoice_postal_code');
+                const invoiceCountry = document.getElementById('invoice_country');
+
+                copyCheckbox.addEventListener('change', function () {
+                    if (this.checked) {
+                        if (invoiceAddress) invoiceAddress.value = address.value;
+                        if (invoiceCity) invoiceCity.value = city.value;
+                        if (invoiceDistrict) invoiceDistrict.value = district.value;
+                        if (invoicePostalCode) invoicePostalCode.value = postalCode.value;
+                        if (invoiceCountry) invoiceCountry.value = country.value;
+                    }
+                });
+            });
+        </script>
+    @endpush
 </x-app-layout>
