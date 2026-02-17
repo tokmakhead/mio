@@ -358,8 +358,8 @@ class SettingsController extends Controller
         try {
             $settings = BrandSetting::all()->pluck('value', 'key');
             $systemSettings = SystemSetting::firstOrCreate(['id' => 1]);
-            return view('settings.brand', compact('settings', 'systemSettings'));
-        } catch (\Exception $e) {
+            return view('settings.brand', compact('settings', 'systemSettings'))->render();
+        } catch (\Throwable $e) {
             dd($e->getMessage(), $e->getTraceAsString());
         }
     }
