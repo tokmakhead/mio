@@ -190,13 +190,22 @@
 
                                         <!-- Balance -->
                                         <td class="px-4 py-4 text-right">
-                                            <span
-                                                class="text-sm font-mono font-bold {{ $customer->balance > 0 ? 'text-danger-600' : ($customer->balance < 0 ? 'text-blue-600' : 'text-success-600') }}">
-                                                {{ number_format(abs($customer->balance), 2) }} ₺
-                                                <span class="text-[10px] uppercase">
-                                                    {{ $customer->balance > 0 ? 'BORÇ' : ($customer->balance < 0 ? 'ALACAK' : '') }}
-                                                </span>
-                                            </span>
+                                            <div class="flex flex-col items-end space-y-1">
+                                                @forelse($customer->balances as $currency => $balance)
+                                                    @if($balance != 0)
+                                                        <span
+                                                            class="text-xs font-mono font-bold {{ $balance > 0 ? 'text-danger-600' : 'text-blue-600' }}">
+                                                            {{ number_format(abs($balance), 2) }}
+                                                            {{ $currency == 'TRY' ? '₺' : $currency }}
+                                                            <span class="text-[9px] uppercase opacity-75">
+                                                                {{ $balance > 0 ? 'BORÇ' : 'ALACAK' }}
+                                                            </span>
+                                                        </span>
+                                                    @endif
+                                                @empty
+                                                    <span class="text-xs font-mono font-bold text-success-600">0.00 ₺</span>
+                                                @endforelse
+                                            </div>
                                         </td>
 
                                         <!-- Services Count -->

@@ -26,23 +26,24 @@ class UpdateInvoiceStatuses extends Command
      */
     public function handle()
     {
-        $overdueCount = 0;
+        $updatedCount = 0;
 
-        $invoices = Invoice::where('status', '!=', 'paid')
-            ->where('status', '!=', 'cancelled')
-            ->where('due_date', '<', now()->startOfDay())
+        $invoices = Invoice::whereNotIn('status', ['paid', 'cancelled', 'draft'])
             ->get();
 
         foreach ($invoices as $invoice) {
             /** @var Invoice $invoice */
-            if ($invoice->status !== 'overdue') {
-                $invoice->status = 'overdue';
-                $invoice->save();
-                $invoice->logActivity('overdue');
-                $overdueCount++;
+            $oldStatus = $invoice->status;
+            $invoice->updateStatus();
+
+            if ($invoice->status !== $oldStatus) {
+                if ($invoice->status === 'overdue') {
+                    $invoice->logActivity('overdue');
+                }
+                $updatedCount++;
             }
         }
 
-        $this->info("Toplam {$overdueCount} faturanın durumu 'Vadesi Geçmiş' (overdue) olarak güncellendi.");
+        $this->info("Toplam {$updatedCount} faturanın durumu güncellendi.");
     }
 }

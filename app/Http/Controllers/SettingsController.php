@@ -270,6 +270,12 @@ class SettingsController extends Controller
 
         $settings->update($data);
 
+        // Sync with BrandSetting
+        \App\Models\BrandSetting::updateOrCreate(
+            ['key' => 'site_title'],
+            ['value' => $request->site_name]
+        );
+
         return back()->with('success', 'Site ayarları güncellendi.');
     }
 
@@ -286,7 +292,7 @@ class SettingsController extends Controller
 
         $data = $request->validate([
             'bank_name' => 'nullable|string',
-            'iban' => 'nullable|string',
+            'iban' => ['nullable', 'string', 'regex:/^TR[0-9]{24}$/'],
             'bank_account_info' => 'nullable|string',
             'invoice_prefix' => 'required|string',
             'invoice_start_number' => 'required|integer',

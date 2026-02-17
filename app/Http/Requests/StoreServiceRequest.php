@@ -32,6 +32,7 @@ class StoreServiceRequest extends FormRequest
             'status' => ['required', 'in:active,suspended,cancelled,expired'],
             'currency' => ['required', 'in:TRY,USD,EUR,GBP'],
             'price' => ['required', 'numeric', 'min:0'],
+            'buying_price' => ['nullable', 'numeric', 'min:0'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after:start_date'],
         ];
@@ -53,6 +54,7 @@ class StoreServiceRequest extends FormRequest
             'status' => 'durum',
             'currency' => 'para birimi',
             'price' => 'fiyat',
+            'buying_price' => 'alış fiyatı',
             'start_date' => 'başlangıç tarihi',
             'end_date' => 'bitiş tarihi',
         ];

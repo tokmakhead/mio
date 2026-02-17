@@ -68,20 +68,34 @@ class Invoice extends Model
 
     public function calculateTotals()
     {
-        $this->subtotal = (string) $this->items->sum('line_subtotal');
-        $this->tax_total = (string) $this->items->sum('line_tax');
-        $this->grand_total = (string) ((float) $this->subtotal + (float) $this->tax_total - (float) $this->discount_total);
+        $this->subtotal = number_format($this->items->sum('line_subtotal'), 2, '.', '');
+        $this->tax_total = number_format($this->items->sum('line_tax'), 2, '.', '');
+        $this->grand_total = number_format((float) $this->subtotal + (float) $this->tax_total - (float) $this->discount_total, 2, '.', '');
         $this->save();
     }
 
     public function updateStatus()
     {
-        if ($this->paid_amount >= $this->grand_total) {
+        if ($this->grand_total > 0 && (float) $this->paid_amount >= (float) $this->grand_total) {
             $this->status = 'paid';
-            if (!$this->paid_at)
+            if (!$this->paid_at) {
                 $this->paid_at = now();
-        } elseif ($this->due_date < now()->startOfDay() && $this->status !== 'cancelled') {
-            $this->status = 'overdue';
+            }
+        } elseif ((float) $this->paid_amount > 0) {
+            $this->status = 'partial';
+            $this->paid_at = null; // Clear if it was fully paid before
+        } else {
+            // Zero or negative payment
+            $this->paid_at = null;
+
+            // If it's not draft or cancelled, determine if it's sent or overdue
+            if (!in_array($this->status, ['draft', 'cancelled'])) {
+                if ($this->due_date && $this->due_date < now()->startOfDay()) {
+                    $this->status = 'overdue';
+                } else {
+                    $this->status = 'sent';
+                }
+            }
         }
 
         $this->save();
@@ -92,6 +106,7 @@ class Invoice extends Model
         return match ($status) {
             'draft' => 'Taslak',
             'sent' => 'Gönderildi',
+            'partial' => 'Kısmi Ödeme',
             'paid' => 'Ödendi',
             'overdue' => 'Vadesi Geçmiş',
             'cancelled' => 'İptal Edildi',
@@ -104,10 +119,33 @@ class Invoice extends Model
         return match ($status) {
             'draft' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
             'sent' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+            'partial' => 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
             'paid' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
             'overdue' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
             'cancelled' => 'bg-gray-500 text-white',
             default => 'bg-gray-100 text-gray-800',
         };
+    }
+
+    /**
+     * Generate a robust sequential invoice number
+     */
+    public static function generateNumber()
+    {
+        $year = now()->year;
+        $prefix = 'FAT';
+
+        $lastRecord = self::where('number', 'like', "{$prefix}-{$year}-%")
+            ->orderByRaw('CAST(SUBSTRING_INDEX(number, "-", -1) AS UNSIGNED) DESC')
+            ->first();
+
+        $nextSequence = 1;
+        if ($lastRecord) {
+            $parts = explode('-', $lastRecord->number);
+            $lastSequence = (int) end($parts);
+            $nextSequence = $lastSequence + 1;
+        }
+
+        return "{$prefix}-{$year}-" . str_pad($nextSequence, 5, '0', STR_PAD_LEFT);
     }
 }

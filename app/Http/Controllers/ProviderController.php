@@ -31,14 +31,19 @@ class ProviderController extends Controller
         $totalProviders = Provider::count();
         $uniqueTypes = Provider::all()->pluck('types')->flatten()->unique()->count();
         $withWebsite = Provider::whereNotNull('website')->count();
-        $activeServices = \App\Models\Service::where('status', 'active')->count();
+
+        // Total Costs (Payables) to providers based on active services
+        $totalCosts = \App\Models\Service::active()
+            ->select('currency', \DB::raw('SUM(buying_price) as total'))
+            ->groupBy('currency')
+            ->pluck('total', 'currency');
 
         return view('providers.index', compact(
             'providers',
             'totalProviders',
             'uniqueTypes',
             'withWebsite',
-            'activeServices'
+            'totalCosts'
         ));
     }
 

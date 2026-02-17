@@ -171,12 +171,26 @@
                         <!-- Price -->
                         <div>
                             <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Fiyat *
+                                Satış Fiyatı *
                             </label>
                             <input type="number" name="price" id="price" value="{{ old('price') }}" required step="0.01"
                                 min="0"
                                 class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500 @error('price') border-danger-500 @enderror">
                             @error('price')
+                                <p class="mt-1 text-sm text-danger-600 dark:text-danger-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Buying Price -->
+                        <div>
+                            <label for="buying_price"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Alış Fiyatı (Maliyet)
+                            </label>
+                            <input type="number" name="buying_price" id="buying_price" value="{{ old('buying_price') }}"
+                                step="0.01" min="0"
+                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500 @error('buying_price') border-danger-500 @enderror">
+                            @error('buying_price')
                                 <p class="mt-1 text-sm text-danger-600 dark:text-danger-400">{{ $message }}</p>
                             @enderror
                         </div>

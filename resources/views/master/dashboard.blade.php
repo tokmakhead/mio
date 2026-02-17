@@ -70,7 +70,7 @@
 
         <!-- Latest Version -->
         <div
-            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 bg-gradient-to-br from-primary-600 to-primary-800 text-white">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-indigo-100">Son Sürüm</p>

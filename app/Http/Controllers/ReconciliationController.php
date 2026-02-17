@@ -33,15 +33,28 @@ class ReconciliationController extends Controller
         $errors = $invoices->filter(function ($invoice) {
             $paidAmount = (float) $invoice->paid_amount;
             $grandTotal = (float) $invoice->grand_total;
-            $isPaid = $paidAmount >= $grandTotal;
-            $statusIsPaid = $invoice->status === 'paid';
+            $status = $invoice->status;
 
-            if ($isPaid && !$statusIsPaid)
+            // Rule 1: Overpayment check (with small epsilon for float precision)
+            if ($paidAmount > $grandTotal + 0.01)
                 return true;
-            if (!$isPaid && $statusIsPaid)
+
+            // Rule 2: Full payment but status not 'paid'
+            if ($paidAmount >= $grandTotal && $grandTotal > 0 && $status !== 'paid')
                 return true;
-            if ($paidAmount > $grandTotal)
+
+            // Rule 3: Partial payment but status not 'partial'
+            if ($paidAmount > 0 && $paidAmount < $grandTotal && $status !== 'partial')
                 return true;
+
+            // Rule 4: Zero payment but status is 'paid' or 'partial'
+            if ($paidAmount <= 0 && ($status === 'paid' || $status === 'partial'))
+                return true;
+
+            // Rule 5: Status is 'paid' but not actually fully paid
+            if ($status === 'paid' && $paidAmount < $grandTotal)
+                return true;
+
             return false;
         });
 

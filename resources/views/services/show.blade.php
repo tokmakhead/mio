@@ -60,14 +60,37 @@
 
                             <!-- Price & Cycle -->
                             <div>
-                                <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Fiyat /
-                                    Dönem</label>
+                                <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Satış
+                                    Fiyatı / Dönem</label>
                                 <p class="mt-1 text-sm text-gray-900 dark:text-white">
                                     {{ number_format($service->price, 2) }} {{ $service->currency }} /
                                     {{ \App\Models\Service::getCycleLabel($service->cycle) }}
                                 </p>
                                 <p class="text-xs text-gray-500 mt-1">MRR: {{ number_format($service->mrr, 2) }} ₺</p>
                             </div>
+
+                            <!-- Cost & Profit -->
+                            @if($service->buying_price)
+                                <div class="pt-2 border-t border-gray-100 dark:border-gray-700">
+                                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Maliyet
+                                        & Kâr</label>
+                                    <div class="mt-1 space-y-1">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                                            Alış: {{ number_format($service->buying_price, 2) }} {{ $service->currency }}
+                                        </p>
+                                        <div class="flex items-center space-x-2">
+                                            <p
+                                                class="text-sm font-semibold {{ $service->profit >= 0 ? 'text-success-600' : 'text-danger-600' }}">
+                                                Kâr: {{ number_format($service->profit, 2) }} {{ $service->currency }}
+                                            </p>
+                                            <span
+                                                class="px-1.5 py-0.5 text-[10px] font-bold rounded {{ $service->profit >= 0 ? 'bg-success-100 text-success-800' : 'bg-danger-100 text-danger-800' }}">
+                                                %{{ number_format($service->margin, 1) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
 
                             <!-- Status -->
                             <div>
@@ -88,13 +111,15 @@
                                     <label
                                         class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Başlangıç</label>
                                     <p class="mt-1 text-sm text-gray-900 dark:text-white">
-                                        {{ $service->start_date->format('d.m.Y') }}</p>
+                                        {{ $service->start_date->format('d.m.Y') }}
+                                    </p>
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Bitiş
                                         (Vade)</label>
                                     <p class="mt-1 text-sm font-semibold {{ $service->expiry_color }}">
-                                        {{ $service->end_date->format('d.m.Y') }}</p>
+                                        {{ $service->end_date->format('d.m.Y') }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -109,7 +134,8 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-lg font-medium text-gray-900 dark:text-white">
-                                    {{ $service->customer->name }}</p>
+                                    {{ $service->customer->name }}
+                                </p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ $service->customer->email }}</p>
                             </div>
                             <a href="{{ route('customers.show', $service->customer) }}"
@@ -125,7 +151,8 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-lg font-medium text-gray-900 dark:text-white">
-                                    {{ $service->provider->name }}</p>
+                                    {{ $service->provider->name }}
+                                </p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ $service->provider->website }}
                                 </p>
                             </div>

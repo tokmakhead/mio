@@ -15,31 +15,57 @@ class DashboardController extends Controller
         $thisMonth = $now->month;
         $thisYear = $now->year;
 
-        // Single optimized query for all KPIs and metrics
-        $metrics = \DB::select("
+        // Default currency for main KPIs
+        $siteSettings = \App\Models\SystemSetting::first();
+        $defaultCurrency = $siteSettings->default_currency ?? 'TRY';
+
+        // Global counts (Currency-independent)
+        $globalMetricsResult = \DB::select("
             SELECT 
                 (SELECT COUNT(*) FROM customers) as total_customers,
                 (SELECT COUNT(*) FROM services WHERE status = 'active') as active_services,
-                (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE EXTRACT(MONTH FROM paid_at) = ? AND EXTRACT(YEAR FROM paid_at) = ?) as this_month_revenue,
                 (SELECT COUNT(*) FROM invoices WHERE status = 'overdue') as overdue_invoices,
-                (SELECT COALESCE(SUM(price), 0) FROM services WHERE status = 'active') as mrr,
-                (SELECT COALESCE(SUM(grand_total), 0) FROM invoices) as billed_total,
-                (SELECT COALESCE(SUM(paid_amount), 0) FROM invoices) as collected_total,
-                (SELECT COALESCE(AVG(grand_total), 0) FROM invoices) as avg_invoice
-        ", [$thisMonth, $thisYear])[0];
+                (SELECT COALESCE(AVG(grand_total), 0) FROM invoices WHERE currency = ?) as avg_invoice
+        ", [$defaultCurrency])[0];
 
-        $totalCustomers = $metrics->total_customers;
-        $activeServicesCount = $metrics->active_services;
-        $thisMonthRevenue = $metrics->this_month_revenue;
-        $overdueInvoices = $metrics->overdue_invoices;
-        $mrr = $metrics->mrr;
-        $villedTotal = $metrics->billed_total;
-        $collectedTotal = $metrics->collected_total;
-        $pendingTotal = $villedTotal - $collectedTotal;
-        $avgInvoice = $metrics->avg_invoice;
+        // Currency-aware metrics (Breakdown)
+        $revenueMetrics = \DB::table('payments')
+            ->select('currency', \DB::raw('SUM(amount) as total'))
+            ->whereMonth('paid_at', $thisMonth)
+            ->whereYear('paid_at', $thisYear)
+            ->groupBy('currency')
+            ->pluck('total', 'currency');
 
-        // Revenue Trend Chart (Last 6 months) - Optimized
-        $revenueTrend = $this->getRevenueTrend();
+        $invoiceMetrics = \DB::table('invoices')
+            ->select(
+                'currency',
+                \DB::raw('SUM(grand_total) as billed'),
+                \DB::raw('SUM(paid_amount) as collected')
+            )
+            ->groupBy('currency')
+            ->get()
+            ->keyBy('currency');
+
+        $mrrMetrics = \App\Models\Service::active()
+            ->select('currency', \DB::raw('SUM(price) as total'))
+            ->groupBy('currency')
+            ->pluck('total', 'currency');
+
+        $totalCustomers = $globalMetricsResult->total_customers;
+        $activeServicesCount = $globalMetricsResult->active_services;
+        $overdueInvoices = $globalMetricsResult->overdue_invoices;
+        $avgInvoice = $globalMetricsResult->avg_invoice;
+
+        // KPI Display values based on default currency
+        $thisMonthRevenue = $revenueMetrics[$defaultCurrency] ?? 0;
+        $mrr = $mrrMetrics[$defaultCurrency] ?? 0;
+
+        $billedTotal = $invoiceMetrics[$defaultCurrency]->billed ?? 0;
+        $collectedTotal = $invoiceMetrics[$defaultCurrency]->collected ?? 0;
+        $pendingTotal = $billedTotal - $collectedTotal;
+
+        // Revenue Trend Chart (Last 6 months) for Default Currency
+        $revenueTrend = $this->getRevenueTrend($defaultCurrency);
 
         // MRR Distribution (by type) - Optimized
         $mrrDistribution = \App\Models\Service::active()
@@ -75,17 +101,20 @@ class DashboardController extends Controller
             'mrr',
             'revenueTrend',
             'mrrDistribution',
-            'villedTotal',
+            'billedTotal',
             'collectedTotal',
             'pendingTotal',
             'avgInvoice',
             'expiringServices',
             'recentActivities',
-            'announcements'
+            'announcements',
+            'revenueMetrics',
+            'invoiceMetrics',
+            'mrrMetrics'
         ));
     }
 
-    private function getRevenueTrend()
+    private function getRevenueTrend($currency = 'TRY')
     {
         // MySQL-compatible version
         $months = [];
@@ -94,10 +123,12 @@ class DashboardController extends Controller
 
             $billed = \App\Models\Invoice::whereYear('issue_date', $date->year)
                 ->whereMonth('issue_date', $date->month)
+                ->where('currency', $currency)
                 ->sum('grand_total');
 
             $collected = \App\Models\Payment::whereYear('paid_at', $date->year)
                 ->whereMonth('paid_at', $date->month)
+                ->where('currency', $currency)
                 ->sum('amount');
 
             $months[] = [

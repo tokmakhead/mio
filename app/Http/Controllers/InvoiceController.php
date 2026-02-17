@@ -73,10 +73,8 @@ class InvoiceController extends Controller
         ]);
 
         return DB::transaction(function () use ($validated) {
-            // Generate number
-            $lastInvoice = Invoice::orderBy('id', 'desc')->first();
-            $nextId = $lastInvoice ? $lastInvoice->id + 1 : 1;
-            $number = 'FAT-' . now()->year . '-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
+            // Generate robust sequential number
+            $number = Invoice::generateNumber();
 
             $invoice = Invoice::create([
                 'customer_id' => $validated['customer_id'],

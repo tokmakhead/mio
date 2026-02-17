@@ -66,7 +66,7 @@
                                     <div class="col-span-6 sm:col-span-3">
                                         <x-input-label for="default_currency" value="Para Birimi" />
                                         <select id="default_currency" name="default_currency"
-                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                                             <option value="TRY" {{ $settings->default_currency == 'TRY' ? 'selected' : '' }}>Türk Lirası (₺)</option>
                                             <option value="USD" {{ $settings->default_currency == 'USD' ? 'selected' : '' }}>Amerikan Doları ($)</option>
                                             <option value="EUR" {{ $settings->default_currency == 'EUR' ? 'selected' : '' }}>Euro (€)</option>

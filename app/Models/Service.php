@@ -22,12 +22,14 @@ class Service extends Model
         'status',
         'currency',
         'price',
+        'buying_price',
         'start_date',
         'end_date',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'buying_price' => 'decimal:2',
         'start_date' => 'date',
         'end_date' => 'date',
     ];

@@ -31,7 +31,11 @@ class StoreCustomerRequest extends FormRequest
             'district' => ['nullable', 'string', 'max:255'],
             'postal_code' => ['nullable', 'string', 'max:20'],
             'country' => ['nullable', 'string', 'max:2'],
-            'tax_or_identity_number' => ['nullable', 'string', 'max:255'],
+            'tax_or_identity_number' => [
+                'nullable',
+                'string',
+                $this->type === 'individual' ? 'digits:11' : 'digits:10'
+            ],
             'invoice_address' => ['nullable', 'array'],
             'invoice_address.address' => ['nullable', 'string'],
             'invoice_address.city' => ['nullable', 'string', 'max:255'],

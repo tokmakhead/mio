@@ -98,10 +98,28 @@ class Customer extends Model
         return $this->hasMany(LedgerEntry::class);
     }
 
+    /**
+     * Get balances grouped by currency
+     */
+    public function getBalancesAttribute()
+    {
+        return $this->ledgerEntries()
+            ->select('currency')
+            ->selectRaw('SUM(CASE WHEN type = \'debit\' THEN amount ELSE 0 END) as debits')
+            ->selectRaw('SUM(CASE WHEN type = \'credit\' THEN amount ELSE 0 END) as credits')
+            ->groupBy('currency')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->currency => (float) $item->debits - (float) $item->credits];
+            });
+    }
+
+    /**
+     * Legacy balance attribute (Defaults to TRY or first currency found)
+     */
     public function getBalanceAttribute()
     {
-        $debits = $this->ledgerEntries()->where('type', 'debit')->sum('amount');
-        $credits = $this->ledgerEntries()->where('type', 'credit')->sum('amount');
-        return $debits - $credits;
+        $balances = $this->balances;
+        return $balances['TRY'] ?? ($balances->first() ?? 0);
     }
 }

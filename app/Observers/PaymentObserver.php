@@ -24,8 +24,8 @@ class PaymentObserver
 
         // 2. Update Invoice
         $invoice = $payment->invoice;
-        $invoice->paid_amount += $payment->amount;
-        $invoice->updateStatus(); // This will save the invoice
+        $invoice->increment('paid_amount', $payment->amount);
+        $invoice->refresh()->updateStatus();
 
         if ($invoice->status === 'paid') {
             $invoice->logActivity('paid');
@@ -59,20 +59,21 @@ class PaymentObserver
 
             if ($oldInvoiceId == $payment->invoice_id) {
                 // Same invoice, just amount changed
+                $diff = $payment->amount - $oldAmount;
                 $invoice = $payment->invoice;
-                $invoice->paid_amount = ($invoice->paid_amount - $oldAmount) + $payment->amount;
-                $invoice->updateStatus();
+                $invoice->increment('paid_amount', $diff);
+                $invoice->refresh()->updateStatus();
             } else {
                 // Moved to a different invoice
                 $oldInvoice = \App\Models\Invoice::find($oldInvoiceId);
                 if ($oldInvoice) {
-                    $oldInvoice->paid_amount -= $oldAmount;
+                    $oldInvoice->decrement('paid_amount', $oldAmount);
                     $oldInvoice->updateStatus();
                 }
 
                 $newInvoice = $payment->invoice;
-                $newInvoice->paid_amount += $payment->amount;
-                $newInvoice->updateStatus();
+                $newInvoice->increment('paid_amount', $payment->amount);
+                $newInvoice->refresh()->updateStatus();
             }
         }
     }
@@ -91,8 +92,8 @@ class PaymentObserver
         // 2. Decrement Invoice Paid Amount
         $invoice = $payment->invoice;
         if ($invoice) {
-            $invoice->paid_amount -= $payment->amount;
-            $invoice->updateStatus();
+            $invoice->decrement('paid_amount', $payment->amount);
+            $invoice->refresh()->updateStatus();
         }
     }
 

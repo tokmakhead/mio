@@ -64,10 +64,8 @@ class QuoteController extends Controller
     public function store(StoreQuoteRequest $request)
     {
         return DB::transaction(function () use ($request) {
-            // Generate number if not exists
-            $lastQuote = Quote::orderBy('id', 'desc')->first();
-            $nextId = $lastQuote ? $lastQuote->id + 1 : 1;
-            $number = 'TK-' . now()->year . '-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
+            // Generate robust sequential number
+            $number = Quote::generateNumber();
 
             $quote = Quote::create([
                 'customer_id' => $request->customer_id,
@@ -236,10 +234,8 @@ class QuoteController extends Controller
                     ->with('info', 'Bu teklif zaten faturaya dönüştürülmüş.');
             }
 
-            // Generate invoice number
-            $lastInvoice = \App\Models\Invoice::orderBy('id', 'desc')->first();
-            $nextId = $lastInvoice ? $lastInvoice->id + 1 : 1;
-            $number = 'FAT-' . now()->year . '-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
+            // Generate robust sequential invoice number
+            $number = \App\Models\Invoice::generateNumber();
 
             $invoice = \App\Models\Invoice::create([
                 'customer_id' => $quote->customer_id,
