@@ -21,7 +21,7 @@ class QuotePdfService
 
         // Format Date
         $dates = [
-            'issue_date' => $quote->created_at->format('d.m.Y'), // Created At used as Issue Date
+            'issue_date' => $quote->created_at ? $quote->created_at->format('d.m.Y') : now()->format('d.m.Y'),
             'due_date' => $quote->valid_until ? $quote->valid_until->format('d.m.Y') : '-',
         ];
 
@@ -37,10 +37,10 @@ class QuotePdfService
     protected function calculateTotals(Quote $quote)
     {
         return [
-            'subtotal' => number_format($quote->subtotal, 2),
-            'tax_total' => number_format($quote->tax_total, 2),
-            'discount_total' => number_format($quote->discount_total ?? 0, 2),
-            'grand_total' => number_format($quote->grand_total, 2),
+            'subtotal' => number_format((float) $quote->subtotal, 2),
+            'tax_total' => number_format((float) $quote->tax_total, 2),
+            'discount_total' => number_format((float) ($quote->discount_total ?? 0), 2),
+            'grand_total' => number_format((float) $quote->grand_total, 2),
             'currency' => $quote->currency,
         ];
     }
