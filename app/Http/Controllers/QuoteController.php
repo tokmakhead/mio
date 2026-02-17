@@ -9,6 +9,7 @@ use App\Models\QuoteItem;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class QuoteController extends Controller
 {
@@ -181,16 +182,11 @@ class QuoteController extends Controller
             ->with('success', 'Teklif başarıyla silindi.');
     }
 
-    /**
-     * PDF Generation
-     */
     public function pdf(Quote $quote)
     {
         $quote->load(['customer', 'items.service']);
-
-        // DomPDF will be used here. For now, we return a simple view.
-        // In real app: return PDF::loadView('quotes.pdf', compact('quote'))->download($quote->number . '.pdf');
-        return view('quotes.pdf', compact('quote'));
+        $pdf = Pdf::loadView('quotes.pdf', compact('quote'));
+        return $pdf->stream($quote->number . '.pdf');
     }
 
     /**

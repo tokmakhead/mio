@@ -8,6 +8,7 @@ use App\Models\InvoiceItem;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
@@ -201,7 +202,8 @@ class InvoiceController extends Controller
     public function pdf(Invoice $invoice)
     {
         $invoice->load(['customer', 'items.service']);
-        return view('invoices.pdf', compact('invoice'));
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
+        return $pdf->stream($invoice->number . '.pdf');
     }
 
     public function send(Invoice $invoice)
