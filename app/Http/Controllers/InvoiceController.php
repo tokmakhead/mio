@@ -200,7 +200,8 @@ class InvoiceController extends Controller
     public function pdf(Invoice $invoice)
     {
         $invoice->load(['customer', 'items.service']);
-        $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
+        $brandSettings = \App\Models\BrandSetting::all()->pluck('value', 'key');
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'brandSettings'));
         return $pdf->download($invoice->number . '.pdf');
     }
 

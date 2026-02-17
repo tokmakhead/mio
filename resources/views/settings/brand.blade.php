@@ -25,7 +25,7 @@
                                     
                                     <!-- Site Title -->
                                     <div>
-                                        <x-input-label for="site_title" :value="__('Logo İsmi')" />
+                                        <x-input-label for="site_title" :value="__('Firma Adı')" />
                                         <x-text-input id="site_title" name="site_title" type="text" class="mt-1 block w-full" 
                                             :value="old('site_title', $settings['site_title'] ?? config('app.name'))" />
                                         <x-input-error class="mt-2" :messages="$errors->get('site_title')" />

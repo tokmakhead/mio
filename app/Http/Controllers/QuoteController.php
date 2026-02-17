@@ -183,7 +183,8 @@ class QuoteController extends Controller
     public function pdf(Quote $quote)
     {
         $quote->load(['customer', 'items.service']);
-        $pdf = Pdf::loadView('quotes.pdf', compact('quote'));
+        $brandSettings = \App\Models\BrandSetting::all()->pluck('value', 'key');
+        $pdf = Pdf::loadView('quotes.pdf', compact('quote', 'brandSettings'));
         return $pdf->download($quote->number . '.pdf');
     }
 
