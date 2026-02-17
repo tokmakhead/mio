@@ -86,7 +86,7 @@
             <div class="relative z-10">
                 <div class="flex items-center gap-3 group">
                     @if(isset($brandSettings['logo_path']))
-                        <img src="{{ $brandSettings['logo_path'] }}" alt="Logo" class="h-10 w-auto">
+                        <img src="{{ $brandSettings['logo_path'] }}" alt="Logo" class="h-10 w-auto brightness-0 invert">
                     @else
                         <img src="{{ asset('assets/img/nexwhite.png') }}" alt="MIONEX Logo" class="h-10 w-auto">
                     @endif
@@ -127,7 +127,15 @@
             class="flex flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24 bg-white dark:bg-gray-900">
             <div class="mx-auto w-full max-w-sm lg:w-96">
                 <!-- Mobile Logo -->
-                <div class="lg:hidden mb-10 text-center">
+                <div class="lg:hidden mb-10 text-center flex flex-col items-center justify-center">
+                    @if(isset($brandSettings['logo_path']))
+                        <img src="{{ $brandSettings['logo_path'] }}" alt="Logo"
+                            class="h-12 w-auto dark:brightness-0 dark:invert mb-4">
+                    @else
+                        <img src="{{ asset('assets/img/nexblack.png') }}" alt="Logo" class="h-12 w-auto dark:hidden mb-4">
+                        <img src="{{ asset('assets/img/nexwhite.png') }}" alt="Logo"
+                            class="h-12 w-auto hidden dark:block mb-4">
+                    @endif
                     <h1 class="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
                         {{ config('app.name') }}
                     </h1>
