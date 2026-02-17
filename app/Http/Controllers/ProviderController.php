@@ -42,12 +42,15 @@ class ProviderController extends Controller
             $totalCosts = collect();
         }
 
+        $activeServices = \App\Models\Service::where('status', 'active')->count();
+
         return view('providers.index', compact(
             'providers',
             'totalProviders',
             'uniqueTypes',
             'withWebsite',
-            'totalCosts'
+            'totalCosts',
+            'activeServices'
         ));
     }
 
