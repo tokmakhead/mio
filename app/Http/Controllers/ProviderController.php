@@ -25,7 +25,7 @@ class ProviderController extends Controller
             });
         }
 
-        $providers = $query->withCount('services')->latest()->paginate(20);
+        $providers = $query->withCount('services')->latest()->paginate(15);
 
         // KPIs
         $totalProviders = Provider::count();

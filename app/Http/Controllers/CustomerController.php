@@ -56,7 +56,7 @@ class CustomerController extends Controller
         }
 
         // Get customers with pagination
-        $customers = $query->withCount('services')->latest()->paginate(20)->withQueryString();
+        $customers = $query->withCount('services')->latest()->paginate(15)->withQueryString();
 
         // KPIs
         $totalCustomers = Customer::count();

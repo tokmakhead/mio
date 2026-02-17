@@ -31,7 +31,7 @@ class InvoiceController extends Controller
             $query->where('status', $request->status);
         }
 
-        $invoices = $query->latest('issue_date')->paginate(20);
+        $invoices = $query->latest('issue_date')->paginate(15);
 
         // KPIs
         $totalInvoices = Invoice::count();

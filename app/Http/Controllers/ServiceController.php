@@ -47,7 +47,7 @@ class ServiceController extends Controller
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $services = $query->paginate(20);
+        $services = $query->paginate(15);
 
         // KPIs
         $totalServices = Service::count();

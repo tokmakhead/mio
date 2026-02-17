@@ -36,7 +36,7 @@ class QuoteController extends Controller
             $query->where('status', $request->status);
         }
 
-        $quotes = $query->latest()->paginate(20);
+        $quotes = $query->latest()->paginate(15);
 
         // KPIs
         $totalQuotes = Quote::count();
