@@ -368,6 +368,12 @@ class SettingsController extends Controller
             'logo' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
             'favicon' => 'nullable|image|mimes:png,jpg,jpeg,ico|max:1024',
             'login_image' => 'nullable|image|max:4096', // 4MB Max
+            'company_address' => 'nullable|string',
+            'company_phone' => 'nullable|string',
+            'company_email' => 'nullable|email',
+            'company_mersis' => 'nullable|string',
+            'company_tax_id' => 'nullable|string',
+            'company_tax_office' => 'nullable|string',
         ]);
 
         $systemSettings = SystemSetting::firstOrCreate(['id' => 1]);
@@ -426,6 +432,22 @@ class SettingsController extends Controller
                     ['key' => 'login_image_path'],
                     ['value' => Storage::disk('public')->url($path)]
                 );
+            }
+        }
+
+        // Handle Company Details
+        $companyFields = [
+            'company_address',
+            'company_phone',
+            'company_email',
+            'company_mersis',
+            'company_tax_id',
+            'company_tax_office'
+        ];
+
+        foreach ($companyFields as $field) {
+            if ($request->has($field)) {
+                BrandSetting::updateOrCreate(['key' => $field], ['value' => $request->input($field)]);
             }
         }
 

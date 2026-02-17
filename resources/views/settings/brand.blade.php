@@ -31,6 +31,44 @@
                                         <x-input-error class="mt-2" :messages="$errors->get('site_title')" />
                                     </div>
 
+                                    <!-- Company Details -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <x-input-label for="company_phone" :value="__('Telefon')" />
+                                            <x-text-input id="company_phone" name="company_phone" type="text" class="mt-1 block w-full" 
+                                                :value="old('company_phone', $settings['company_phone'] ?? '')" placeholder="+90 555 000 0000" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="company_email" :value="__('E-posta')" />
+                                            <x-text-input id="company_email" name="company_email" type="email" class="mt-1 block w-full" 
+                                                :value="old('company_email', $settings['company_email'] ?? '')" placeholder="info@example.com" />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <x-input-label for="company_address" :value="__('Adres')" />
+                                        <x-textarea-input id="company_address" name="company_address" class="mt-1 block w-full" rows="2"
+                                            :value="old('company_address', $settings['company_address'] ?? '')" placeholder="Şirket tam adresi..." />
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <x-input-label for="company_mersis" :value="__('Mersis No')" />
+                                            <x-text-input id="company_mersis" name="company_mersis" type="text" class="mt-1 block w-full" 
+                                                :value="old('company_mersis', $settings['company_mersis'] ?? '')" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="company_tax_office" :value="__('Vergi Dairesi')" />
+                                            <x-text-input id="company_tax_office" name="company_tax_office" type="text" class="mt-1 block w-full" 
+                                                :value="old('company_tax_office', $settings['company_tax_office'] ?? '')" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="company_tax_id" :value="__('Vergi No')" />
+                                            <x-text-input id="company_tax_id" name="company_tax_id" type="text" class="mt-1 block w-full" 
+                                                :value="old('company_tax_id', $settings['company_tax_id'] ?? '')" />
+                                        </div>
+                                    </div>
+
                                     <!-- Primary Color -->
                                     <div>
                                         <x-input-label for="primary_color" :value="__('Ana Renk (Primary Color)')" />
