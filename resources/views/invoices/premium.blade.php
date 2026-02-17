@@ -211,6 +211,21 @@
             font-size: 8pt;
             color: #5A5A5A;
         }
+
+        /* Screen Preview Fix */
+        @media screen {
+            body {
+                max-width: 210mm;
+                margin: 20px auto;
+                background-color: #FFFFFF;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                padding: 20mm;
+            }
+
+            html {
+                background-color: #E5E7EB;
+            }
+        }
     </style>
 </head>
 
@@ -221,10 +236,10 @@
         <tr>
             <td width="50%">
                 <div class="brand-name">{{ $brandSettings['site_title'] ?? 'MIONEX' }}</div>
-                <div class="brand-tag">Müşteri Odaklı Lojistik ve Yönetim</div>
+                <div class="brand-tag">M&#252;&#351;teri Odakl&#305; Lojistik ve Y&#246;netim</div>
             </td>
             <td width="50%" class="text-right">
-                <div class="doc-title">SATIŞ FATURASI</div>
+                <div class="doc-title">SATI&#350; FATURASI</div>
                 <div class="doc-number">#{{ $invoice->number }}</div>
             </td>
         </tr>
@@ -235,7 +250,7 @@
         <table>
             <tr>
                 <td width="50%" style="padding-right: 15px;">
-                    <div class="party-label">FATURA SAHİBİ</div>
+                    <div class="party-label">FATURA SAH&#304;B&#304;</div>
                     <div class="party-content">
                         <strong>{{ $brandSettings['company_name'] ?? ($brandSettings['site_title'] ?? 'MIONEX') }}</strong><br>
                         {{ $brandSettings['company_address'] ?? '' }}<br>
@@ -260,13 +275,13 @@
     <table class="dates-table">
         <tr>
             <td width="25%">
-                <div class="party-label">DÜZENLEME TARİHİ</div>
+                <div class="party-label">D&#220;ZENLEME TAR&#304;H&#304;</div>
             </td>
             <td width="25%">
                 <div class="party-content">{{ $dates['issue_date'] }}</div>
             </td>
             <td width="25%">
-                <div class="party-label">VADE TARİHİ</div>
+                <div class="party-label">VADE TAR&#304;H&#304;</div>
             </td>
             <td width="25%">
                 <div class="party-content">{{ $dates['due_date'] }}</div>
@@ -278,9 +293,9 @@
     <table class="items-table">
         <thead>
             <tr>
-                <th width="40%">HİZMET / AÇIKLAMA</th>
-                <th width="15%" class="text-center">MİKTAR</th>
-                <th width="15%" class="text-right">BİRİM FİYAT</th>
+                <th width="40%">H&#304;ZMET / A&#199;IKLAMA</th>
+                <th width="15%" class="text-center">M&#304;KTAR</th>
+                <th width="15%" class="text-right">B&#304;R&#304;M F&#304;YAT</th>
                 <th width="10%" class="text-right">KDV</th>
                 <th width="20%" class="text-right">TOPLAM</th>
             </tr>
