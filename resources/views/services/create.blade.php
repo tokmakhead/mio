@@ -87,10 +87,11 @@
                     <div>
                         <label for="identifier_code"
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Tanımlayıcı Kod *
+                            Tanımlayıcı Kod <span class="text-gray-400 font-normal text-xs">(Boş bırakırsanız otomatik
+                                oluşturulur)</span>
                         </label>
                         <input type="text" name="identifier_code" id="identifier_code"
-                            value="{{ old('identifier_code') }}" required placeholder="HST-001, DOM-001, SSL-001"
+                            value="{{ old('identifier_code') }}" placeholder="örn: HST-2024001 (Opsiyonel)"
                             class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500 @error('identifier_code') border-danger-500 @enderror">
                         @error('identifier_code')
                             <p class="mt-1 text-sm text-danger-600 dark:text-danger-400">{{ $message }}</p>

@@ -80,7 +80,20 @@ class ServiceController extends Controller
      */
     public function store(StoreServiceRequest $request)
     {
-        Service::create($request->validated());
+        $data = $request->validated();
+
+        if (empty($data['identifier_code'])) {
+            $prefix = match ($data['type']) {
+                'hosting' => 'HST',
+                'domain' => 'DOM',
+                'ssl' => 'SSL',
+                'email' => 'EML',
+                default => 'SRV',
+            };
+            $data['identifier_code'] = $prefix . '-' . strtoupper(\Illuminate\Support\Str::random(8));
+        }
+
+        Service::create($data);
 
         return redirect()->route('services.index')
             ->with('success', 'Hizmet başarıyla oluşturuldu.');

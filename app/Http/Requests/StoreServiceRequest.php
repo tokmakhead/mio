@@ -26,7 +26,7 @@ class StoreServiceRequest extends FormRequest
             'provider_id' => ['required', 'exists:providers,id'],
             'type' => ['required', 'in:hosting,domain,ssl,email,other'],
             'name' => ['required', 'string', 'max:255'],
-            'identifier_code' => ['required', 'string', 'max:20', 'unique:services,identifier_code'],
+            'identifier_code' => ['nullable', 'string', 'max:20', 'unique:services,identifier_code'],
             'cycle' => ['required', 'in:monthly,quarterly,yearly,biennial,custom'],
             'payment_type' => ['required', 'in:installment,upfront'],
             'status' => ['required', 'in:active,suspended,cancelled,expired'],
