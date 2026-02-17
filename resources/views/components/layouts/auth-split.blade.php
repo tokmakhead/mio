@@ -18,43 +18,53 @@
     @endif
 
     <!-- Dynamic Colors -->
-    @if(isset($brandSettings['primary_color']))
-        @php
-            $hex = $brandSettings['primary_color'];
-            list($r, $g, $b) = sscanf($hex, "#%02x%02x%02x");
-            $rgb = "$r $g $b";
-        @endphp
-        <style>
-            :root {
-                --color-primary-500:
-                    {{ $rgb }}
-                ;
-                --color-primary-600:
-                    {{ $rgb }}
-                ;
-                --color-primary-50:
-                    {{ $r }}
-                    {{ $g }}
-                    {{ $b }}
-                    / 0.1;
-                --color-primary-900:
-                    {{ $r }}
-                    {{ $g }}
-                    {{ $b }}
-                ;
-                /* For auth gradient */
-            }
+    @php
+        $hex = $brandSettings['primary_color'] ?? '#de4968'; // MIONEX Brand Red Fallback
+        list($r, $g, $b) = sscanf($hex, "#%02x%02x%02x");
+        $rgb = "$r $g $b";
+    @endphp
+    <style>
+        :root {
+            --color-primary-500:
+                {{ $rgb }}
+            ;
+            --color-primary-600:
+                {{ $rgb }}
+            ;
+            --color-primary-700:
+                {{ $rgb }}
+            ;
+            --color-primary-50:
+                {{ $r }}
+                {{ $g }}
+                {{ $b }}
+                / 0.1;
+            --color-primary-900:
+                {{ $r }}
+                {{ $g }}
+                {{ $b }}
+            ;
+        }
 
-            /* Override tailwind classes if needed for specificity */
-            .bg-primary-600 {
-                background-color: rgb({{ $rgb }}) !important;
-            }
+        /* Force Override for Auth Pages */
+        .bg-primary-600,
+        .bg-primary-700 {
+            background-color: rgb({{ $rgb }}) !important;
+        }
 
-            .text-primary-600 {
-                color: rgb({{ $rgb }}) !important;
-            }
-        </style>
-    @endif
+        .text-primary-600,
+        .text-primary-500 {
+            color: rgb({{ $rgb }}) !important;
+        }
+
+        .focus\:ring-primary-500 {
+            --tw-ring-color: rgb({{ $rgb }}) !important;
+        }
+
+        .focus\:border-primary-500 {
+            border-color: rgb({{ $rgb }}) !important;
+        }
+    </style>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
