@@ -10,45 +10,9 @@
             padding: 0;
         }
 
-        /* Typography */
-        @if(file_exists(public_path('fonts/Inter-Regular.ttf')))
-            @font-face {
-                font-family: 'Inter';
-                font-weight: 400;
-                font-style: normal;
-                src: url('{{ public_path("fonts/Inter-Regular.ttf") }}') format('truetype');
-            }
-
-            @font-face {
-                font-family: 'Inter';
-                font-weight: 500;
-                font-style: normal;
-                src: url('{{ public_path("fonts/Inter-Medium.ttf") }}') format('truetype');
-            }
-
-            @font-face {
-                font-family: 'Inter';
-                font-weight: 600;
-                font-style: normal;
-                src: url('{{ public_path("fonts/Inter-SemiBold.ttf") }}') format('truetype');
-            }
-
-            @font-face {
-                font-family: 'Inter';
-                font-weight: 700;
-                font-style: normal;
-                src: url('{{ public_path("fonts/Inter-Bold.ttf") }}') format('truetype');
-            }
-
-            body {
-                font-family: 'Inter', sans-serif;
-            }
-
-        @else body {
-                font-family: 'DejaVu Sans', sans-serif;
-            }
-
-        @endif body {
+        /* Typography Protection */
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
             color: #0B0B0B;
             font-size: 10pt;
             line-height: 1.4;
