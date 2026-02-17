@@ -53,11 +53,34 @@ if (file_exists($symlinkPath)) {
         if (is_dir($symlinkPath)) {
             // Check if empty
             $items = scandir($symlinkPath);
+            $force = isset($_GET['force']) && $_GET['force'] == '1';
+
             if (count($items) <= 2) { // Just . and ..
                 if (rmdir($symlinkPath)) {
                     echo "Empty directory removed successfully.\n";
                 } else {
                     echo "FAILED to remove directory. Please delete 'public/storage' folder manually via FTP/File Manager.\n";
+                }
+            } elseif ($force) {
+                echo "Force mode active. Attempting recursive deletion of 'public/storage'...\n";
+                function deleteDirectory($dir)
+                {
+                    if (!file_exists($dir))
+                        return true;
+                    if (!is_dir($dir))
+                        return unlink($dir);
+                    foreach (scandir($dir) as $item) {
+                        if ($item == '.' || $item == '..')
+                            continue;
+                        if (!deleteDirectory($dir . DIRECTORY_SEPARATOR . $item))
+                            return false;
+                    }
+                    return rmdir($dir);
+                }
+                if (deleteDirectory($symlinkPath)) {
+                    echo "Directory removed recursively.\n";
+                } else {
+                    echo "FAILED to remove directory recursively. Please delete it manually.\n";
                 }
             } else {
                 echo "Directory is NOT empty. Please check its content and delete/move it manually:\n";
@@ -66,6 +89,8 @@ if (file_exists($symlinkPath)) {
                         echo "- $item\n";
                     }
                 }
+                echo "\nTo force delete this folder via this script, add ?force=1 to the URL.\n";
+                echo "WARNING: This will permanently delete everything inside 'public/storage'!\n";
             }
         } else {
             // It's a file?
