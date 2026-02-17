@@ -374,61 +374,69 @@ class SettingsController extends Controller
             'login_image' => 'nullable|image|max:4096', // 4MB Max
         ]);
 
-        // Get SystemSetting instance
         $systemSettings = SystemSetting::firstOrCreate(['id' => 1]);
 
-        // Handle Text Fields
-        $textFields = ['site_title', 'primary_color'];
-        foreach ($textFields as $field) {
-            if ($request->has($field)) {
-                BrandSetting::updateOrCreate(
-                    ['key' => $field],
-                    ['value' => $request->input($field)]
-                );
-
-                // Sync site_title with SystemSetting
-                if ($field === 'site_title') {
-                    $systemSettings->update(['site_name' => $request->input($field)]);
-                }
-            }
+        // Handle Site Title & Primary Color
+        if ($request->filled('site_title')) {
+            BrandSetting::updateOrCreate(['key' => 'site_title'], ['value' => $request->site_title]);
+            $systemSettings->update(['site_name' => $request->site_title]);
         }
 
-        // Handle Logo Upload (save to SystemSetting)
+        if ($request->filled('primary_color')) {
+            BrandSetting::updateOrCreate(['key' => 'primary_color'], ['value' => $request->primary_color]);
+        }
+
+        // Handle Logo Upload
         if ($request->hasFile('logo')) {
-            // Delete old logo if exists
-            if ($systemSettings->logo_path && \Storage::disk('public')->exists($systemSettings->logo_path)) {
-                \Storage::disk('public')->delete($systemSettings->logo_path);
+            $file = $request->file('logo');
+            if ($file->isValid()) {
+                // Delete old logo if exists
+                if ($systemSettings->logo_path && Storage::disk('public')->exists($systemSettings->logo_path)) {
+                    Storage::disk('public')->delete($systemSettings->logo_path);
+                }
+
+                $path = $file->store('branding', 'public');
+                $systemSettings->update(['logo_path' => $path]);
+
+                // Also store in BrandSetting for consistency
+                BrandSetting::updateOrCreate(['key' => 'logo_path'], ['value' => Storage::url($path)]);
             }
-            $logoPath = $request->file('logo')->store('branding', 'public');
-            $systemSettings->update(['logo_path' => $logoPath]);
         }
 
-        // Handle Favicon Upload (save to SystemSetting)
+        // Handle Favicon Upload
         if ($request->hasFile('favicon')) {
-            // Delete old favicon if exists
-            if ($systemSettings->favicon_path && \Storage::disk('public')->exists($systemSettings->favicon_path)) {
-                \Storage::disk('public')->delete($systemSettings->favicon_path);
+            $file = $request->file('favicon');
+            if ($file->isValid()) {
+                // Delete old favicon if exists
+                if ($systemSettings->favicon_path && Storage::disk('public')->exists($systemSettings->favicon_path)) {
+                    Storage::disk('public')->delete($systemSettings->favicon_path);
+                }
+
+                $path = $file->store('branding', 'public');
+                $systemSettings->update(['favicon_path' => $path]);
+
+                // Also store in BrandSetting for consistency
+                BrandSetting::updateOrCreate(['key' => 'favicon_path'], ['value' => Storage::url($path)]);
             }
-            $faviconPath = $request->file('favicon')->store('branding', 'public');
-            $systemSettings->update(['favicon_path' => $faviconPath]);
         }
 
-        // Handle Login Image (save to BrandSetting)
+        // Handle Login Image
         if ($request->hasFile('login_image')) {
-            $path = $request->file('login_image')->store('public/brand');
-            $url = \Storage::url($path);
-
-            BrandSetting::updateOrCreate(
-                ['key' => 'login_image_path'],
-                ['value' => $url]
-            );
+            $file = $request->file('login_image');
+            if ($file->isValid()) {
+                $path = $file->store('brand', 'public');
+                BrandSetting::updateOrCreate(
+                    ['key' => 'login_image_path'],
+                    ['value' => Storage::url($path)]
+                );
+            }
         }
 
-        // Clear cache and view cache to reflect changes immediately
+        // Clear all relevant caches
         \Illuminate\Support\Facades\Cache::forget('brand_settings');
         \Artisan::call('view:clear');
 
-        return back()->with('success', 'Marka ayarları güncellendi.');
+        return back()->with('success', 'Marka ayarları başarıyla güncellendi.');
     }
 
     // Payment Gateways
