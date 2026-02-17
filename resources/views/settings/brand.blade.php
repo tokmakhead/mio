@@ -57,6 +57,46 @@
                                         <p class="mt-2 text-xs text-gray-500">Sistem genelindeki butonlar ve vurgular bu rengi kullanacaktır.</p>
                                         <x-input-error class="mt-2" :messages="$errors->get('primary_color')" />
                                     </div>
+
+                                    <!-- Logo Upload -->
+                                    <div>
+                                        <x-input-label for="logo" value="Logo" />
+                                        <div class="mt-1 flex items-center space-x-4">
+                                            @if(isset($systemSettings->logo_path) && $systemSettings->logo_path)
+                                                <img src="{{ asset('storage/' . $systemSettings->logo_path) }}" alt="Logo" class="h-16 w-auto border border-gray-200 dark:border-gray-700 rounded">
+                                            @endif
+                                            <input id="logo" name="logo" type="file" accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+                                                class="block w-full text-sm text-gray-500 dark:text-gray-400
+                                                file:mr-4 file:py-2 file:px-4
+                                                file:rounded-md file:border-0
+                                                file:text-sm file:font-semibold
+                                                file:bg-primary-50 file:text-primary-700
+                                                hover:file:bg-primary-100
+                                                dark:file:bg-primary-900 dark:file:text-primary-300" />
+                                        </div>
+                                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">PNG, JPG, JPEG veya SVG. Maksimum 2MB.</p>
+                                        <x-input-error class="mt-2" :messages="$errors->get('logo')" />
+                                    </div>
+
+                                    <!-- Favicon Upload -->
+                                    <div>
+                                        <x-input-label for="favicon" value="Favicon" />
+                                        <div class="mt-1 flex items-center space-x-4">
+                                            @if(isset($systemSettings->favicon_path) && $systemSettings->favicon_path)
+                                                <img src="{{ asset('storage/' . $systemSettings->favicon_path) }}" alt="Favicon" class="h-8 w-auto border border-gray-200 dark:border-gray-700 rounded">
+                                            @endif
+                                            <input id="favicon" name="favicon" type="file" accept="image/png,image/jpeg,image/jpg,image/x-icon"
+                                                class="block w-full text-sm text-gray-500 dark:text-gray-400
+                                                file:mr-4 file:py-2 file:px-4
+                                                file:rounded-md file:border-0
+                                                file:text-sm file:font-semibold
+                                                file:bg-primary-50 file:text-primary-700
+                                                hover:file:bg-primary-100
+                                                dark:file:bg-primary-900 dark:file:text-primary-300" />
+                                        </div>
+                                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">PNG, JPG, JPEG veya ICO. Maksimum 1MB.</p>
+                                        <x-input-error class="mt-2" :messages="$errors->get('favicon')" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -82,57 +122,7 @@
                     <div class="mt-5 md:mt-0 md:col-span-2">
                         <div class="shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:overflow-hidden bg-white dark:bg-gray-800">
                             <div class="px-4 py-5 space-y-6 sm:p-6">
-                                <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
-
-                                    <!-- Logo -->
-                                    <div class="col-span-2 sm:col-span-1">
-                                        <x-input-label for="logo" :value="__('Logo')" />
-                                        <div class="mt-2 flex items-center justify-center rounded-lg border border-dashed border-gray-900/25 dark:border-gray-700 px-6 py-10">
-                                            <div class="text-center">
-                                                @if(isset($settings['logo_path']))
-                                                    <div class="mx-auto mb-4 h-16 flex items-center justify-center">
-                                                        <img src="{{ $settings['logo_path'] }}" alt="Current Logo" class="max-h-full object-contain">
-                                                    </div>
-                                                @else
-                                                    <svg class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                                        <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
-                                                    </svg>
-                                                @endif
-                                                <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400 justify-center">
-                                                    <label for="logo" class="relative cursor-pointer rounded-md bg-white dark:bg-gray-800 font-semibold text-primary-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-2 hover:text-primary-500">
-                                                        <span>Dosya Seç</span>
-                                                        <input id="logo" name="logo" type="file" accept="image/*" class="sr-only">
-                                                    </label>
-                                                </div>
-                                                <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">PNG, JPG, SVG (Max 2MB)</p>
-                                            </div>
-                                        </div>
-                                        <x-input-error class="mt-2" :messages="$errors->get('logo')" />
-                                    </div>
-
-                                    <!-- Favicon -->
-                                    <div class="col-span-2 sm:col-span-1">
-                                        <x-input-label for="favicon" :value="__('Favicon')" />
-                                        <div class="mt-2 flex items-center justify-center rounded-lg border border-dashed border-gray-900/25 dark:border-gray-700 px-6 py-10">
-                                            <div class="text-center">
-                                                @if(isset($settings['favicon_path']))
-                                                    <div class="mx-auto mb-4 h-8 w-8">
-                                                        <img src="{{ $settings['favicon_path'] }}" alt="Favicon" class="h-full w-full object-contain">
-                                                    </div>
-                                                @else
-                                                    <div class="mx-auto h-8 w-8 rounded bg-gray-200 dark:bg-gray-700"></div>
-                                                @endif
-                                                <div class="mt-12 flex text-sm leading-6 text-gray-600 dark:text-gray-400 justify-center">
-                                                    <label for="favicon" class="relative cursor-pointer rounded-md bg-white dark:bg-gray-800 font-semibold text-primary-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-2 hover:text-primary-500">
-                                                        <span>Dosya Seç</span>
-                                                        <input id="favicon" name="favicon" type="file" accept="image/x-icon,image/png" class="sr-only">
-                                                    </label>
-                                                </div>
-                                                <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">ICO, PNG (Max 1MB)</p>
-                                            </div>
-                                        </div>
-                                        <x-input-error class="mt-2" :messages="$errors->get('favicon')" />
-                                    </div>
+                                <div class="grid grid-cols-1 gap-8">
 
                                     <!-- Login Background -->
                                     <div class="col-span-2">

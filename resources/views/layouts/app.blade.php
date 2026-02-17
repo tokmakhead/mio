@@ -15,8 +15,8 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Dynamic Favicon -->
-    @if(isset($brandSettings['favicon_path']))
-        <link rel="icon" href="{{ $brandSettings['favicon_path'] }}" type="image/x-icon" />
+    @if(isset($siteSettings->favicon_path) && $siteSettings->favicon_path)
+        <link rel="icon" href="{{ asset('storage/' . $siteSettings->favicon_path) }}" type="image/x-icon" />
     @endif
 
     <!-- Dynamic Colors -->
@@ -36,7 +36,7 @@
                 ;
                 /* Using same for simplicity, or darken slightly */
                 /* For a full palette we would need a sophisticated generator, 
-                                           but overriding 500/600 covers buttons and main accents */
+                                               but overriding 500/600 covers buttons and main accents */
                 --color-primary-50:
                     {{ $r }}
                     {{ $g }}

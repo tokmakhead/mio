@@ -87,32 +87,26 @@ class DashboardController extends Controller
 
     private function getRevenueTrend()
     {
-        // Optimized: Single query for all 6 months
-        $results = \DB::select("
-            WITH months AS (
-                SELECT generate_series(
-                    date_trunc('month', CURRENT_DATE - INTERVAL '5 months'),
-                    date_trunc('month', CURRENT_DATE),
-                    '1 month'::interval
-                ) AS month
-            )
-            SELECT 
-                TO_CHAR(m.month, 'Mon') as month_name,
-                COALESCE(SUM(i.grand_total), 0) as billed,
-                COALESCE(SUM(p.amount), 0) as collected
-            FROM months m
-            LEFT JOIN invoices i ON date_trunc('month', i.issue_date) = m.month
-            LEFT JOIN payments p ON date_trunc('month', p.paid_at) = m.month
-            GROUP BY m.month
-            ORDER BY m.month
-        ");
+        // MySQL-compatible version
+        $months = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i)->startOfMonth();
 
-        return array_map(function ($row) {
-            return [
-                'month' => $row->month_name,
-                'billed' => (float) $row->billed,
-                'collected' => (float) $row->collected
+            $billed = \App\Models\Invoice::whereYear('issue_date', $date->year)
+                ->whereMonth('issue_date', $date->month)
+                ->sum('grand_total');
+
+            $collected = \App\Models\Payment::whereYear('paid_at', $date->year)
+                ->whereMonth('paid_at', $date->month)
+                ->sum('amount');
+
+            $months[] = [
+                'month' => $date->format('M'),
+                'billed' => $billed ?? 0,
+                'collected' => $collected ?? 0,
             ];
-        }, $results);
+        }
+
+        return $months;
     }
 }

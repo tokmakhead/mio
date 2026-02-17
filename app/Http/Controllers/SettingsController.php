@@ -354,7 +354,8 @@ class SettingsController extends Controller
     public function brand()
     {
         $settings = BrandSetting::all()->pluck('value', 'key');
-        return view('settings.brand', compact('settings'));
+        $systemSettings = SystemSetting::firstOrCreate(['id' => 1]);
+        return view('settings.brand', compact('settings', 'systemSettings'));
     }
 
     public function updateBrand(Request $request)
@@ -362,10 +363,13 @@ class SettingsController extends Controller
         $data = $request->validate([
             'site_title' => 'nullable|string|max:255',
             'primary_color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
-            'logo' => 'nullable|image|max:2048', // 2MB Max
-            'favicon' => 'nullable|image|max:1024', // 1MB Max
+            'logo' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
+            'favicon' => 'nullable|image|mimes:png,jpg,jpeg,ico|max:1024',
             'login_image' => 'nullable|image|max:4096', // 4MB Max
         ]);
+
+        // Get SystemSetting instance
+        $systemSettings = SystemSetting::firstOrCreate(['id' => 1]);
 
         // Handle Text Fields
         $textFields = ['site_title', 'primary_color'];
@@ -378,35 +382,45 @@ class SettingsController extends Controller
 
                 // Sync site_title with SystemSetting
                 if ($field === 'site_title') {
-                    $systemSettings = SystemSetting::firstOrCreate(['id' => 1]);
                     $systemSettings->update(['site_name' => $request->input($field)]);
                 }
             }
         }
 
-        // Handle File Uploads
-        $fileFields = [
-            'logo' => 'logo_path',
-            'favicon' => 'favicon_path',
-            'login_image' => 'login_image_path'
-        ];
-
-        foreach ($fileFields as $inputName => $dbKey) {
-            if ($request->hasFile($inputName)) {
-                // Store file publically
-                $path = $request->file($inputName)->store('public/brand');
-                $url = Storage::url($path);
-
-                BrandSetting::updateOrCreate(
-                    ['key' => $dbKey],
-                    ['value' => $url]
-                );
+        // Handle Logo Upload (save to SystemSetting)
+        if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($systemSettings->logo_path && \Storage::disk('public')->exists($systemSettings->logo_path)) {
+                \Storage::disk('public')->delete($systemSettings->logo_path);
             }
+            $logoPath = $request->file('logo')->store('branding', 'public');
+            $systemSettings->update(['logo_path' => $logoPath]);
+        }
+
+        // Handle Favicon Upload (save to SystemSetting)
+        if ($request->hasFile('favicon')) {
+            // Delete old favicon if exists
+            if ($systemSettings->favicon_path && \Storage::disk('public')->exists($systemSettings->favicon_path)) {
+                \Storage::disk('public')->delete($systemSettings->favicon_path);
+            }
+            $faviconPath = $request->file('favicon')->store('branding', 'public');
+            $systemSettings->update(['favicon_path' => $faviconPath]);
+        }
+
+        // Handle Login Image (save to BrandSetting)
+        if ($request->hasFile('login_image')) {
+            $path = $request->file('login_image')->store('public/brand');
+            $url = \Storage::url($path);
+
+            BrandSetting::updateOrCreate(
+                ['key' => 'login_image_path'],
+                ['value' => $url]
+            );
         }
 
         // Clear cache and view cache to reflect changes immediately
         \Illuminate\Support\Facades\Cache::forget('brand_settings');
-        Artisan::call('view:clear');
+        \Artisan::call('view:clear');
 
         return back()->with('success', 'Marka ayarları güncellendi.');
     }
