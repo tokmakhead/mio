@@ -45,11 +45,34 @@ echo "\n";
 echo "3. Attempting to Fix Symlink:\n";
 if (file_exists($symlinkPath)) {
     if (is_link($symlinkPath)) {
-        echo "Symlink already exists. Skipping.\n";
+        echo "Symlink already exists and is a valid link. Skipping.\n";
     } else {
-        echo "Public/storage exists but is NOT a link. This is a problem! It should usually be deleted manually if it's an empty folder.\n";
+        echo "Public/storage exists but is a DIRECTORY/FILE, not a link. Attempting to remove it...\n";
+
+        // Try to remove it if it's a directory
+        if (is_dir($symlinkPath)) {
+            // Check if empty
+            $items = scandir($symlinkPath);
+            if (count($items) <= 2) { // Just . and ..
+                if (rmdir($symlinkPath)) {
+                    echo "Empty directory removed successfully.\n";
+                } else {
+                    echo "FAILED to remove directory. Please delete 'public/storage' folder manually via FTP/File Manager.\n";
+                }
+            } else {
+                echo "Directory is NOT empty. I will not delete it automatically to prevent data loss. Please check its content and delete/move it manually.\n";
+            }
+        } else {
+            // It's a file?
+            if (unlink($symlinkPath)) {
+                echo "File removed successfully.\n";
+            }
+        }
     }
-} else {
+}
+
+// Re-check if it was cleared
+if (!file_exists($symlinkPath)) {
     echo "Creating symlink...\n";
     try {
         Artisan::call('storage:link');
@@ -63,7 +86,7 @@ if (file_exists($symlinkPath)) {
         if (symlink($publicStoragePath, $symlinkPath)) {
             echo "Manual symlink created successfully.\n";
         } else {
-            echo "FAILED to create manual symlink. Please check folder permissions.\n";
+            echo "FAILED to create manual symlink. Please check folder permissions or ask your host if symlink() is enabled.\n";
         }
     }
 }
