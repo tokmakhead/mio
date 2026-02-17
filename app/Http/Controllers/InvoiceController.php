@@ -203,7 +203,7 @@ class InvoiceController extends Controller
     {
         $invoice->load(['customer', 'items.service']);
         $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
-        return $pdf->stream($invoice->number . '.pdf');
+        return $pdf->download($invoice->number . '.pdf');
     }
 
     public function send(Invoice $invoice)

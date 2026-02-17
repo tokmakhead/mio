@@ -186,7 +186,7 @@ class QuoteController extends Controller
     {
         $quote->load(['customer', 'items.service']);
         $pdf = Pdf::loadView('quotes.pdf', compact('quote'));
-        return $pdf->stream($quote->number . '.pdf');
+        return $pdf->download($quote->number . '.pdf');
     }
 
     /**
