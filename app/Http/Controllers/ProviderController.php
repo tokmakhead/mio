@@ -33,10 +33,14 @@ class ProviderController extends Controller
         $withWebsite = Provider::whereNotNull('website')->count();
 
         // Total Costs (Payables) to providers based on active services
-        $totalCosts = \App\Models\Service::active()
-            ->select('currency', \DB::raw('SUM(buying_price) as total'))
-            ->groupBy('currency')
-            ->pluck('total', 'currency');
+        try {
+            $totalCosts = \App\Models\Service::active()
+                ->select('currency', \DB::raw('SUM(buying_price) as total'))
+                ->groupBy('currency')
+                ->pluck('total', 'currency');
+        } catch (\Exception $e) {
+            $totalCosts = collect();
+        }
 
         return view('providers.index', compact(
             'providers',
