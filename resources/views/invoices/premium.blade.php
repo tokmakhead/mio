@@ -189,6 +189,10 @@
             margin-top: 10px;
         }
 
+        .grand-total-box td {
+            vertical-align: middle !important;
+        }
+
         /* FOOTER */
         .footer {
             position: fixed;
