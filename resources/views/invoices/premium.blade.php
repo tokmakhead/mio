@@ -11,36 +11,44 @@
         }
 
         /* Typography */
-        @font-face {
-            font-family: 'Inter';
-            font-weight: 400;
-            font-style: normal;
-            src: url('{{ public_path("fonts/Inter-Regular.ttf") }}') format('truetype');
-        }
+        @if(file_exists(public_path('fonts/Inter-Regular.ttf')))
+            @font-face {
+                font-family: 'Inter';
+                font-weight: 400;
+                font-style: normal;
+                src: url('{{ public_path("fonts/Inter-Regular.ttf") }}') format('truetype');
+            }
 
-        @font-face {
-            font-family: 'Inter';
-            font-weight: 500;
-            font-style: normal;
-            src: url('{{ public_path("fonts/Inter-Medium.ttf") }}') format('truetype');
-        }
+            @font-face {
+                font-family: 'Inter';
+                font-weight: 500;
+                font-style: normal;
+                src: url('{{ public_path("fonts/Inter-Medium.ttf") }}') format('truetype');
+            }
 
-        @font-face {
-            font-family: 'Inter';
-            font-weight: 600;
-            font-style: normal;
-            src: url('{{ public_path("fonts/Inter-SemiBold.ttf") }}') format('truetype');
-        }
+            @font-face {
+                font-family: 'Inter';
+                font-weight: 600;
+                font-style: normal;
+                src: url('{{ public_path("fonts/Inter-SemiBold.ttf") }}') format('truetype');
+            }
 
-        @font-face {
-            font-family: 'Inter';
-            font-weight: 700;
-            font-style: normal;
-            src: url('{{ public_path("fonts/Inter-Bold.ttf") }}') format('truetype');
-        }
+            @font-face {
+                font-family: 'Inter';
+                font-weight: 700;
+                font-style: normal;
+                src: url('{{ public_path("fonts/Inter-Bold.ttf") }}') format('truetype');
+            }
 
-        body {
-            font-family: 'Inter', 'DejaVu Sans', sans-serif;
+            body {
+                font-family: 'Inter', sans-serif;
+            }
+
+        @else body {
+                font-family: 'DejaVu Sans', sans-serif;
+            }
+
+        @endif body {
             color: #0B0B0B;
             font-size: 10pt;
             line-height: 1.4;
@@ -382,7 +390,8 @@
                             <td colspan="2">
                                 <div class="grand-total-label text-left">GENEL TOPLAM</div>
                                 <div class="grand-total-value text-right">{{ $totals['grand_total'] }}
-                                    {{ $totals['currency'] }}</div>
+                                    {{ $totals['currency'] }}
+                                </div>
                             </td>
                         </tr>
 
@@ -393,7 +402,8 @@
                             <tr>
                                 <td class="text-muted" style="padding-top: 10px;">Kalan Tutar</td>
                                 <td class="remaining-value" style="padding-top: 10px;">{{ $totals['remaining_amount'] }}
-                                    {{ $totals['currency'] }}</td>
+                                    {{ $totals['currency'] }}
+                                </td>
                             </tr>
                         @endif
                     </table>
