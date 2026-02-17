@@ -202,7 +202,7 @@
             color: #6b7280;
         }
 
-        /* Screen Preview Fix */
+        /* Screen Only Styles */
         @media screen {
             body {
                 background-color: #e5e7eb;
@@ -216,6 +216,28 @@
                 background-color: #fff;
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
                 position: relative;
+            }
+        }
+
+        /* Print Reset */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: transparent;
+            }
+
+            .page-container {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: transparent;
+                box-shadow: none;
+            }
+
+            @page {
+                margin: 0;
+                size: auto;
             }
         }
     </style>
@@ -295,14 +317,16 @@
                                 <strong style="color: #111;">{{ $item->description }}</strong>
                                 @if($item->service && $item->service->identifier_code)
                                     <div style="font-size: 8pt; color: #888; margin-top: 2px;">
-                                        {{ $item->service->identifier_code }}</div>
+                                        {{ $item->service->identifier_code }}
+                                    </div>
                                 @endif
                             </td>
                             <td class="text-center">{{ number_format($item->qty, 0) }}</td>
                             <td class="text-right">{{ number_format($item->unit_price, 2) }} {{ $totals['currency'] }}</td>
                             <td class="text-right">%{{ (int) $item->vat_rate }}</td>
                             <td class="text-right font-bold" style="color: #111;">{{ number_format($item->line_total, 2) }}
-                                {{ $totals['currency'] }}</td>
+                                {{ $totals['currency'] }}
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -332,22 +356,23 @@
                     </td>
 
                     <td style="width: 40%;">
-                        <table class="w-full">
+                        <table class="totals-area">
                             <tr class="total-row">
-                                <td class="text-muted">Ara Toplam:</td>
+                                <td class="text-muted text-right">Ara Toplam:</td>
                                 <td class="text-right font-bold">{{ $totals['subtotal'] }} {{ $totals['currency'] }}
                                 </td>
                             </tr>
                             <tr class="total-row">
-                                <td class="text-muted">KDV Toplam:</td>
+                                <td class="text-muted text-right">KDV Toplam:</td>
                                 <td class="text-right font-bold">{{ $totals['tax_total'] }} {{ $totals['currency'] }}
                                 </td>
                             </tr>
                             @if($invoice->discount_total > 0)
                                 <tr class="total-row">
-                                    <td style="color: #dc2626;">&#304;ndirim:</td>
+                                    <td class="text-right" style="color: #dc2626;">&#304;ndirim:</td>
                                     <td class="text-right" style="color: #dc2626;">-{{ $totals['discount_total'] }}
-                                        {{ $totals['currency'] }}</td>
+                                        {{ $totals['currency'] }}
+                                    </td>
                                 </tr>
                             @endif
                         </table>
@@ -355,9 +380,10 @@
                         <div class="grand-total-box">
                             <table class="w-full">
                                 <tr>
-                                    <td style="font-size: 10pt; opacity: 0.9;">GENEL TOPLAM</td>
+                                    <td style="font-size: 10pt; opacity: 0.9; text-align: left;">GENEL TOPLAM</td>
                                     <td class="text-right" style="font-size: 16pt; font-weight: bold;">
-                                        {{ $totals['grand_total'] }} {{ $totals['currency'] }}</td>
+                                        {{ $totals['grand_total'] }} {{ $totals['currency'] }}
+                                    </td>
                                 </tr>
                             </table>
                         </div>
