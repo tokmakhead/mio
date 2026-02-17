@@ -2,18 +2,7 @@
     <!-- Page Banner -->
     <x-page-banner title="Hizmet Yönetimi"
         subtitle="Aktif hizmetlerinizi, domain ve hosting sürelerini buradan takip edebilirsiniz."
-        metric="{{ number_format($mrr, 2) }}₺ MRR">
-        <x-slot name="actions">
-            <a href="{{ route('services.create') }}"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-white/20 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 backdrop-blur-sm transition-all duration-200">
-                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Yeni Hizmet Ekle
-            </a>
-        </x-slot>
-    </x-page-banner>
+        metric="{{ number_format($mrr, 2) }}₺ MRR" />
 
     <!-- Main Content -->
     <div class="py-8">
@@ -95,6 +84,18 @@
             <!-- Services Table or Empty State -->
             @if($services->count() > 0)
                 <x-card>
+                    <!-- Header with Add Button -->
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Hizmetler</h3>
+                        <a href="{{ route('services.create') }}"
+                            class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                                </path>
+                            </svg>
+                            <span>Yeni Hizmet Ekle</span>
+                        </a>
+                    </div>
 
                     <!-- Table -->
                     <div class="overflow-x-auto">
