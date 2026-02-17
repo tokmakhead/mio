@@ -270,11 +270,7 @@ class SettingsController extends Controller
 
         $settings->update($data);
 
-        // Sync with BrandSetting
-        \App\Models\BrandSetting::updateOrCreate(
-            ['key' => 'site_title'],
-            ['value' => $request->site_name]
-        );
+        // Decoupled: Do not sync to BrandSetting 'site_title'
 
         return back()->with('success', 'Site ayarları güncellendi.');
     }
@@ -377,9 +373,10 @@ class SettingsController extends Controller
         $systemSettings = SystemSetting::firstOrCreate(['id' => 1]);
 
         // Handle Site Title & Primary Color
+        // Handle Site Title & Primary Color
         if ($request->filled('site_title')) {
             BrandSetting::updateOrCreate(['key' => 'site_title'], ['value' => $request->site_title]);
-            $systemSettings->update(['site_name' => $request->site_title]);
+            // Decoupled: Do not sync to SystemSetting site_name
         }
 
         if ($request->filled('primary_color')) {

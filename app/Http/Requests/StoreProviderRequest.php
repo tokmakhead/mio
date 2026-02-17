@@ -24,7 +24,8 @@ class StoreProviderRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'types' => ['required', 'array', 'min:1'],
-            'types.*' => ['in:hosting,domain,ssl,email,other'],
+            'types.*' => ['string'],
+            'custom_type' => ['nullable', 'string', 'max:50'],
             'website' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:255'],

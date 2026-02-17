@@ -67,7 +67,16 @@ class ProviderController extends Controller
      */
     public function store(StoreProviderRequest $request)
     {
-        Provider::create($request->validated());
+        $data = $request->validated();
+
+        // Handle custom type
+        if (in_array('other', $data['types']) && !empty($request->custom_type)) {
+            $data['types'] = array_diff($data['types'], ['other']);
+            $data['types'][] = $request->custom_type;
+        }
+        $data['types'] = array_values($data['types']);
+
+        Provider::create($data);
 
         return redirect()->route('providers.index')
             ->with('success', 'Sağlayıcı başarıyla oluşturuldu.');
@@ -94,7 +103,16 @@ class ProviderController extends Controller
      */
     public function update(UpdateProviderRequest $request, Provider $provider)
     {
-        $provider->update($request->validated());
+        $data = $request->validated();
+
+        // Handle custom type
+        if (in_array('other', $data['types']) && !empty($request->custom_type)) {
+            $data['types'] = array_diff($data['types'], ['other']);
+            $data['types'][] = $request->custom_type;
+        }
+        $data['types'] = array_values($data['types']);
+
+        $provider->update($data);
 
         return redirect()->route('providers.index')
             ->with('success', 'Sağlayıcı başarıyla güncellendi.');

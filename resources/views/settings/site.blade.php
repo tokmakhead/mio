@@ -28,7 +28,7 @@
 
                                     <!-- Site Name -->
                                     <div class="col-span-6 sm:col-span-4">
-                                        <x-input-label for="site_name" value="Site Adı" />
+                                        <x-input-label for="site_name" value="Site Başlığı" />
                                         <x-text-input id="site_name" name="site_name" type="text"
                                             class="mt-1 block w-full" :value="old('site_name', $settings->site_name)"
                                             required />
