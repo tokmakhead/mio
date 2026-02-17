@@ -197,13 +197,17 @@ class InvoiceController extends Controller
             ->with('success', 'Fatura silindi.');
     }
 
-    public function pdf(Invoice $invoice)
+    public function pdf(Invoice $invoice, \App\Services\InvoicePdfService $pdfService)
     {
-        $invoice->load(['customer', 'items.service']);
-        $brandSettings = \App\Models\BrandSetting::all()->pluck('value', 'key');
-        // Use the new premium template
-        $pdf = Pdf::loadView('invoices.premium', compact('invoice', 'brandSettings'));
+        $data = $pdfService->prepareData($invoice);
+        $pdf = Pdf::loadView('invoices.premium', $data);
         return $pdf->download($invoice->number . '.pdf');
+    }
+
+    public function previewPdf(Invoice $invoice, \App\Services\InvoicePdfService $pdfService)
+    {
+        $data = $pdfService->prepareData($invoice);
+        return view('invoices.premium', $data);
     }
 
     public function send(Invoice $invoice)
