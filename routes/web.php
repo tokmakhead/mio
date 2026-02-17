@@ -5,6 +5,15 @@ use App\Http\Controllers\InstallController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/fix-config', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('route:clear');
+    return 'Config, Cache, View, and Route cleared! <br> <a href="/settings/brand">Go back to Brand Settings</a>';
+});
 
 // Installation Routes
 Route::group(['prefix' => 'install', 'as' => 'install.', 'middleware' => ['web']], function () {
