@@ -201,7 +201,8 @@ class InvoiceController extends Controller
     {
         $invoice->load(['customer', 'items.service']);
         $brandSettings = \App\Models\BrandSetting::all()->pluck('value', 'key');
-        $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'brandSettings'));
+        // Use the new premium template
+        $pdf = Pdf::loadView('invoices.premium', compact('invoice', 'brandSettings'));
         return $pdf->download($invoice->number . '.pdf');
     }
 
