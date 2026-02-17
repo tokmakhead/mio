@@ -180,12 +180,17 @@ class QuoteController extends Controller
             ->with('success', 'Teklif başarıyla silindi.');
     }
 
-    public function pdf(Quote $quote)
+    public function pdf(Quote $quote, \App\Services\QuotePdfService $pdfService)
     {
-        $quote->load(['customer', 'items.service']);
-        $brandSettings = \App\Models\BrandSetting::all()->pluck('value', 'key');
-        $pdf = Pdf::loadView('quotes.pdf', compact('quote', 'brandSettings'));
+        $data = $pdfService->prepareData($quote);
+        $pdf = Pdf::loadView('quotes.premium', $data);
         return $pdf->download($quote->number . '.pdf');
+    }
+
+    public function previewPdf(Quote $quote, \App\Services\QuotePdfService $pdfService)
+    {
+        $data = $pdfService->prepareData($quote);
+        return view('quotes.premium', $data);
     }
 
     /**
