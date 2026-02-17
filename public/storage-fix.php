@@ -60,7 +60,12 @@ if (file_exists($symlinkPath)) {
                     echo "FAILED to remove directory. Please delete 'public/storage' folder manually via FTP/File Manager.\n";
                 }
             } else {
-                echo "Directory is NOT empty. I will not delete it automatically to prevent data loss. Please check its content and delete/move it manually.\n";
+                echo "Directory is NOT empty. Please check its content and delete/move it manually:\n";
+                foreach ($items as $item) {
+                    if ($item != '.' && $item != '..') {
+                        echo "- $item\n";
+                    }
+                }
             }
         } else {
             // It's a file?
