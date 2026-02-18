@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>FATURA - {{ $invoice->number }}</title>
+    <title>TEKLİF - {{ $quote->number }}</title>
     <style>
         @page {
             margin: 0;
@@ -258,9 +258,9 @@
                         <div class="brand-sub">M&#252;&#351;teri Odakl&#305; Lojistik ve Y&#246;netim</div>
                     </td>
                     <td style="width: 40%; text-align: right;">
-                        <div class="invoice-badge">FATURA</div>
+                        <div class="invoice-badge">TEKLİF</div>
                         <div class="invoice-meta">
-                            <strong>NO:</strong> #{{ $invoice->number }}<br>
+                            <strong>NO:</strong> #{{ $quote->number }}<br>
                             <strong>TAR&#304;H:</strong> {{ $dates['issue_date'] }}
                         </div>
                     </td>
@@ -290,12 +290,11 @@
                         <div class="info-card">
                             <div class="card-header">SAYIN M&#220;&#351;TER&#304;</div>
                             <div class="card-body">
-                                <strong
-                                    style="font-size: 11pt; color: #111;">{{ $invoice->customer->name }}</strong><br>
+                                <strong style="font-size: 11pt; color: #111;">{{ $quote->customer->name }}</strong><br>
                                 <div style="margin-top: 5px; color: #555;">
-                                    {{ $invoice->customer->address }}<br>
-                                    {{ $invoice->customer->email }}<br>
-                                    {{ $invoice->customer->phone }}
+                                    {{ $quote->customer->address }}<br>
+                                    {{ $quote->customer->email }}<br>
+                                    {{ $quote->customer->phone }}
                                 </div>
                             </div>
                         </div>
@@ -315,7 +314,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($invoice->items as $item)
+                    @foreach($quote->items as $item)
                         <tr>
                             <td>
                                 <strong style="color: #111;">{{ $item->description }}</strong>
@@ -340,14 +339,14 @@
             <table class="w-full">
                 <tr>
                     <td style="width: 60%; padding-right: 40px;">
-                        @if($invoice->notes)
+                        @if($quote->notes)
                             <div style="margin-bottom: 20px;">
                                 <div
                                     style="font-size: 8pt; font-weight: bold; text-transform: uppercase; color: #dc2626; margin-bottom: 5px;">
                                     NOTLAR</div>
                                 <div
                                     style="background: #fffbe6; border: 1px solid #fde68a; padding: 10px; border-radius: 4px; font-size: 9pt; color: #92400e;">
-                                    {{ $invoice->notes }}
+                                    {{ $quote->notes }}
                                 </div>
                             </div>
                         @endif
@@ -371,7 +370,7 @@
                                 <td class="text-right font-bold">{{ $totals['tax_total'] }} {{ $totals['currency'] }}
                                 </td>
                             </tr>
-                            @if($invoice->discount_total > 0)
+                            @if($quote->discount_total > 0)
                                 <tr class="total-row">
                                     <td class="text-right" style="color: #dc2626;">&#304;ndirim:</td>
                                     <td class="text-right" style="color: #dc2626;">-{{ $totals['discount_total'] }}
