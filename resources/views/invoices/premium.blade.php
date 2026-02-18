@@ -18,6 +18,8 @@
             margin: 0;
             padding: 0;
             width: 100%;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         /* Helpers */
@@ -92,8 +94,8 @@
         }
 
         .invoice-badge {
-            background-color: #111;
-            color: #fff;
+            background-color: #111 !important;
+            color: #fff !important;
             padding: 8px 15px;
             font-size: 14pt;
             font-weight: bold;
@@ -150,8 +152,8 @@
         }
 
         .items-table thead th {
-            background-color: #111;
-            color: #fff;
+            background-color: #111 !important;
+            color: #fff !important;
             padding: 12px 15px;
             font-size: 8pt;
             font-weight: 600;
@@ -183,8 +185,8 @@
         }
 
         .grand-total-box {
-            background-color: #dc2626;
-            color: #fff;
+            background-color: #dc2626 !important;
+            color: #fff !important;
             padding: 12px 15px;
             border-radius: 6px;
             margin-top: 10px;
@@ -412,7 +414,8 @@
             <table class="w-full">
                 <tr>
                     <td style="text-transform: none;">{{ $brandSettings['company_name'] ?? 'MIONEX' }} &copy;
-                        {{ date('Y') }}</td>
+                        {{ date('Y') }}
+                    </td>
                     <td class="text-right">Sayfa 1 / 1</td>
                 </tr>
             </table>
