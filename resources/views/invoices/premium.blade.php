@@ -6,17 +6,18 @@
     <title>FATURA - {{ $invoice->number }}</title>
     <style>
         @page {
-            margin: 0;
-            padding: 0;
+            margin: 0cm;
+            padding: 0cm;
         }
 
         body {
-            font-family: 'DejaVu Sans', sans-serif;
+            font-family: 'DejaVu Sans', sans-serif !important;
             color: #333;
             font-size: 9pt;
             line-height: 1.5;
             margin: 0;
             padding: 0;
+            width: 100%;
         }
 
         /* Helpers */
@@ -152,10 +153,10 @@
             background-color: #111;
             color: #fff;
             padding: 12px 15px;
-            font-size: 9pt;
-            text-transform: uppercase;
+            font-size: 8pt;
             font-weight: 600;
             text-align: left;
+            border: none;
         }
 
         .items-table tbody td {
@@ -184,23 +185,24 @@
         .grand-total-box {
             background-color: #dc2626;
             color: #fff;
-            padding: 15px;
+            padding: 12px 15px;
             border-radius: 6px;
             margin-top: 10px;
         }
 
         .grand-total-box td {
             vertical-align: middle !important;
+            font-family: 'DejaVu Sans', sans-serif !important;
         }
 
         /* FOOTER */
         .footer {
-            position: fixed;
+            position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             background-color: #f8f8f8;
-            padding: 20px 50px;
+            padding: 15px 50px;
             border-top: 1px solid #e5e7eb;
             font-size: 8pt;
             color: #6b7280;
@@ -241,7 +243,7 @@
 
             @page {
                 margin: 0;
-                size: auto;
+                size: a4 portrait;
             }
         }
     </style>
@@ -308,10 +310,10 @@
                 <thead>
                     <tr>
                         <th width="45%">H&#304;ZMET / A&#199;IKLAMA</th>
-                        <th width="15%" class="text-center">M&#304;KTAR</th>
-                        <th width="15%" class="text-right">B&#304;R&#304;M</th>
+                        <th width="12%" class="text-center">M&#304;KTAR</th>
+                        <th width="16%" class="text-right">B&#304;R&#304;M</th>
                         <th width="10%" class="text-right">KDV</th>
-                        <th width="15%" class="text-right">T. TUTAR</th>
+                        <th width="17%" class="text-right">T. TUTAR</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -384,9 +386,12 @@
                         <div class="grand-total-box">
                             <table class="w-full">
                                 <tr>
-                                    <td style="font-size: 10pt; opacity: 0.9; text-align: left;">GENEL TOPLAM</td>
-                                    <td class="text-right" style="font-size: 16pt; font-weight: bold;">
-                                        {{ $totals['grand_total'] }} {{ $totals['currency'] }}
+                                    <td style="font-size: 8pt; opacity: 0.9; text-align: left; vertical-align: middle;">
+                                        GENEL TOPLAM</td>
+                                    <td class="text-right"
+                                        style="font-size: 14pt; font-weight: bold; vertical-align: middle; white-space: nowrap;">
+                                        {{ $totals['grand_total'] }} <span
+                                            style="font-size: 10pt;">{{ $totals['currency'] }}</span>
                                     </td>
                                 </tr>
                             </table>
@@ -406,7 +411,8 @@
         <div class="footer">
             <table class="w-full">
                 <tr>
-                    <td>{{ $brandSettings['company_name'] ?? 'MIONEX' }} &copy; {{ date('Y') }}</td>
+                    <td style="text-transform: none;">{{ $brandSettings['company_name'] ?? 'MIONEX' }} &copy;
+                        {{ date('Y') }}</td>
                     <td class="text-right">Sayfa 1 / 1</td>
                 </tr>
             </table>
