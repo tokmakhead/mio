@@ -219,7 +219,13 @@ class InvoiceController extends Controller
 
         $invoice->logActivity('sent');
 
-        return back()->with('success', 'Fatura müşteriye gönderildi olarak işaretlendi.');
+        // Trigger real email
+        if ($invoice->customer->email) {
+            \Illuminate\Support\Facades\Mail::to($invoice->customer->email)
+                ->send(new \App\Mail\InvoiceMail($invoice));
+        }
+
+        return back()->with('success', 'Fatura başarıyla gönderildi.');
     }
 
     public function addPayment(Request $request, Invoice $invoice)

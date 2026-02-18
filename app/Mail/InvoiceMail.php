@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Quote;
+use App\Models\Invoice;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -10,14 +10,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class QuoteMail extends Mailable
+class InvoiceMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public Quote $quote)
+    public function __construct(public Invoice $invoice)
     {
     }
 
@@ -27,7 +27,7 @@ class QuoteMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Teklif Formu: ' . $this->quote->number,
+            subject: 'Fatura Formu: ' . $this->invoice->number,
         );
     }
 
@@ -37,7 +37,7 @@ class QuoteMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.quote',
+            view: 'emails.invoice',
         );
     }
 
@@ -48,12 +48,12 @@ class QuoteMail extends Mailable
      */
     public function attachments(): array
     {
-        $pdfService = app(\App\Services\QuotePdfService::class);
-        $data = $pdfService->prepareData($this->quote);
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('quotes.premium', $data);
+        $pdfService = app(\App\Services\InvoicePdfService::class);
+        $data = $pdfService->prepareData($this->invoice);
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.premium', $data);
 
         return [
-            \Illuminate\Mail\Mailables\Attachment::fromData(fn() => $pdf->output(), $this->quote->number . '.pdf')
+            \Illuminate\Mail\Mailables\Attachment::fromData(fn() => $pdf->output(), $this->invoice->number . '.pdf')
                 ->withMime('application/pdf'),
         ];
     }

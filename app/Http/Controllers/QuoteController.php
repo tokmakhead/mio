@@ -205,7 +205,13 @@ class QuoteController extends Controller
 
         $quote->logActivity('sent');
 
-        return back()->with('success', 'Teklif başarıyla gönderildi olarak işaretlendi.');
+        // Trigger real email
+        if ($quote->customer->email) {
+            \Illuminate\Support\Facades\Mail::to($quote->customer->email)
+                ->send(new \App\Mail\QuoteMail($quote));
+        }
+
+        return back()->with('success', 'Teklif başarıyla gönderildi.');
     }
 
     /**
