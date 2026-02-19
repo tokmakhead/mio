@@ -87,11 +87,11 @@
                                                         Kullanılabilir Değişkenler</p>
                                                     <ul
                                                         class="text-[11px] space-y-1 font-mono text-gray-600 dark:text-gray-400">
-                                                        <li>{{ '{{customer_name}}' }}</li>
-                                                        <li>{{ '{{invoice_number}}' }}</li>
-                                                        <li>{{ '{{quote_number}}' }}</li>
-                                                        <li>{{ '{{service_name}}' }}</li>
-                                                        <li>{{ '{{expiry_date}}' }}</li>
+                                                        <li>@{{customer_name}}</li>
+                                                        <li>@{{invoice_number}}</li>
+                                                        <li>@{{quote_number}}</li>
+                                                        <li>@{{service_name}}</li>
+                                                        <li>@{{expiry_date}}</li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -206,7 +206,7 @@
                                 <div class="bg-orange-500 p-1 rounded-md text-white">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
-                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1-1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                                             clip-rule="evenodd" />
                                     </svg>
                                 </div>
@@ -254,37 +254,33 @@
                 const subject = document.getElementById('subject_' + id).value;
 
                 // Professional email wrapper for preview
-                const styledContent = `
-                                <html>
-                                    <head>
-                                        <style>
-                                            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; padding: 40px 20px; margin: 0; }
-                                            .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eef2f5; }
-                                            .email-header { background: #9f1239; padding: 30px; text-align: center; color: white; }
-                                            .email-body { padding: 40px; line-height: 1.6; color: #334455; font-size: 15px; }
-                                            .email-footer { background: #f8fafc; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #edf2f7; }
-                                            .email-logo { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
-                                            h1, h2, h3 { color: #1e293b; margin-top: 0; }
-                                            p { margin-bottom: 20px; }
-                                            a { color: #9f1239; text-decoration: underline; }
-                                        </style>
-                                    </head>
-                                    <body>
-                                        <div class="email-container">
-                                            <div class="email-header">
-                                                <div class="email-logo">MIONEX</div>
+                const styledContent = `<html>
+                                        <head>
+                                            <style>
+                                                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; padding: 40px 20px; margin: 0; }
+                                                .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eef2f5; }
+                                                .email-header { background: #9f1239; padding: 30px; text-align: center; color: white; }
+                                                .email-body { padding: 40px; line-height: 1.6; color: #334455; font-size: 15px; }
+                                                .email-footer { background: #f8fafc; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #edf2f7; }
+                                                .email-logo { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+                                                h1, h2, h3 { color: #1e293b; margin-top: 0; }
+                                                p { margin-bottom: 20px; }
+                                                a { color: #9f1239; text-decoration: underline; }
+                                            </style>
+                                        </head>
+                                        <body>
+                                            <div class="email-container">
+                                                <div class="email-header">
+                                                    <div class="email-logo">MIONEX</div>
+                                                </div>
+                                                <div class="email-body">` + content.replace(/\n/g, '<br>') + `</div>
+                                                <div class="email-footer">
+                                                    Bu bir sistem bildirimidir. Lütfen bu e-postayı yanıtlamayın.<br>
+                                                    &copy; {{ date('Y') }} MIONEX. Tüm hakları saklıdır.
+                                                </div>
                                             </div>
-                                            <div class="email-body">
-                                                ${content.replace(/\n/g, '<br>')}
-                                            </div>
-                                            <div class="email-footer">
-                                                Bu bir sistem bildirimidir. Lütfen bu e-postayı yanıtlamayın.<br>
-                                                &copy; {{ date('Y') }} MIONEX. Tüm hakları saklıdır.
-                                            </div>
-                                        </div>
-                                    </body>
-                                </html>
-                            `;
+                                        </body>
+                                    </html>`;
 
                 const doc = frame.contentWindow.document;
                 doc.open();
@@ -315,7 +311,7 @@
                 const recipient = document.getElementById('test_recipient').value;
                 const emailError = document.getElementById('email_error');
 
-                if (recipient && recipient.includes('@') && recipient.includes('.')) {
+                if (recipient && recipient.indexOf('@') !== -1 && recipient.indexOf('.') !== -1) {
                     emailError.classList.add('hidden');
                     const form = document.createElement('form');
                     form.method = 'POST';
