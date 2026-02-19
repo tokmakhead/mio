@@ -94,14 +94,6 @@ class DashboardController extends Controller
                 ->limit(5)
                 ->get();
 
-            return [
-                'totalCustomers' => $globalCounts->total_customers,
-                'activeServicesCount' => $globalCounts->active_services,
-                'overdueInvoices' => $globalCounts->overdue_invoices,
-                'thisMonthRevenue' => $thisMonthRevenue,
-                'mrr' => $mrr,
-                'revenueTrend' => $revenueTrend,
-                'mrrDistribution' => $mrrDistribution,
             // Overdue Total (Vadesi Geçmiş Alacaklar)
             $overdueTotal = \App\Models\Invoice::where('currency', $defaultCurrency)
                 ->where('status', '!=', 'paid')
