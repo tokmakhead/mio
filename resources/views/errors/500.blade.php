@@ -45,6 +45,20 @@
             deneyin.
         </p>
 
+        @if(isset($exception))
+            <div
+                class="mb-10 p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl text-left overflow-x-auto">
+                <p class="text-xs font-bold text-red-600 dark:text-red-400 uppercase mb-2">Hata Detayı:</p>
+                <p class="text-sm font-mono text-gray-800 dark:text-gray-200 break-words mb-4">
+                    {{ $exception->getMessage() }}
+                </p>
+                <p class="text-[10px] font-mono text-gray-400 dark:text-gray-500 max-h-40 overflow-y-auto">
+                    {{ $exception->getFile() }}:{{ $exception->getLine() }}<br>
+                    {{ Str::limit($exception->getTraceAsString(), 500) }}
+                </p>
+            </div>
+        @endif
+
         <a href="/"
             class="inline-flex items-center justify-center px-8 py-3 brand-gradient text-white font-semibold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-rose-500/25">
             Tekrar Dene
