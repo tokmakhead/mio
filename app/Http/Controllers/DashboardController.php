@@ -9,125 +9,102 @@ class DashboardController extends Controller
 {
     public function index(\App\Services\AnnouncementService $announcementService)
     {
-        $announcements = $announcementService->fetch(); // Remote/External, keep instant or cache separately inside service
+        try {
+            $announcements = $announcementService->fetch();
 
-        // Cache Key based on default currency to handle settings changes
-        $siteSettings = \App\Models\SystemSetting::first();
-        $defaultCurrency = $siteSettings->default_currency ?? 'TRY';
-        $cacheKey = 'dashboard_stats_' . $defaultCurrency;
+            // Cache Key based on default currency
+            $siteSettings = \App\Models\SystemSetting::first();
+            $defaultCurrency = $siteSettings->default_currency ?? 'TRY';
+            $cacheKey = 'dashboard_stats_v2_' . $defaultCurrency; // Versioned cache key
 
-        // Cache for 30 minutes. Observers will clear this on new data.
-        $dashboardData = \Illuminate\Support\Facades\Cache::remember($cacheKey, 1800, function () use ($defaultCurrency) {
-            $financeService = new \App\Services\FinanceService();
-            $now = now();
-            $thisMonth = $now->month;
-            $thisYear = $now->year;
+            $dashboardData = \Illuminate\Support\Facades\Cache::remember($cacheKey, 1800, function () use ($defaultCurrency) {
+                $financeService = new \App\Services\FinanceService();
+                $now = now();
 
-            // Global counts (Currency-independent)
-            $globalCounts = \DB::select("
-                SELECT 
-                    (SELECT COUNT(*) FROM customers) as total_customers,
-                    (SELECT COUNT(*) FROM services WHERE status = 'active') as active_services,
-                    (SELECT COUNT(*) FROM invoices WHERE status = 'overdue') as overdue_invoices
-            ")[0];
+                // Robust counts
+                $data = [
+                    'totalCustomers' => \App\Models\Customer::count(),
+                    'activeServicesCount' => \App\Models\Service::active()->count(),
+                    'overdueInvoices' => \App\Models\Invoice::where('status', 'overdue')->count(),
+                ];
 
-            // Optimized Financial Metrics via FinanceService
-            $currencySummary = $financeService->getGlobalSummary();
+                // Optimized Financial Metrics
+                $currencySummary = $financeService->getGlobalSummary();
 
-            // Specific metrics for MRR and Revenue (Already grouped by currency)
-            $revenueMetrics = \DB::table('payments')
-                ->select('currency', \DB::raw('SUM(amount) as total'))
-                ->whereMonth('paid_at', $thisMonth)
-                ->whereYear('paid_at', $thisYear)
-                ->groupBy('currency')
-                ->pluck('total', 'currency');
+                // Revenue Trend Chart
+                $data['revenueTrend'] = $this->getRevenueTrend($defaultCurrency);
 
-            $mrrMetrics = \App\Models\Service::active()
-                ->select('currency', \DB::raw('SUM(price) as total'))
-                ->groupBy('currency')
-                ->pluck('total', 'currency');
+                // Specific metrics
+                $primarySummary = $currencySummary[$defaultCurrency] ?? ['receivable' => 0, 'payable' => 0, 'net' => 0];
 
-            // Revenue Trend Chart
-            $revenueTrend = $this->getRevenueTrend($defaultCurrency);
+                $data['thisMonthRevenue'] = \App\Models\Payment::where('currency', $defaultCurrency)
+                    ->whereMonth('paid_at', $now->month)
+                    ->whereYear('paid_at', $now->year)
+                    ->sum('amount');
 
-            // Summary for primary KPI display
-            $primarySummary = $currencySummary[$defaultCurrency] ?? ['receivable' => 0, 'payable' => 0, 'net' => 0];
-            $thisMonthRevenue = $revenueMetrics[$defaultCurrency] ?? 0;
-            $mrr = $mrrMetrics[$defaultCurrency] ?? 0;
+                $data['mrr'] = \App\Models\Service::active()
+                    ->where('currency', $defaultCurrency)
+                    ->isRecurring()
+                    ->get()
+                    ->sum('mrr');
 
-            // Average invoice
-            $avgInvoice = \App\Models\Invoice::where('currency', $defaultCurrency)->avg('grand_total') ?? 0;
+                // Average invoice
+                $data['avgInvoice'] = \App\Models\Invoice::where('currency', $defaultCurrency)->avg('grand_total') ?? 0;
 
-            // MRR Distribution
-            $mrrDistribution = \App\Models\Service::active()
-                ->select('type', \DB::raw('SUM(price) as total_price'))
-                ->where('currency', $defaultCurrency)
-                ->groupBy('type')
-                ->get()
-                ->map(function ($item) {
-                    return [
-                        'label' => \App\Models\Service::getTypeLabel($item->type),
-                        'value' => (float) $item->total_price,
-                    ];
-                });
+                // MRR Distribution
+                $mrrDistribution = \App\Models\Service::active()
+                    ->select('type', \DB::raw('SUM(price) as total_price'))
+                    ->where('currency', $defaultCurrency)
+                    ->groupBy('type')
+                    ->get()
+                    ->map(function ($item) {
+                        return [
+                            'label' => \App\Models\Service::getTypeLabel($item->type),
+                            'value' => (float) $item->total_price,
+                        ];
+                    });
 
-            // Upcoming Expiries
-            $expiringServices = \App\Models\Service::with('customer:id,name')
-                ->active()
-                ->expiringSoon(90)
-                ->orderBy('end_date')
-                ->limit(10)
-                ->get();
+                // Overdue Total
+                $overdueTotal = \App\Models\Invoice::where('currency', $defaultCurrency)
+                    ->where('status', '!=', 'paid')
+                    ->where('status', '!=', 'cancelled')
+                    ->where('due_date', '<', $now->startOfDay())
+                    ->sum(\DB::raw('grand_total - paid_amount'));
 
-            // Recent Activities
-            $recentActivities = \App\Models\ActivityLog::with('actor:id,name', 'subject')
-                ->latest()
-                ->limit(10)
-                ->get();
+                // Merge all
+                return array_merge($data, [
+                    'mrrDistribution' => $mrrDistribution,
+                    'billedTotal' => $primarySummary['receivable'] + $primarySummary['payable'],
+                    'collectedTotal' => $primarySummary['receivable'],
+                    'pendingTotal' => $primarySummary['payable'],
+                    'overdueTotal' => $overdueTotal,
+                    'expiringServices' => \App\Models\Service::with('customer:id,name')->active()->expiringSoon(90)->orderBy('end_date')->limit(10)->get(),
+                    'recentActivities' => \App\Models\ActivityLog::with('actor:id,name', 'subject')->latest()->limit(10)->get(),
+                    'topCustomers' => \App\Models\Payment::with('customer:id,name,email,company_name')
+                        ->select('customer_id', \DB::raw('SUM(amount) as total_paid'))
+                        ->where('currency', $defaultCurrency)
+                        ->groupBy('customer_id')
+                        ->orderByDesc('total_paid')
+                        ->limit(5)
+                        ->get(),
+                    'currencySummary' => $currencySummary,
+                    'revenueMetrics' => \App\Models\Payment::select('currency', \DB::raw('SUM(amount) as total'))->whereMonth('paid_at', $now->month)->whereYear('paid_at', $now->year)->groupBy('currency')->pluck('total', 'currency'),
+                    'mrrMetrics' => \App\Models\Service::active()->select('currency', \DB::raw('SUM(price) as total'))->groupBy('currency')->pluck('total', 'currency'),
+                ]);
+            });
 
-            // Top 5 Customers (By Revenue in Default Currency)
-            $topCustomers = \App\Models\Payment::with('customer:id,name,email,company_name')
-                ->select('customer_id', \DB::raw('SUM(amount) as total_paid'))
-                ->where('currency', $defaultCurrency)
-                ->groupBy('customer_id')
-                ->orderByDesc('total_paid')
-                ->limit(5)
-                ->get();
+            $dashboardData['announcements'] = $announcements;
+            $dashboardData['defaultCurrency'] = $defaultCurrency;
 
-            // Overdue Total (Vadesi Geçmiş Alacaklar)
-            $overdueTotal = \App\Models\Invoice::where('currency', $defaultCurrency)
-                ->where('status', '!=', 'paid')
-                ->where('status', '!=', 'cancelled')
-                ->where('due_date', '<', $now->startOfDay())
-                ->sum(\DB::raw('grand_total - paid_amount'));
+            return view('dashboard', $dashboardData);
 
-            return [
-                'totalCustomers' => $globalCounts->total_customers,
-                'activeServicesCount' => $globalCounts->active_services,
-                'overdueInvoices' => $globalCounts->overdue_invoices,
-                'thisMonthRevenue' => $thisMonthRevenue,
-                'mrr' => $mrr,
-                'revenueTrend' => $revenueTrend,
-                'mrrDistribution' => $mrrDistribution,
-                'billedTotal' => $primarySummary['receivable'] + $primarySummary['payable'],
-                'collectedTotal' => $primarySummary['receivable'],
-                'pendingTotal' => $primarySummary['payable'], // Keep for compatibility if needed, but UI will use overdueTotal or rename this variable
-                'overdueTotal' => $overdueTotal,
-                'avgInvoice' => $avgInvoice,
-                'expiringServices' => $expiringServices,
-                'recentActivities' => $recentActivities,
-                'topCustomers' => $topCustomers,
-                'currencySummary' => $currencySummary,
-                'revenueMetrics' => $revenueMetrics,
-                'mrrMetrics' => $mrrMetrics,
-            ];
-        });
-
-        // Add non-cached data
-        $dashboardData['announcements'] = $announcements;
-        $dashboardData['defaultCurrency'] = $defaultCurrency;
-
-        return view('dashboard', $dashboardData);
+        } catch (\Exception $e) {
+            if (config('app.debug')) {
+                throw $e;
+            }
+            \Log::error('Dashboard error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->view('errors.500', ['exception' => $e], 500);
+        }
     }
 
     private function getRevenueTrend($currency = 'TRY')

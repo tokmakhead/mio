@@ -65,6 +65,11 @@ class Service extends Model
             ->where('status', 'active');
     }
 
+    public function scopeIsRecurring($query)
+    {
+        return $query->whereIn('cycle', ['monthly', 'quarterly', 'yearly', 'biennial']);
+    }
+
     /**
      * Accessors
      */
