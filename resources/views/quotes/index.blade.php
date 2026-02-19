@@ -167,12 +167,16 @@
                                             </div>
                                         </td>
                                         <td class="px-4 py-4">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                {{ $quote->customer->name }}
-                                            </div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                {{ $quote->customer->email }}
-                                            </div>
+                                            @if($quote->customer)
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    {{ $quote->customer->name }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ $quote->customer->email }}
+                                                </div>
+                                            @else
+                                                <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
+                                            @endif
                                         </td>
                                         <td class="px-4 py-4 text-sm font-semibold text-gray-900 dark:text-white">
                                             {{ number_format($quote->grand_total, 2) }} {{ $quote->currency }}

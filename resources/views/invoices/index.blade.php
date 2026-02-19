@@ -177,12 +177,16 @@
                                             {{ $invoice->number }}
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm font-semibold text-gray-900 dark:text-white">
-                                                {{ $invoice->customer->name }}
-                                            </div>
-                                            <div class="text-xs text-gray-500 tracking-tight">
-                                                {{ $invoice->customer->email }}
-                                            </div>
+                                            @if($invoice->customer)
+                                                <div class="text-sm font-semibold text-gray-900 dark:text-white">
+                                                    {{ $invoice->customer->name }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 tracking-tight">
+                                                    {{ $invoice->customer->email }}
+                                                </div>
+                                            @else
+                                                <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4">
                                             <span

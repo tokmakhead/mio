@@ -39,9 +39,6 @@
                         Havuzu</x-nav-link>
                     <x-nav-link href="{{ route('reports.index') }}" :active="request()->routeIs('reports.index')">Analiz
                         Merkezi</x-nav-link>
-                    <x-nav-link href="{{ route('reports.profit') }}" :active="request()->routeIs('reports.profit')">Kâr
-                        /
-                        Zarar</x-nav-link>
 
                     <x-nav-link href="{{ route('settings.brand') }}" :active="request()->routeIs('settings.*')">Sistem
                         Ayarları</x-nav-link>

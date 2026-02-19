@@ -216,18 +216,26 @@
 
                                         <!-- Customer -->
                                         <td class="px-4 py-4">
-                                            <a href="{{ route('customers.show', $service->customer) }}"
-                                                class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
-                                                {{ $service->customer->name }}
-                                            </a>
+                                            @if($service->customer)
+                                                <a href="{{ route('customers.show', $service->customer) }}"
+                                                    class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
+                                                    {{ $service->customer->name }}
+                                                </a>
+                                            @else
+                                                <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
+                                            @endif
                                         </td>
 
                                         <!-- Provider -->
                                         <td class="px-4 py-4">
-                                            <a href="{{ route('providers.show', $service->provider) }}"
-                                                class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
-                                                {{ $service->provider->name }}
-                                            </a>
+                                            @if($service->provider)
+                                                <a href="{{ route('providers.show', $service->provider) }}"
+                                                    class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
+                                                    {{ $service->provider->name }}
+                                                </a>
+                                            @else
+                                                <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
+                                            @endif
                                         </td>
 
                                         <!-- Cycle -->
