@@ -22,12 +22,12 @@
                 <div class="space-y-4 mb-8">
                     @foreach($announcements as $announcement)
                         <div class="rounded-md p-4 border-l-4 shadow-sm
-                                                                            @if($announcement['type'] == 'info') bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500
-                                                                            @elseif($announcement['type'] == 'success') bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-500
-                                                                            @elseif($announcement['type'] == 'warning') bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500
-                                                                            @elseif($announcement['type'] == 'danger') bg-red-50 border-red-400 dark:bg-red-900/20 dark:border-red-500
-                                                                            @else bg-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-500 @endif
-                                                                        ">
+                                                                                    @if($announcement['type'] == 'info') bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500
+                                                                                    @elseif($announcement['type'] == 'success') bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-500
+                                                                                    @elseif($announcement['type'] == 'warning') bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500
+                                                                                    @elseif($announcement['type'] == 'danger') bg-red-50 border-red-400 dark:bg-red-900/20 dark:border-red-500
+                                                                                    @else bg-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-500 @endif
+                                                                                ">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     @if($announcement['type'] == 'info')
@@ -62,21 +62,21 @@
                                 </div>
                                 <div class="ml-3">
                                     <h3 class="text-sm font-medium 
-                                                                                        @if($announcement['type'] == 'info') text-blue-800 dark:text-blue-200
-                                                                                        @elseif($announcement['type'] == 'success') text-green-800 dark:text-green-200
-                                                                                        @elseif($announcement['type'] == 'warning') text-yellow-800 dark:text-yellow-200
-                                                                                        @elseif($announcement['type'] == 'danger') text-red-800 dark:text-red-200
-                                                                                        @else text-gray-800 dark:text-gray-200 @endif
-                                                                                    ">
+                                                                                                @if($announcement['type'] == 'info') text-blue-800 dark:text-blue-200
+                                                                                                @elseif($announcement['type'] == 'success') text-green-800 dark:text-green-200
+                                                                                                @elseif($announcement['type'] == 'warning') text-yellow-800 dark:text-yellow-200
+                                                                                                @elseif($announcement['type'] == 'danger') text-red-800 dark:text-red-200
+                                                                                                @else text-gray-800 dark:text-gray-200 @endif
+                                                                                            ">
                                         {{ $announcement['title'] }}
                                     </h3>
                                     <div class="mt-2 text-sm 
-                                                                                        @if($announcement['type'] == 'info') text-blue-700 dark:text-blue-300
-                                                                                        @elseif($announcement['type'] == 'success') text-green-700 dark:text-green-300
-                                                                                        @elseif($announcement['type'] == 'warning') text-yellow-700 dark:text-yellow-300
-                                                                                        @elseif($announcement['type'] == 'danger') text-red-700 dark:text-red-300
-                                                                                        @else text-gray-700 dark:text-gray-300 @endif
-                                                                                    ">
+                                                                                                @if($announcement['type'] == 'info') text-blue-700 dark:text-blue-300
+                                                                                                @elseif($announcement['type'] == 'success') text-green-700 dark:text-green-300
+                                                                                                @elseif($announcement['type'] == 'warning') text-yellow-700 dark:text-yellow-300
+                                                                                                @elseif($announcement['type'] == 'danger') text-red-700 dark:text-red-300
+                                                                                                @else text-gray-700 dark:text-gray-300 @endif
+                                                                                            ">
                                         <p>{{ $announcement['message'] }}</p>
                                     </div>
                                 </div>
@@ -228,9 +228,9 @@
                                         <td class="px-6 py-4 text-right">
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                                                                                                        @if($service->days_until_expiry < 30) bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400
-                                                                                                        @elseif($service->days_until_expiry < 60) bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400
-                                                                                                        @else bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400 @endif">
+                                                                                                            @if($service->days_until_expiry < 30) bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400
+                                                                                                            @elseif($service->days_until_expiry < 60) bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400
+                                                                                                            @else bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400 @endif">
                                                 {{ $service->days_until_expiry }} gün
                                             </span>
                                         </td>
@@ -263,9 +263,9 @@
                                         </span>
                                         <div>
                                             <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                {{ $customer->customer->company_name ?? $customer->customer->name }}
+                                                {{ $customer->customer->name }}
                                             </p>
-                                            <p class="text-xs text-gray-500">{{ $customer->customer->name }}</p>
+                                            <p class="text-xs text-gray-500">{{ $customer->customer->email }}</p>
                                         </div>
                                     </div>
                                     <div class="text-right">
@@ -301,20 +301,20 @@
                                                 <div>
                                                     <span
                                                         class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-800 
-                                                                                                                @php
-                                                                                                                    $color = 'bg-gray-400';
-                                                                                                                    if (str_contains($activity->action, 'created'))
-                                                                                                                        $color = 'bg-green-500';
-                                                                                                                    if (str_contains($activity->action, 'updated'))
-                                                                                                                        $color = 'bg-blue-500';
-                                                                                                                    if (str_contains($activity->action, 'deleted'))
-                                                                                                                        $color = 'bg-red-500';
-                                                                                                                    if (str_contains($activity->action, 'sent'))
-                                                                                                                        $color = 'bg-primary-500';
-                                                                                                                    if (str_contains($activity->action, 'login'))
-                                                                                                                        $color = 'bg-primary-500';
-                                                                                                                @endphp
-                                                                                                                {{ $color }}">
+                                                                                                                    @php
+                                                                                                                        $color = 'bg-gray-400';
+                                                                                                                        if (str_contains($activity->action, 'created'))
+                                                                                                                            $color = 'bg-green-500';
+                                                                                                                        if (str_contains($activity->action, 'updated'))
+                                                                                                                            $color = 'bg-blue-500';
+                                                                                                                        if (str_contains($activity->action, 'deleted'))
+                                                                                                                            $color = 'bg-red-500';
+                                                                                                                        if (str_contains($activity->action, 'sent'))
+                                                                                                                            $color = 'bg-primary-500';
+                                                                                                                        if (str_contains($activity->action, 'login'))
+                                                                                                                            $color = 'bg-primary-500';
+                                                                                                                    @endphp
+                                                                                                                    {{ $color }}">
                                                         @php
                                                             $icon = 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z';
                                                             if (str_contains($activity->action, 'invoice'))

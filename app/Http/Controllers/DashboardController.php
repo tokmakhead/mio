@@ -80,7 +80,7 @@ class DashboardController extends Controller
                     'overdueTotal' => $overdueTotal,
                     'expiringServices' => \App\Models\Service::with('customer:id,name')->active()->expiringSoon(90)->orderBy('end_date')->limit(10)->get(),
                     'recentActivities' => \App\Models\ActivityLog::with('actor:id,name', 'subject')->latest()->limit(10)->get(),
-                    'topCustomers' => \App\Models\Payment::with('customer:id,name,email,company_name')
+                    'topCustomers' => \App\Models\Payment::with('customer:id,name,email')
                         ->select('customer_id', \DB::raw('SUM(amount) as total_paid'))
                         ->where('currency', $defaultCurrency)
                         ->groupBy('customer_id')
