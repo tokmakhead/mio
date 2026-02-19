@@ -1,5 +1,5 @@
 <h1>{{ __('New Quote') }}</h1>
-<p>{{ __('Dear') }} {{ $quote->customer->name }},</p>
+<p>{{ __('Dear') }} {{ $quote->customer->name ?? __('Customer') }},</p>
 <p>{{ __('We have prepared a quote with number :number as per your request, which is attached.', ['number' => $quote->number]) }}
 </p>
 <p><strong>{{ __('Total Amount') }}:</strong> {{ number_format($quote->grand_total, 2) }} {{ $quote->currency }}</p>

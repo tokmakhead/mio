@@ -16,7 +16,7 @@
             <h2 style="color: #a82244; margin: 0;">{{ __('New Invoice') }}: {{ $invoice->number }}</h2>
         </div>
         
-        <p>{{ __('Dear') }} <strong>{{ $invoice->customer->name }}</strong>,</p>
+        <p>{{ __('Dear') }} <strong>{{ $invoice->customer->name ?? __('Customer') }}</strong>,</p>
         
         <p>{{ __('A new invoice with number :number has been created for your account.', ['number' => $invoice->number]) }}</p>
         

@@ -158,10 +158,14 @@
                                                     {{ $service->name }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                                                    <a href="{{ route('customers.show', $service->customer) }}"
-                                                        class="hover:text-primary-600">
-                                                        {{ $service->customer->name }}
-                                                    </a>
+                                                    @if($service->customer)
+                                                        <a href="{{ route('customers.show', $service->customer) }}"
+                                                            class="hover:text-primary-600">
+                                                            {{ $service->customer->name }}
+                                                        </a>
+                                                    @else
+                                                        <span class="text-gray-400">-</span>
+                                                    @endif
                                                 </td>
                                                 <td class="px-4 py-3">
                                                     <div class="flex items-center space-x-1.5">

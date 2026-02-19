@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-page-banner title="Fatura Detayı" subtitle="{{ $invoice->number }} - {{ $invoice->customer->name }}" />
+    <x-page-banner title="Fatura Detayı" subtitle="{{ $invoice->number }} - {{ $invoice->customer->name ?? '-' }}" />
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,10 +27,10 @@
                                 <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Fatura
                                     Adresi</h4>
                                 <div class="text-sm font-bold text-gray-900 dark:text-white">
-                                    {{ $invoice->customer->name }}
+                                    {{ $invoice->customer->name ?? '-' }}
                                 </div>
                                 <div class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
-                                    {{ $invoice->customer->address }}
+                                    {{ $invoice->customer->address ?? '-' }}
                                 </div>
                             </div>
                             <div class="text-right">
@@ -69,7 +69,7 @@
                                                 </div>
                                                 @if($item->service)
                                                     <div class="text-xs text-gray-500 mt-0.5">Hizmet Kod:
-                                                        {{ $item->service->identifier_code }}
+                                                        {{ $item->service->identifier_code ?? '-' }}
                                                     </div>
                                                 @endif
                                             </td>

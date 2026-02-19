@@ -134,14 +134,17 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-lg font-medium text-gray-900 dark:text-white">
-                                    {{ $service->customer->name }}
+                                    {{ $service->customer->name ?? '-' }}
                                 </p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $service->customer->email }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    {{ $service->customer->email ?? '-' }}</p>
                             </div>
-                            <a href="{{ route('customers.show', $service->customer) }}"
-                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                Müşteriye Git
-                            </a>
+                            @if($service->customer)
+                                <a href="{{ route('customers.show', $service->customer) }}"
+                                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    Müşteriye Git
+                                </a>
+                            @endif
                         </div>
                     </x-card>
 
@@ -151,15 +154,18 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-lg font-medium text-gray-900 dark:text-white">
-                                    {{ $service->provider->name }}
+                                    {{ $service->provider->name ?? '-' }}
                                 </p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $service->provider->website }}
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    {{ $service->provider->website ?? '-' }}
                                 </p>
                             </div>
-                            <a href="{{ route('providers.show', $service->provider) }}"
-                                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                Sağlayıcıya Git
-                            </a>
+                            @if($service->provider)
+                                <a href="{{ route('providers.show', $service->provider) }}"
+                                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    Sağlayıcıya Git
+                                </a>
+                            @endif
                         </div>
                     </x-card>
                 </div>

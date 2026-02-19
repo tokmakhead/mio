@@ -42,13 +42,21 @@
                                             {{ $payment->paid_at->format('d.m.Y') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            <a href="{{ route('invoices.show', $payment->invoice) }}"
-                                                class="text-blue-600 dark:text-blue-400 hover:underline">
-                                                {{ $payment->invoice->number }}
-                                            </a>
+                                            @if($payment->invoice)
+                                                <a href="{{ route('invoices.show', $payment->invoice) }}"
+                                                    class="text-blue-600 dark:text-blue-400 hover:underline">
+                                                    {{ $payment->invoice->number }}
+                                                </a>
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            {{ $payment->customer->name }}
+                                            @if($payment->customer)
+                                                {{ $payment->customer->name }}
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ number_format($payment->amount, 2) }} {{ $payment->currency }}

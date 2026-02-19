@@ -1,6 +1,6 @@
 <x-app-layout>
     <!-- Page Banner -->
-    <x-page-banner title="Teklif Detayı" subtitle="{{ $quote->number }} - {{ $quote->customer->name }}" />
+    <x-page-banner title="Teklif Detayı" subtitle="{{ $quote->number }} - {{ $quote->customer->name ?? '-' }}" />
 
     <!-- Main Content -->
     <div class="py-8">
@@ -110,10 +110,10 @@
                             <div>
                                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Müşteri
                                     Bilgileri</h4>
-                                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $quote->customer->name }}
-                                </p>
-                                <p class="text-sm text-gray-500">{{ $quote->customer->email }}</p>
-                                <p class="text-sm text-gray-500">{{ $quote->customer->phone }}</p>
+                                <p class="text-lg font-bold text-gray-900 dark:text-white">
+                                    {{ $quote->customer->name ?? '-' }}</p>
+                                <p class="text-sm text-gray-500">{{ $quote->customer->email ?? '-' }}</p>
+                                <p class="text-sm text-gray-500">{{ $quote->customer->phone ?? '-' }}</p>
                             </div>
                             <div class="mt-4 md:mt-0 md:text-right">
                                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Teklif
@@ -147,7 +147,8 @@
                                                     {{ $item->description }}
                                                 </div>
                                                 @if($item->service)
-                                                    <div class="text-xs text-primary-600">{{ $item->service->identifier_code }}
+                                                    <div class="text-xs text-primary-600">
+                                                        {{ $item->service->identifier_code ?? '-' }}
                                                     </div>
                                                 @endif
                                             </td>
