@@ -17,6 +17,8 @@ class Invoice extends Model
         'number',
         'status',
         'currency',
+        'discount_type',
+        'discount_rate',
         'discount_total',
         'subtotal',
         'tax_total',
@@ -68,9 +70,16 @@ class Invoice extends Model
 
     public function calculateTotals()
     {
-        $this->subtotal = number_format($this->items->sum('line_subtotal'), 2, '.', '');
-        $this->tax_total = number_format($this->items->sum('line_tax'), 2, '.', '');
-        $this->grand_total = number_format((float) $this->subtotal + (float) $this->tax_total - (float) $this->discount_total, 2, '.', '');
+        $this->subtotal = (float) number_format($this->items->sum('line_subtotal'), 2, '.', '');
+        $this->tax_total = (float) number_format($this->items->sum('line_tax'), 2, '.', '');
+
+        if ($this->discount_type === 'percentage') {
+            $this->discount_total = (float) number_format((float) $this->subtotal * ($this->discount_rate / 100), 2, '.', '');
+        } else {
+            $this->discount_total = (float) number_format((float) $this->discount_rate, 2, '.', '');
+        }
+
+        $this->grand_total = (float) number_format((float) $this->subtotal + (float) $this->tax_total - (float) $this->discount_total, 2, '.', '');
         $this->save();
     }
 
@@ -132,20 +141,72 @@ class Invoice extends Model
      */
     public static function generateNumber()
     {
-        $year = now()->year;
-        $prefix = 'FAT';
+        $settings = \App\Models\SystemSetting::first();
+        $prefix = $settings->invoice_prefix ?? 'FAT';
+        $startNumber = $settings->invoice_start_number ?? 1;
 
-        $lastRecord = self::where('number', 'like', "{$prefix}-{$year}-%")
-            ->orderByRaw('CAST(SUBSTRING_INDEX(number, "-", -1) AS UNSIGNED) DESC')
+        $year = now()->year;
+
+        // Handle dynamic placeholders
+        $prefix = str_replace(['{YEAR}', '{Y}'], [$year, substr($year, -2)], $prefix);
+
+        // If prefix doesn't contain YEAR tag but user wants year-based prefix, they should set it in settings.
+        // Default behavior: just use the prefix as is.
+        // Format: PREFIX-SEQUENCE (e.g. FAT2024-00001) or just PREFIX-SEQUENCE (FAT-00001)
+
+        // To find the last record, we need to match the prefix pattern.
+        // If the prefix changes annually (contains year), the sequence will naturally reset because matching records won't be found.
+
+        $lastRecord = self::where('number', 'like', "{$prefix}%")
+            ->orderByRaw('LENGTH(number) DESC') // Order by length first to handle 1 vs 10 correctly if not padded
+            ->orderBy('number', 'desc')
             ->first();
 
-        $nextSequence = 1;
+        // Extract sequence
         if ($lastRecord) {
-            $parts = explode('-', $lastRecord->number);
-            $lastSequence = (int) end($parts);
-            $nextSequence = $lastSequence + 1;
+            // Assuming format is PREFIX-SEQUENCE or PREFIXSEQUENCE
+            // Remove prefix from the start
+            $sequenceStr = substr($lastRecord->number, strlen($prefix));
+            // Remove any separator if present (e.g. -)
+            // But wait, the separator might be part of the prefix or added automatically?
+            // Let's assume the user puts the separator in the prefix if they want it, OR we enforce a standard.
+            // Current standard was PREFIX-YEAR-SEQUENCE.
+            // New standard: Just use the defined prefix. 
+            // BUT: If the user didn't put a separator in the prefix, `FAT202400001` is hard to parse if no separator.
+            // Let's assume we ALWAYS append a hyphen between prefix and sequence IF the prefix doesn't end with one.
+
+            // Actually, let's keep it simple. We filter by `like prefix%`.
+            // We strip the prefix. The rest is the number.
+
+            // Sanitize separator handling:
+            // If prefix ends with -, leave it. If not, maybe check if the number has -, ...
+            // Best approach: trusting the user set `FAT-{YEAR}-` as prefix.
+            // If they just set `FAT`, we might want `FAT-00001`.
+
+            // Let's check if the last record implies a separator. 
+            // Actually, let's look at `SystemSetting` defaults. 
+            // If I change the logic, I might break existing numbering if they rely on hardcoded `FAT-`.
+            // Existing logic enforced: `FAT-{YEAR}-`.
+
+            // Proposed Logic:
+            // 1. Get Prefix. Replace Tags.
+            // 2. Search `number LIKE 'Prefix%'`.
+            // 3. Last Number - Prefix = Sequence (Int).
+            // 4. Increment.
+
+            $sequencePart = substr($lastRecord->number, strlen($prefix));
+            // Remove leading hyphen if we added one automatically? 
+            // If we assume the stored number is exactly what we generated, 
+            // then we should generate it consistently.
+
+            // Let's assume we simply concatenate Prefix + PaddedSequence.
+
+            $currentSequence = (int) $sequencePart;
+            $nextSequence = $currentSequence + 1;
+        } else {
+            $nextSequence = $startNumber;
         }
 
-        return "{$prefix}-{$year}-" . str_pad($nextSequence, 5, '0', STR_PAD_LEFT);
+        return $prefix . str_pad($nextSequence, 5, '0', STR_PAD_LEFT);
     }
 }

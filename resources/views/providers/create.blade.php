@@ -21,6 +21,42 @@
                         @enderror
                     </div>
 
+                    <!-- Corporate Information -->
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Kurumsal Bilgiler</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Tax Office -->
+                            <div>
+                                <label for="tax_office"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Vergi Dairesi
+                                </label>
+                                <input type="text" name="tax_office" id="tax_office" value="{{ old('tax_office') }}"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+
+                            <!-- Tax Number -->
+                            <div>
+                                <label for="tax_number"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Vergi Numarası
+                                </label>
+                                <input type="text" name="tax_number" id="tax_number" value="{{ old('tax_number') }}"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+
+                            <!-- Address -->
+                            <div class="md:col-span-2">
+                                <label for="address"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Adres
+                                </label>
+                                <textarea name="address" id="address" rows="2"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">{{ old('address') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Types (Checkbox Group) -->
                     <div x-data="{ 
                         selectedTypes: {{ json_encode(old('types', [])) }},
@@ -37,7 +73,7 @@
                         </label>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <!-- Standard Types -->
-                            @foreach(['hosting' => ['label' => 'Hosting', 'color' => 'blue'], 'domain' => ['label' => 'Domain', 'color' => 'green'], 'ssl' => ['label' => 'SSL', 'color' => 'yellow'], 'email' => ['label' => 'E-posta', 'color' => 'purple']] as $type => $config)
+                            @foreach(\App\Models\Provider::getAvailableTypes() as $type => $config)
                                 <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all"
                                     :class="selectedTypes.includes('{{ $type }}') ? 'border-{{ $config['color'] }}-500 bg-{{ $config['color'] }}-50 dark:bg-{{ $config['color'] }}-900/20' : 'border-gray-300 dark:border-gray-600 hover:border-{{ $config['color'] }}-300'">
                                     <input type="checkbox" name="types[]" value="{{ $type }}" @click="toggle('{{ $type }}')"
@@ -46,7 +82,6 @@
                                     <div class="ml-3 flex items-center space-x-2">
                                         <div
                                             class="w-8 h-8 rounded-full bg-{{ $config['color'] }}-100 dark:bg-{{ $config['color'] }}-900 flex items-center justify-center">
-                                            <!-- Icons could be dynamic but keeping it consistent requires mapping or simplified checks -->
                                             @if($type == 'hosting')
                                                 <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none"
                                                     stroke="currentColor" viewBox="0 0 24 24">
@@ -75,6 +110,27 @@
                                                         d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
                                                     </path>
                                                 </svg>
+                                            @elseif($type == 'server')
+                                                <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                                    </path>
+                                                </svg>
+                                            @elseif($type == 'license')
+                                                <svg class="w-5 h-5 text-pink-600 dark:text-pink-400" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z">
+                                                    </path>
+                                                </svg>
+                                            @else
+                                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                                    </path>
+                                                </svg>
                                             @endif
                                         </div>
                                         <span
@@ -82,26 +138,6 @@
                                     </div>
                                 </label>
                             @endforeach
-
-                            <!-- Other -->
-                            <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all"
-                                :class="selectedTypes.includes('other') ? 'border-gray-500 bg-gray-50 dark:bg-gray-900/20' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'">
-                                <input type="checkbox" name="types[]" value="other" @click="toggle('other')"
-                                    :checked="selectedTypes.includes('other')"
-                                    class="w-4 h-4 text-gray-600 rounded focus:ring-gray-500 dark:focus:ring-gray-600 dark:ring-offset-gray-800">
-                                <div class="ml-3 flex items-center space-x-2">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                                            </path>
-                                        </svg>
-                                    </div>
-                                    <span class="font-medium text-gray-900 dark:text-white">Diğer</span>
-                                </div>
-                            </label>
                         </div>
 
                         <!-- Custom Type Input -->

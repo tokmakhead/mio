@@ -24,7 +24,8 @@
                                         class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500">
                                         @foreach($customers as $customer)
                                             <option value="{{ $customer->id }}" {{ old('customer_id', $quote->customer_id) == $customer->id ? 'selected' : '' }}>
-                                                {{ $customer->name }}</option>
+                                                {{ $customer->name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -68,11 +69,31 @@
                                     <span>Ara Toplam</span>
                                     <span x-text="formatMoney(calculateSubtotal())"></span>
                                 </div>
-                                <div class="flex justify-between items-center text-gray-600 dark:text-gray-400">
-                                    <span>İndirim</span>
-                                    <input type="number" name="discount_total" x-model.number="discount" step="0.01"
-                                        min="0"
-                                        class="w-24 py-1 text-right border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md text-xs focus:ring-primary-500 focus:border-primary-500">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600 dark:text-gray-400">İndirim</span>
+                                        <div
+                                            class="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 p-0.5 rounded-lg border border-gray-200 dark:border-gray-700">
+                                            <button type="button" @click="discountType = 'fixed'"
+                                                :class="discountType === 'fixed' ? 'bg-white dark:bg-gray-700 shadow-sm' : ''"
+                                                class="px-2 py-0.5 text-[9px] font-bold rounded-md transition-all">SABİT</button>
+                                            <button type="button" @click="discountType = 'percentage'"
+                                                :class="discountType === 'percentage' ? 'bg-white dark:bg-gray-700 shadow-sm' : ''"
+                                                class="px-2 py-0.5 text-[9px] font-bold rounded-md transition-all">YÜZDE
+                                                %</button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="discount_type" :value="discountType">
+                                    <div class="relative">
+                                        <input type="number" name="discount_rate" x-model.number="discountRate"
+                                            step="0.01" min="0"
+                                            class="w-full py-1.5 text-right border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md text-sm focus:ring-primary-500 focus:border-primary-500 pr-8">
+                                        <div
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400 text-xs">
+                                            <span
+                                                x-text="discountType === 'percentage' ? '%' : (currency === 'TRY' ? '₺' : (currency === 'USD' ? '$' : '€'))"></span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="flex justify-between text-gray-600 dark:text-gray-400">
                                     <span>KDV Toplam</span>
@@ -138,7 +159,11 @@
                                                         <option value="">-- Özel Hizmet --</option>
                                                         @foreach($services as $service)
                                                             <option value="{{ $service->id }}"
-                                                                data-price="{{ $service->price }}">{{ $service->name }}
+                                                                data-price="{{ $service->price }}"
+                                                                data-currency="{{ $service->currency }}"
+                                                                data-vat-rate="{{ $service->vat_rate ?? 20 }}"
+                                                                data-description-template="{{ $service->description_template }}">
+                                                                {{ $service->name }}
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -198,7 +223,8 @@
                         'unit_price' => (float) $i->unit_price,
                         'vat_rate' => $i->vat_rate
                     ])),
-                    discount: {{ (float) $quote->discount_total }},
+                    discountRate: {{ (float) $quote->discount_rate }},
+                    discountType: '{{ $quote->discount_type ?? 'fixed' }}',
                     currency: '{{ $quote->currency }}',
 
                     addItem() {
@@ -211,11 +237,31 @@
                         const option = select.options[select.selectedIndex];
                         this.items[index].service_id = serviceId;
                         this.items[index].unit_price = parseFloat(option.getAttribute('data-price'));
-                        this.items[index].description = option.text;
+                        
+                        const vatRate = parseInt(option.getAttribute('data-vat-rate')) || 20;
+                        const descriptionTemplate = option.getAttribute('data-description-template');
+                        
+                        this.items[index].vat_rate = vatRate;
+
+                        // Use description template if available, otherwise default to service name
+                        if (descriptionTemplate && descriptionTemplate.trim() !== '') {
+                            this.items[index].description = descriptionTemplate;
+                        } else {
+                            this.items[index].description = option.text.trim();
+                        }
                     },
                     calculateSubtotal() { return this.items.reduce((sum, item) => sum + (item.qty * item.unit_price), 0); },
                     calculateTax() { return this.items.reduce((sum, item) => sum + (item.qty * item.unit_price * (item.vat_rate / 100)), 0); },
-                    calculateGrandTotal() { return this.calculateSubtotal() + this.calculateTax() - (this.discount || 0); },
+                    calculateDiscountAmount() {
+                        if (this.discountType === 'percentage') {
+                            return (this.calculateSubtotal() * (this.discountRate / 100));
+                        }
+                        return this.discountRate || 0;
+                    },
+
+                    calculateGrandTotal() {
+                        return this.calculateSubtotal() + this.calculateTax() - this.calculateDiscountAmount();
+                    },
                     formatMoney(amount) {
                         let symbol = '₺';
                         if (this.currency === 'USD') symbol = '$';

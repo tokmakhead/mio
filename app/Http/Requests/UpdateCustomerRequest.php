@@ -32,6 +32,7 @@ class UpdateCustomerRequest extends FormRequest
             'district' => ['nullable', 'string', 'max:255'],
             'postal_code' => ['nullable', 'string', 'max:20'],
             'country' => ['nullable', 'string', 'max:2'],
+            'tax_office' => ['nullable', 'string', 'max:255'],
             'tax_or_identity_number' => [
                 'nullable',
                 'string',
@@ -65,6 +66,7 @@ class UpdateCustomerRequest extends FormRequest
             'district' => 'ilçe',
             'postal_code' => 'posta kodu',
             'country' => 'ülke',
+            'tax_office' => 'vergi dairesi',
             'tax_or_identity_number' => 'vergi/TC no',
             'status' => 'durum',
             'notes' => 'notlar',

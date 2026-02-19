@@ -53,14 +53,27 @@ class ServiceController extends Controller
         $totalServices = Service::count();
         $domainCount = Service::where('type', 'domain')->count();
         $hostingCount = Service::where('type', 'hosting')->count();
-        $mrr = Service::active()->get()->sum('mrr');
+        // MRR Calculation Grouped by Currency
+        $mrrByCurrency = Service::active()->get()
+            ->groupBy('currency')
+            ->map(function ($services) {
+                return $services->sum('mrr');
+            });
+
+        // For backward compatibility with view, we might need a default, 
+        // but best is to pass the collection.
+        // The view uses $mrr scalar. I will pass $mrrByCurrency to view 
+        // and also keeping $mrr as TRY for fallback or sum? No, sum is wrong.
+        // Let's pass $mrrByCurrency.
+
 
         return view('services.index', compact(
             'services',
             'totalServices',
             'domainCount',
             'hostingCount',
-            'mrr'
+            'hostingCount',
+            'mrrByCurrency'
         ));
     }
 

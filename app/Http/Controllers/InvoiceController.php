@@ -33,19 +33,27 @@ class InvoiceController extends Controller
 
         $invoices = $query->latest('issue_date')->paginate(15);
 
-        // KPIs
-        $totalInvoices = Invoice::count();
-        $totalAmount = Invoice::sum('grand_total');
-        $totalCollected = Invoice::sum('paid_amount');
-        $totalPending = $totalAmount - $totalCollected;
+        // KPIs (Separated by Currency)
+        $financeService = new \App\Services\FinanceService();
+        $summary = $financeService->getGlobalSummary();
+        $defaultCurrency = \App\Models\SystemSetting::first()->default_currency ?? 'TRY';
 
-        return view('invoices.index', compact(
-            'invoices',
-            'totalInvoices',
-            'totalAmount',
-            'totalCollected',
-            'totalPending'
-        ));
+        $primary = $summary[$defaultCurrency] ?? ['receivable' => 0, 'payable' => 0, 'net' => 0];
+
+        $totalInvoices = Invoice::count();
+        $totalAmount = $primary['receivable'] + $primary['payable'];
+        $totalCollected = $primary['receivable'];
+        $totalPending = $primary['payable'];
+
+        return view('invoices.index', [
+            'invoices' => $invoices,
+            'totalInvoices' => $totalInvoices,
+            'totalAmount' => $totalAmount,
+            'totalCollected' => $totalCollected,
+            'totalPending' => $totalPending,
+            'summary' => $summary,
+            'defaultCurrency' => $defaultCurrency
+        ]);
     }
 
     public function create()
@@ -63,7 +71,8 @@ class InvoiceController extends Controller
             'issue_date' => 'required|date',
             'due_date' => 'required|date|after_or_equal:issue_date',
             'currency' => 'required|in:TRY,USD,EUR',
-            'discount_total' => 'nullable|numeric|min:0',
+            'discount_type' => 'required|in:fixed,percentage',
+            'discount_rate' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.description' => 'required|string',
@@ -79,12 +88,13 @@ class InvoiceController extends Controller
             $invoice = Invoice::create([
                 'customer_id' => $validated['customer_id'],
                 'number' => $number,
-                'status' => 'draft',
                 'currency' => $validated['currency'],
-                'discount_total' => $validated['discount_total'] ?? 0,
+                'discount_type' => $validated['discount_type'],
+                'discount_rate' => $validated['discount_rate'] ?? 0,
                 'issue_date' => $validated['issue_date'],
                 'due_date' => $validated['due_date'],
                 'notes' => $validated['notes'],
+                'status' => 'draft',
             ]);
 
             foreach ($validated['items'] as $itemData) {
@@ -141,7 +151,8 @@ class InvoiceController extends Controller
             'issue_date' => 'required|date',
             'due_date' => 'required|date|after_or_equal:issue_date',
             'currency' => 'required|in:TRY,USD,EUR',
-            'discount_total' => 'nullable|numeric|min:0',
+            'discount_type' => 'required|in:fixed,percentage',
+            'discount_rate' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.description' => 'required|string',
@@ -154,7 +165,8 @@ class InvoiceController extends Controller
             $invoice->update([
                 'customer_id' => $validated['customer_id'],
                 'currency' => $validated['currency'],
-                'discount_total' => $validated['discount_total'] ?? 0,
+                'discount_type' => $validated['discount_type'],
+                'discount_rate' => $validated['discount_rate'] ?? 0,
                 'issue_date' => $validated['issue_date'],
                 'due_date' => $validated['due_date'],
                 'notes' => $validated['notes'],
@@ -221,8 +233,37 @@ class InvoiceController extends Controller
 
         // Trigger real email
         if ($invoice->customer->email) {
-            \Illuminate\Support\Facades\Mail::to($invoice->customer->email)
-                ->send(new \App\Mail\InvoiceMail($invoice));
+            try {
+                $settings = \App\Models\EmailSetting::first();
+                $useQueue = $settings && $settings->use_queue;
+                $mailable = new \App\Mail\InvoiceMail($invoice);
+
+                if ($useQueue) {
+                    \Illuminate\Support\Facades\Mail::to($invoice->customer->email)->queue($mailable);
+                    // Log 'queued' status manually since Event won't fire 'MessageSent' immediately? 
+                    // Actually MessageSent fires when sent. MessageQueued fires when queued.
+                    // Let's rely on MessageSent for success. 
+                    // But for queue, we might want to know it's queued.
+                    \App\Models\EmailLog::create([
+                        'to' => $invoice->customer->email,
+                        'subject' => 'Fatura #' . $invoice->number, // Approximation
+                        'body' => 'Queued for sending',
+                        'status' => 'queued',
+                        'sent_at' => now(),
+                    ]);
+                } else {
+                    \Illuminate\Support\Facades\Mail::to($invoice->customer->email)->send($mailable);
+                }
+            } catch (\Exception $e) {
+                \App\Models\EmailLog::create([
+                    'to' => $invoice->customer->email,
+                    'subject' => 'Fatura #' . $invoice->number,
+                    'status' => 'failed',
+                    'error_message' => $e->getMessage(),
+                    'sent_at' => now(),
+                ]);
+                return back()->with('error', 'Fatura durumu güncellendi ancak e-posta gönderilemedi: ' . $e->getMessage());
+            }
         }
 
         return back()->with('success', 'Fatura başarıyla gönderildi.');
@@ -249,5 +290,35 @@ class InvoiceController extends Controller
         // Note: PaymentObserver handles updating $invoice->paid_amount and status
 
         return back()->with('success', 'Ödeme başarıyla kaydedildi.');
+    }
+
+    public function bulkExport(Request $request, \App\Services\InvoicePdfService $pdfService)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:invoices,id',
+        ]);
+
+        $invoices = Invoice::whereIn('id', $request->ids)->get();
+
+        if ($invoices->isEmpty()) {
+            return back()->with('error', 'Fatura seçilmedi.');
+        }
+
+        $zip = new \ZipArchive;
+        $fileName = 'faturalar_' . now()->format('Y-m-d_H-i') . '.zip';
+        $path = storage_path('app/public/' . $fileName);
+
+        if ($zip->open($path, \ZipArchive::CREATE) === TRUE) {
+            foreach ($invoices as $invoice) {
+                $data = $pdfService->prepareData($invoice);
+                $pdf = Pdf::loadView('invoices.premium', $data);
+                $content = $pdf->output();
+                $zip->addFromString($invoice->number . '.pdf', $content);
+            }
+            $zip->close();
+        }
+
+        return response()->download($path)->deleteFileAfterSend(true);
     }
 }

@@ -13,6 +13,7 @@
 }
 
 @tailwind base;
+@import 'tom-select/dist/css/tom-select.css';
 @tailwind components;
 @tailwind utilities;
 

@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->string('district')->nullable()->comment('İlçe');
             $table->string('postal_code')->nullable()->comment('Posta kodu');
             $table->string('country')->default('TR')->comment('Ülke');
+            $table->string('tax_office')->nullable()->after('country')->comment('Vergi Dairesi');
             $table->string('tax_or_identity_number')->nullable()->comment('Vergi/TC No');
             $table->json('invoice_address')->nullable()->comment('Fatura adresi (farklıysa)');
             $table->enum('status', ['active', 'inactive'])->default('active')->comment('Durum');

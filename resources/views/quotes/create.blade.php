@@ -19,12 +19,9 @@
                                     <label
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Müşteri
                                         *</label>
-                                    <select name="customer_id" required
-                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500">
-                                        <option value="">Müşteri Seçin</option>
-                                        @foreach($customers as $customer)
-                                            <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>{{ $customer->name }}</option>
-                                        @endforeach
+                                    <select name="customer_id" id="customer_select" required
+                                        placeholder="Müşteri aramaya başlayın..." autocomplete="off">
+                                        <option value="">Müşteri Seçiniz...</option>
                                     </select>
                                     @error('customer_id') <p class="mt-1 text-xs text-danger-600">{{ $message }}</p>
                                     @enderror
@@ -71,11 +68,31 @@
                                     <span>Ara Toplam</span>
                                     <span x-text="formatMoney(calculateSubtotal())"></span>
                                 </div>
-                                <div class="flex justify-between items-center text-gray-600 dark:text-gray-400">
-                                    <span>İndirim</span>
-                                    <input type="number" name="discount_total" x-model.number="discount" step="0.01"
-                                        min="0"
-                                        class="w-24 py-1 text-right border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md text-xs focus:ring-primary-500 focus:border-primary-500">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-600 dark:text-gray-400">İndirim</span>
+                                        <div
+                                            class="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 p-0.5 rounded-lg border border-gray-200 dark:border-gray-700">
+                                            <button type="button" @click="discountType = 'fixed'"
+                                                :class="discountType === 'fixed' ? 'bg-white dark:bg-gray-700 shadow-sm' : ''"
+                                                class="px-2 py-0.5 text-[9px] font-bold rounded-md transition-all">SABİT</button>
+                                            <button type="button" @click="discountType = 'percentage'"
+                                                :class="discountType === 'percentage' ? 'bg-white dark:bg-gray-700 shadow-sm' : ''"
+                                                class="px-2 py-0.5 text-[9px] font-bold rounded-md transition-all">YÜZDE
+                                                %</button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="discount_type" :value="discountType">
+                                    <div class="relative">
+                                        <input type="number" name="discount_rate" x-model.number="discountRate"
+                                            step="0.01" min="0"
+                                            class="w-full py-1.5 text-right border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md text-sm focus:ring-primary-500 focus:border-primary-500 pr-8">
+                                        <div
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400 text-xs">
+                                            <span
+                                                x-text="discountType === 'percentage' ? '%' : (currency === 'TRY' ? '₺' : (currency === 'USD' ? '$' : '€'))"></span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="flex justify-between text-gray-600 dark:text-gray-400">
                                     <span>KDV Toplam</span>
@@ -140,7 +157,12 @@
                                                         <option value="">-- Özel Hizmet --</option>
                                                         @foreach($services as $service)
                                                             <option value="{{ $service->id }}"
-                                                                data-price="{{ $service->price }}">{{ $service->name }}
+                                                                data-price="{{ $service->price }}"
+                                                                data-currency="{{ $service->currency }}"
+                                                                data-vat-rate="{{ $service->vat_rate ?? 20 }}"
+                                                                data-description-template="{{ $service->description_template }}">
+                                                                {{ $service->name }} ({{ $service->price }}
+                                                                {{ $service->currency }})
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -201,6 +223,38 @@
 
     @push('scripts')
         <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (document.getElementById('customer_select')) {
+                    new TomSelect('#customer_select', {
+                        valueField: 'id',
+                        labelField: 'text',
+                        searchField: ['name', 'email', 'tax_number'],
+                        load: function (query, callback) {
+                            var url = '{{ route("customers.api_search") }}?q=' + encodeURIComponent(query);
+                            fetch(url)
+                                .then(response => response.json())
+                                .then(json => {
+                                    callback(json);
+                                }).catch(() => {
+                                    callback();
+                                });
+                        },
+                        placeholder: 'Müşteri adı, e-posta veya vergi no...',
+                        render: {
+                            option: function (item, escape) {
+                                return `<div>
+                                                <span class="font-bold">${escape(item.name)}</span>
+                                                <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
+                                            </div>`;
+                            },
+                            item: function (item, escape) {
+                                return `<div>${escape(item.name)}</div>`;
+                            }
+                        }
+                    });
+                }
+            });
+
             function quoteForm() {
                 return {
                     items: [{
@@ -210,7 +264,8 @@
                         unit_price: 0,
                         vat_rate: 20
                     }],
-                    discount: 0,
+                    discountRate: 0,
+                    discountType: 'fixed',
                     currency: 'TRY',
 
                     addItem() {
@@ -235,12 +290,27 @@
 
                         const select = event.target;
                         const option = select.options[select.selectedIndex];
-                        const price = option.getAttribute('data-price');
-                        const name = option.text;
+                        const price = parseFloat(option.getAttribute('data-price'));
+                        const name = option.text.split('(')[0].trim();
+                        const serviceCurrency = option.getAttribute('data-currency');
+                        const vatRate = parseInt(option.getAttribute('data-vat-rate')) || 20;
+                        const descriptionTemplate = option.getAttribute('data-description-template');
+
+                        // Currency Check
+                        if (serviceCurrency && serviceCurrency !== this.currency) {
+                            alert(`DİKKAT: Seçilen hizmetin para birimi (${serviceCurrency}) ile teklif para birimi (${this.currency}) farklı!\n\nFiyatı (${price}) kur çevrimine göre manuel olarak güncellemeniz önerilir.`);
+                        }
 
                         this.items[index].service_id = serviceId;
-                        this.items[index].unit_price = parseFloat(price);
-                        this.items[index].description = name;
+                        this.items[index].unit_price = price;
+                        this.items[index].vat_rate = vatRate;
+
+                        // Use description template if available, otherwise default to service name
+                        if (descriptionTemplate && descriptionTemplate.trim() !== '') {
+                            this.items[index].description = descriptionTemplate;
+                        } else {
+                            this.items[index].description = name;
+                        }
                     },
 
                     calculateSubtotal() {
@@ -251,8 +321,15 @@
                         return this.items.reduce((sum, item) => sum + (item.qty * item.unit_price * (item.vat_rate / 100)), 0);
                     },
 
+                    calculateDiscountAmount() {
+                        if (this.discountType === 'percentage') {
+                            return (this.calculateSubtotal() * (this.discountRate / 100));
+                        }
+                        return this.discountRate || 0;
+                    },
+
                     calculateGrandTotal() {
-                        return this.calculateSubtotal() + this.calculateTax() - (this.discount || 0);
+                        return this.calculateSubtotal() + this.calculateTax() - this.calculateDiscountAmount();
                     },
 
                     formatMoney(amount) {

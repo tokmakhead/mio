@@ -25,12 +25,22 @@ class QuotePdfService
             'due_date' => $quote->valid_until ? $quote->valid_until->format('d.m.Y') : '-',
         ];
 
+        // Fetch Bank Accounts for the Quote Currency
+        $bankAccounts = \App\Models\BankAccount::active()
+            ->where('currency', $quote->currency)
+            ->get();
+
+        if ($bankAccounts->isEmpty()) {
+            $bankAccounts = \App\Models\BankAccount::active()->where('currency', 'TRY')->get();
+        }
+
         return [
             'quote' => $quote,
             'brandSettings' => $brandSettings,
             'totals' => $totals,
             'dates' => $dates,
-            'qrBase64' => $qrBase64
+            'qrBase64' => $qrBase64,
+            'bankAccounts' => $bankAccounts,
         ];
     }
 

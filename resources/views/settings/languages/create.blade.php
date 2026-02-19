@@ -1,31 +1,32 @@
 <x-app-layout>
-    <x-page-banner title="Yeni Dil Ekle" subtitle="Sisteme yeni bir dil desteği ekleyin." />
-    <x-settings-tabs />
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Yeni Dil Ekle') }}
+        </h2>
+    </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-md mx-auto bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <form action="{{ route('settings.languages.store') }}" method="POST" class="p-6">
-                    @csrf
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <x-settings-tabs />
 
-                    <div>
-                        <x-input-label for="locale" value="Dil Kodu (Örn: tr, fr, de)" />
-                        <x-text-input id="locale" name="locale" type="text" class="mt-1 block w-full uppercase"
-                            maxlength="2" required autofocus />
-                        <x-input-error :messages="$errors->get('locale')" class="mt-2" />
-                        <p class="mt-2 text-xs text-gray-500">2 karakterli ISO kodu giriniz. 'en.json' dosyasından
-                            kopyalanarak oluşturulacaktır.</p>
-                    </div>
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <form action="{{ route('settings.languages.store') }}" method="POST" class="max-w-md">
+                        @csrf
+                        <div class="mb-4">
+                            <x-input-label for="locale" :value="__('Dil Kodu (Örn: fr, es)')" />
+                            <x-text-input id="locale" class="block mt-1 w-full" type="text" name="locale" required
+                                autofocus />
+                            <x-input-error :messages="$errors->get('locale')" class="mt-2" />
+                        </div>
 
-                    <div class="mt-6 flex justify-end">
-                        <x-secondary-button type="button" onclick="history.back()" class="mr-3">
-                            İptal
-                        </x-secondary-button>
-                        <x-primary-button>
-                            Oluştur
-                        </x-primary-button>
-                    </div>
-                </form>
+                        <div class="flex items-center gap-4">
+                            <x-primary-button>{{ __('Oluştur') }}</x-primary-button>
+                            <a href="{{ route('settings.languages.index') }}"
+                                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">{{ __('İptal') }}</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

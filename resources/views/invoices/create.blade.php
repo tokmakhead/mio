@@ -18,12 +18,9 @@
                                     <label
                                         class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Müşteri
                                         Seçin *</label>
-                                    <select name="customer_id" required
-                                        class="w-full rounded-xl border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-primary-500 focus:border-primary-500">
-                                        <option value="">Seçiniz...</option>
-                                        @foreach($customers as $customer)
-                                            <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>{{ $customer->name }}</option>
-                                        @endforeach
+                                    <select name="customer_id" id="customer_select" required
+                                        placeholder="Müşteri aramaya başlayın..." autocomplete="off">
+                                        <option value="">Müşteri Seçiniz...</option>
                                     </select>
                                     @error('customer_id') <p class="mt-1 text-xs text-danger-600">{{ $message }}</p>
                                     @enderror
@@ -65,12 +62,31 @@
                                 </div>
 
                                 <div>
-                                    <label
-                                        class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">İndirim
-                                        Tutarı</label>
-                                    <input type="number" name="discount_total" x-model.number="discount" step="0.01"
-                                        min="0"
-                                        class="w-full rounded-xl border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm">
+                                    <div class="flex items-center justify-between mb-1.5">
+                                        <label
+                                            class="block text-xs font-bold text-gray-400 uppercase tracking-widest">İndirim</label>
+                                        <div
+                                            class="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 p-0.5 rounded-lg border border-gray-200 dark:border-gray-700">
+                                            <button type="button" @click="discountType = 'fixed'"
+                                                :class="discountType === 'fixed' ? 'bg-white dark:bg-gray-700 shadow-sm' : ''"
+                                                class="px-2 py-0.5 text-[10px] font-bold rounded-md transition-all">SABİT</button>
+                                            <button type="button" @click="discountType = 'percentage'"
+                                                :class="discountType === 'percentage' ? 'bg-white dark:bg-gray-700 shadow-sm' : ''"
+                                                class="px-2 py-0.5 text-[10px] font-bold rounded-md transition-all">YÜZDE
+                                                %</button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="discount_type" :value="discountType">
+                                    <div class="relative">
+                                        <input type="number" name="discount_rate" x-model.number="discountRate"
+                                            step="0.01" min="0"
+                                            class="w-full rounded-xl border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm pr-10">
+                                        <div
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+                                            <span
+                                                x-text="discountType === 'percentage' ? '%' : (currency === 'TRY' ? '₺' : (currency === 'USD' ? '$' : '€'))"></span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -98,9 +114,9 @@
                                     <span x-text="formatMoney(calculateTax())"></span>
                                 </div>
                                 <div class="flex justify-between text-sm text-danger-600 font-semibold"
-                                    x-show="discount > 0">
+                                    x-show="calculateDiscountAmount() > 0">
                                     <span>İndirim</span>
-                                    <span x-text="'-' + formatMoney(discount)"></span>
+                                    <span x-text="'-' + formatMoney(calculateDiscountAmount())"></span>
                                 </div>
                                 <div
                                     class="pt-4 border-t border-primary-100 dark:border-primary-900 flex justify-between">
@@ -164,7 +180,12 @@
                                                         <option value="">-- Özel Giriş --</option>
                                                         @foreach($services as $service)
                                                             <option value="{{ $service->id }}"
-                                                                data-price="{{ $service->price }}">{{ $service->name }}
+                                                                data-price="{{ $service->price }}"
+                                                                data-currency="{{ $service->currency }}"
+                                                                data-vat-rate="{{ $service->vat_rate ?? 20 }}"
+                                                                data-description-template="{{ $service->description_template }}">
+                                                                {{ $service->name }} ({{ $service->price }}
+                                                                {{ $service->currency }})
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -237,11 +258,44 @@
 
     @push('scripts')
         <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (document.getElementById('customer_select')) {
+                    new TomSelect('#customer_select', {
+                        valueField: 'id',
+                        labelField: 'text',
+                        searchField: ['name', 'email', 'tax_number'],
+                        load: function (query, callback) {
+                            var url = '{{ route("customers.api_search") }}?q=' + encodeURIComponent(query);
+                            fetch(url)
+                                .then(response => response.json())
+                                .then(json => {
+                                    callback(json);
+                                }).catch(() => {
+                                    callback();
+                                });
+                        },
+                        placeholder: 'Müşteri adı, e-posta veya vergi no...',
+                        render: {
+                            option: function (item, escape) {
+                                return `<div>
+                                                    <span class="font-bold">${escape(item.name)}</span>
+                                                    <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
+                                                </div>`;
+                            },
+                            item: function (item, escape) {
+                                return `<div>${escape(item.name)}</div>`;
+                            }
+                        }
+                    });
+                }
+            });
+
             function invoiceForm() {
                 return {
                     items: [{ service_id: '', description: '', qty: 1, unit_price: 0, vat_rate: 20 }],
                     currency: 'TRY',
-                    discount: 0,
+                    discountRate: 0,
+                    discountType: 'fixed',
 
                     addItem() {
                         this.items.push({ service_id: '', description: '', qty: 1, unit_price: 0, vat_rate: 20 });
@@ -251,12 +305,35 @@
                         if (!serviceId) return;
                         const select = event.target;
                         const option = select.options[select.selectedIndex];
-                        this.items[index].unit_price = parseFloat(option.getAttribute('data-price'));
-                        this.items[index].description = option.text;
+                        let price = parseFloat(option.getAttribute('data-price'));
+                        const serviceCurrency = option.getAttribute('data-currency');
+                        const vatRate = parseInt(option.getAttribute('data-vat-rate')) || 20;
+                        const descriptionTemplate = option.getAttribute('data-description-template');
+
+                        // Currency Check
+                        if (serviceCurrency && serviceCurrency !== this.currency) {
+                            alert(`DİKKAT: Seçilen hizmetin para birimi (${serviceCurrency}) ile fatura para birimi (${this.currency}) farklı!\n\nFiyatı (${price}) kur çevrimine göre manuel olarak güncellemeniz önerilir.`);
+                        }
+
+                        this.items[index].unit_price = price;
+                        this.items[index].vat_rate = vatRate;
+
+                        // Use description template if available, otherwise default to service name
+                        if (descriptionTemplate && descriptionTemplate.trim() !== '') {
+                            this.items[index].description = descriptionTemplate;
+                        } else {
+                            this.items[index].description = option.text.split('(')[0].trim();
+                        }
                     },
                     calculateSubtotal() { return this.items.reduce((sum, item) => sum + (item.qty * item.unit_price), 0); },
                     calculateTax() { return this.items.reduce((sum, item) => sum + (item.qty * item.unit_price * (item.vat_rate / 100)), 0); },
-                    calculateGrandTotal() { return this.calculateSubtotal() + this.calculateTax() - this.discount; },
+                    calculateDiscountAmount() {
+                        if (this.discountType === 'percentage') {
+                            return (this.calculateSubtotal() * (this.discountRate / 100));
+                        }
+                        return this.discountRate || 0;
+                    },
+                    calculateGrandTotal() { return this.calculateSubtotal() + this.calculateTax() - this.calculateDiscountAmount(); },
                     formatMoney(amount) {
                         let symbol = '₺';
                         if (this.currency === 'USD') symbol = '$';

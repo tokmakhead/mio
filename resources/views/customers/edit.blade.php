@@ -120,7 +120,16 @@
                             </div>
 
                             <!-- Tax/ID Number -->
-                            <div class="md:col-span-2">
+                            <div>
+                                <label for="tax_office"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vergi
+                                    Dairesi</label>
+                                <input type="text" name="tax_office" id="tax_office"
+                                    value="{{ old('tax_office', $customer->tax_office) }}"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+
+                            <div>
                                 <label for="tax_or_identity_number"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vergi / TC
                                     Kimlik No</label>

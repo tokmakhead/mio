@@ -139,6 +139,27 @@
                                         <x-text-input id="from_name" name="from_name" type="text"
                                             class="mt-1 block w-full" :value="old('from_name', $settings->from_name)" />
                                     </div>
+
+                                    <div class="col-span-6">
+                                        <div class="border-t border-gray-100 dark:border-gray-700 my-4"></div>
+                                    </div>
+
+                                    <div class="col-span-6 sm:col-span-6 flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <input id="use_queue" name="use_queue" type="checkbox" value="1" {{ $settings->use_queue ? 'checked' : '' }}
+                                                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                            <label for="use_queue"
+                                                class="ml-2 block text-sm text-gray-900 dark:text-gray-100">
+                                                E-postaları Arka Planda Gönder (Queue)
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <a href="{{ route('smtp.logs') }}"
+                                                class="text-sm text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold">
+                                                Gönderim Geçmişini Görüntüle &rarr;
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 text-right sm:px-6">

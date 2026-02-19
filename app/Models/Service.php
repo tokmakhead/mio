@@ -24,7 +24,10 @@ class Service extends Model
         'price',
         'buying_price',
         'start_date',
-        'end_date',
+        'expiry_date',
+        'buying_currency',
+        'vat_rate',
+        'description_template',
     ];
 
     protected $casts = [

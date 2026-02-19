@@ -1,8 +1,14 @@
 <x-app-layout>
     <!-- Page Banner -->
     <x-page-banner title="Hizmet Yönetimi"
-        subtitle="Aktif hizmetlerinizi, domain ve hosting sürelerini buradan takip edebilirsiniz."
-        metric="{{ number_format($mrr, 2) }}₺ MRR" />
+        subtitle="Aktif hizmetlerinizi, domain ve hosting sürelerini buradan takip edebilirsiniz.">
+        <x-slot name="metric">
+            @foreach($mrrByCurrency as $currency => $amount)
+                <span class="mr-2">{{ number_format($amount, 2) }} {{ $currency }}</span>
+            @endforeach
+            MRR
+        </x-slot>
+    </x-page-banner>
 
     <!-- Main Content -->
     <div class="py-8">
@@ -18,7 +24,10 @@
                 <x-kpi-card title="Hosting Sayısı" value="{{ $hostingCount }}" tone="warning"
                     icon='<svg class="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>' />
 
-                <x-kpi-card title="Aylık Gelir (MRR)" value="{{ number_format($mrr, 2) }}₺" tone="danger"
+                <x-kpi-card title="Aylık Gelir (MRR)" 
+                    value="{{ $mrrByCurrency['TRY'] ?? 0 > 0 ? number_format($mrrByCurrency['TRY'], 2) . ' ₺' : '' }}" 
+                    tone="danger"
+                    sub-value="{{ $mrrByCurrency->except('TRY')->map(fn($v, $k) => number_format($v, 2) . ' ' . $k)->join(' | ') }}"
                     icon='<svg class="w-6 h-6 text-danger-600 dark:text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
             </div>
 
@@ -107,6 +116,9 @@
                                         Hizmet</th>
                                     <th
                                         class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        Net Kâr</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                         Kod</th>
                                     <th
                                         class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -152,6 +164,36 @@
                                                         {{ number_format($service->price, 2) }} {{ $service->currency }}</div>
                                                 </div>
                                             </div>
+                                        </td>
+
+                                        <!-- Net Profit -->
+                                        <td class="px-4 py-4">
+                                            @if($service->buying_price)
+                                                <div class="flex flex-col">
+                                                    @php
+                                                        $isSameCurrency = $service->currency === ($service->buying_currency ?? 'TRY');
+                                                        $profit = $isSameCurrency ? $service->price - $service->buying_price : null;
+                                                    @endphp
+
+                                                    @if($isSameCurrency)
+                                                        <span class="text-sm font-medium {{ $profit >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400' }}">
+                                                            {{ number_format($profit, 2) }} {{ $service->currency }}
+                                                        </span>
+                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                            (Maliyet: {{ number_format($service->buying_price, 2) }} {{ $service->buying_currency ?? 'TRY' }})
+                                                        </span>
+                                                    @else
+                                                        <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            {{ number_format($service->price, 2) }} {{ $service->currency }}
+                                                        </span>
+                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                            - {{ number_format($service->buying_price, 2) }} {{ $service->buying_currency ?? 'TRY' }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
+                                            @endif
                                         </td>
 
                                         <!-- Identifier Code Pill -->

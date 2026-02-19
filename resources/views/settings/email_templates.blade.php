@@ -74,13 +74,30 @@
                                     </div>
                                     <div>
                                         <div class="flex justify-between items-center mb-1">
-                                            <x-input-label for="html_body_{{$template->id}}" value="İçerik (HTML)"
+                                            <x-input-label for="html_body_{{$template->id}}" value="İçerik (Görsel Editör)"
                                                 class="text-xs uppercase" />
-                                            <button type="button"
-                                                class="text-[10px] text-primary-600 font-bold hover:underline">DEĞİŞKENLER</button>
+                                            <div class="group relative">
+                                                <button type="button"
+                                                    class="text-[10px] text-primary-600 font-bold hover:underline">
+                                                    DEĞİŞKENLER
+                                                </button>
+                                                <div
+                                                    class="hidden group-hover:block absolute right-0 bottom-full mb-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-3 z-50">
+                                                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">
+                                                        Kullanılabilir Değişkenler</p>
+                                                    <ul
+                                                        class="text-[11px] space-y-1 font-mono text-gray-600 dark:text-gray-400">
+                                                        <li>{{ '{{customer_name}}' }}</li>
+                                                        <li>{{ '{{invoice_number}}' }}</li>
+                                                        <li>{{ '{{quote_number}}' }}</li>
+                                                        <li>{{ '{{service_name}}' }}</li>
+                                                        <li>{{ '{{expiry_date}}' }}</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <textarea id="html_body_{{$template->id}}" name="html_body" rows="6"
-                                            class="block w-full text-xs font-mono bg-gray-50/50 border-gray-300 dark:border-gray-700 dark:bg-gray-900/50 dark:text-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">{{ $template->html_body }}</textarea>
+                                        <textarea id="html_body_{{$template->id}}" name="html_body" rows="10"
+                                            class="email-editor block w-full text-sm bg-gray-50/50 border-gray-300 dark:border-gray-700 dark:bg-gray-900/50 dark:text-gray-300 rounded-lg">{{ $template->html_body }}</textarea>
                                     </div>
                                     <div class="flex items-center justify-between pt-2">
                                         <label class="relative inline-flex items-center cursor-pointer">
@@ -218,7 +235,19 @@
     </div>
 
     @push('scripts')
+        <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
         <script>
+            tinymce.init({
+                selector: '.email-editor',
+                height: 400,
+                menubar: false,
+                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                content_style: 'body { font-family: Outfit, sans-serif; font-size: 14px; }',
+                skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
+                content_css: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default',
+            });
+
             function previewTemplate(id) {
                 const frame = document.getElementById('previewFrame');
                 const content = document.getElementById('html_body_' + id).value;
@@ -226,36 +255,36 @@
 
                 // Professional email wrapper for preview
                 const styledContent = `
-                        <html>
-                            <head>
-                                <style>
-                                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; padding: 40px 20px; margin: 0; }
-                                    .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eef2f5; }
-                                    .email-header { background: #9f1239; padding: 30px; text-align: center; color: white; }
-                                    .email-body { padding: 40px; line-height: 1.6; color: #334455; font-size: 15px; }
-                                    .email-footer { background: #f8fafc; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #edf2f7; }
-                                    .email-logo { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
-                                    h1, h2, h3 { color: #1e293b; margin-top: 0; }
-                                    p { margin-bottom: 20px; }
-                                    a { color: #9f1239; text-decoration: underline; }
-                                </style>
-                            </head>
-                            <body>
-                                <div class="email-container">
-                                    <div class="email-header">
-                                        <div class="email-logo">MIONEX</div>
-                                    </div>
-                                    <div class="email-body">
-                                        ${content.replace(/\n/g, '<br>')}
-                                    </div>
-                                    <div class="email-footer">
-                                        Bu bir sistem bildirimidir. Lütfen bu e-postayı yanıtlamayın.<br>
-                                        &copy; {{ date('Y') }} MIONEX. Tüm hakları saklıdır.
-                                    </div>
-                                </div>
-                            </body>
-                        </html>
-                    `;
+                                <html>
+                                    <head>
+                                        <style>
+                                            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; padding: 40px 20px; margin: 0; }
+                                            .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eef2f5; }
+                                            .email-header { background: #9f1239; padding: 30px; text-align: center; color: white; }
+                                            .email-body { padding: 40px; line-height: 1.6; color: #334455; font-size: 15px; }
+                                            .email-footer { background: #f8fafc; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #edf2f7; }
+                                            .email-logo { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+                                            h1, h2, h3 { color: #1e293b; margin-top: 0; }
+                                            p { margin-bottom: 20px; }
+                                            a { color: #9f1239; text-decoration: underline; }
+                                        </style>
+                                    </head>
+                                    <body>
+                                        <div class="email-container">
+                                            <div class="email-header">
+                                                <div class="email-logo">MIONEX</div>
+                                            </div>
+                                            <div class="email-body">
+                                                ${content.replace(/\n/g, '<br>')}
+                                            </div>
+                                            <div class="email-footer">
+                                                Bu bir sistem bildirimidir. Lütfen bu e-postayı yanıtlamayın.<br>
+                                                &copy; {{ date('Y') }} MIONEX. Tüm hakları saklıdır.
+                                            </div>
+                                        </div>
+                                    </body>
+                                </html>
+                            `;
 
                 const doc = frame.contentWindow.document;
                 doc.open();

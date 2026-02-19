@@ -81,6 +81,30 @@ class ManualTestSeeder extends Seeder
             'demo_readonly' => true,
         ]);
 
+        // Create Test Customer & Provider
+        $customer = Customer::create(['name' => 'Renewal Test Customer', 'email' => 'renewal@test.com', 'status' => 'active']);
+        $provider = Provider::create(['name' => 'Renewal Test Provider', 'types' => ['hosting']]);
+
+        // Create a service expiring in 5 days for renewal testing
+        $expiringService = Service::create([
+            'customer_id' => $customer->id,
+            'provider_id' => $provider->id,
+            'type' => 'hosting',
+            'name' => 'Renewal Test Hosting Plan',
+            'identifier_code' => 'TEST-RENEW-001',
+            'cycle' => 'yearly',
+            'payment_type' => 'upfront',
+            'status' => 'active',
+            'currency' => 'TRY',
+            'price' => 1200.00,
+            'buying_price' => 800.00,
+            'buying_currency' => 'TRY',
+            'start_date' => now()->subYear()->addDays(5),
+            'end_date' => now()->addDays(5), // Expiring in 5 days
+        ]);
+
+        $this->command->info("Created expiring service: #{$expiringService->id} {$expiringService->name}");
+
         $this->command->info('✓ System cleared and ready for manual testing!');
     }
 }

@@ -60,26 +60,32 @@ class ReconciliationController extends Controller
 
         $consistent = $invoices->diff($errors);
 
-        // 2. Customer Balances
-        $customerQuery = Customer::with(['ledgerEntries', 'invoices']);
+        // 2. Customer Balances (Refactored for performance)
+        $customerQuery = Customer::query();
 
         if ($request->filled('search')) {
             $customerQuery->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $customers = $customerQuery->get()
-            ->map(function ($customer) {
-                $debits = $customer->ledgerEntries->where('type', 'debit')->sum('amount');
-                $credits = $customer->ledgerEntries->where('type', 'credit')->sum('amount');
-                $calculatedBalance = $debits - $credits;
+        $allCustomers = $customerQuery->get();
+        $customerIds = $allCustomers->pluck('id')->toArray();
 
-                return [
-                    'customer' => $customer,
-                    'debit' => $debits,
-                    'credit' => $credits,
-                    'balance' => $calculatedBalance,
-                ];
-            });
+        $financeService = new \App\Services\FinanceService();
+        $balances = $financeService->getCustomersBalances($customerIds);
+
+        $customers = $allCustomers->map(function ($customer) use ($balances) {
+            $customerBalances = $balances->get($customer->id, collect());
+
+            // For reconciliation, we might want a primary balance (TRY) or sum of all
+            // But let's stay consistent with the single 'balance' column for now
+            $balance = $customerBalances->get('TRY', 0);
+
+            return [
+                'customer' => $customer,
+                'balances' => $customerBalances, // All currencies
+                'balance' => $balance, // Legacy compat
+            ];
+        });
 
         // Filter customers by balance status if requested
         if ($request->filled('balance_status')) {

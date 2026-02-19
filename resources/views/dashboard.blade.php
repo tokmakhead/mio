@@ -4,9 +4,13 @@
     @endpush
 
     <!-- Page Banner -->
+    @php
+        $financeService = new \App\Services\FinanceService();
+    @endphp
     <x-page-banner title="Hoş geldin, {{ Auth::user()->name }}"
         subtitle="Operasyonel özet ve performans verileri | {{ now()->translatedFormat('l, d F Y') }}"
-        metric="{{ number_format($mrr, 0) }}₺" label="Toplam MRR"
+        metric="{{ $financeService->formatCurrency($mrr, $defaultCurrency) }}"
+        label="Toplam MRR ({{ $defaultCurrency }})"
         tooltip="Aktif hizmetlerinizden elde ettiğiniz aylık tahmini gelirdir." />
 
     <!-- Main Content -->
@@ -18,12 +22,12 @@
                 <div class="space-y-4 mb-8">
                     @foreach($announcements as $announcement)
                         <div class="rounded-md p-4 border-l-4 shadow-sm
-                                                    @if($announcement['type'] == 'info') bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500
-                                                    @elseif($announcement['type'] == 'success') bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-500
-                                                    @elseif($announcement['type'] == 'warning') bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500
-                                                    @elseif($announcement['type'] == 'danger') bg-red-50 border-red-400 dark:bg-red-900/20 dark:border-red-500
-                                                    @else bg-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-500 @endif
-                                                ">
+                                                                            @if($announcement['type'] == 'info') bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500
+                                                                            @elseif($announcement['type'] == 'success') bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-500
+                                                                            @elseif($announcement['type'] == 'warning') bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500
+                                                                            @elseif($announcement['type'] == 'danger') bg-red-50 border-red-400 dark:bg-red-900/20 dark:border-red-500
+                                                                            @else bg-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-500 @endif
+                                                                        ">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     @if($announcement['type'] == 'info')
@@ -58,21 +62,21 @@
                                 </div>
                                 <div class="ml-3">
                                     <h3 class="text-sm font-medium 
-                                                                @if($announcement['type'] == 'info') text-blue-800 dark:text-blue-200
-                                                                @elseif($announcement['type'] == 'success') text-green-800 dark:text-green-200
-                                                                @elseif($announcement['type'] == 'warning') text-yellow-800 dark:text-yellow-200
-                                                                @elseif($announcement['type'] == 'danger') text-red-800 dark:text-red-200
-                                                                @else text-gray-800 dark:text-gray-200 @endif
-                                                            ">
+                                                                                        @if($announcement['type'] == 'info') text-blue-800 dark:text-blue-200
+                                                                                        @elseif($announcement['type'] == 'success') text-green-800 dark:text-green-200
+                                                                                        @elseif($announcement['type'] == 'warning') text-yellow-800 dark:text-yellow-200
+                                                                                        @elseif($announcement['type'] == 'danger') text-red-800 dark:text-red-200
+                                                                                        @else text-gray-800 dark:text-gray-200 @endif
+                                                                                    ">
                                         {{ $announcement['title'] }}
                                     </h3>
                                     <div class="mt-2 text-sm 
-                                                                @if($announcement['type'] == 'info') text-blue-700 dark:text-blue-300
-                                                                @elseif($announcement['type'] == 'success') text-green-700 dark:text-green-300
-                                                                @elseif($announcement['type'] == 'warning') text-yellow-700 dark:text-yellow-300
-                                                                @elseif($announcement['type'] == 'danger') text-red-700 dark:text-red-300
-                                                                @else text-gray-700 dark:text-gray-300 @endif
-                                                            ">
+                                                                                        @if($announcement['type'] == 'info') text-blue-700 dark:text-blue-300
+                                                                                        @elseif($announcement['type'] == 'success') text-green-700 dark:text-green-300
+                                                                                        @elseif($announcement['type'] == 'warning') text-yellow-700 dark:text-yellow-300
+                                                                                        @elseif($announcement['type'] == 'danger') text-red-700 dark:text-red-300
+                                                                                        @else text-gray-700 dark:text-gray-300 @endif
+                                                                                    ">
                                         <p>{{ $announcement['message'] }}</p>
                                     </div>
                                 </div>
@@ -90,7 +94,8 @@
                 <x-kpi-card title="Aktif Hizmet" value="{{ $activeServicesCount }}" tone="success"
                     icon='<svg class="w-6 h-6 text-success-600 dark:text-success-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>' />
 
-                <x-kpi-card title="Bu Ay Gelir" value="{{ number_format($thisMonthRevenue, 2) }}₺" tone="warning"
+                <x-kpi-card title="Bu Ay Gelir ({{ $defaultCurrency }})"
+                    value="{{ $financeService->formatCurrency($thisMonthRevenue, $defaultCurrency) }}" tone="warning"
                     icon='<svg class="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
 
                 <x-kpi-card title="Vadesi Geçen" value="{{ $overdueInvoices }}" tone="danger"
@@ -127,82 +132,152 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 <div
                     class="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-xl border border-gray-100 dark:border-gray-700/50">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-widest mb-1">Toplam Kesilen</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ number_format($billedTotal, 2) }}₺</p>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-widest mb-1">Toplam Kesilen
+                        ({{ $defaultCurrency }})</p>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white">
+                        {{ $financeService->formatCurrency($billedTotal, $defaultCurrency) }}
+                    </p>
                 </div>
                 <div
                     class="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-xl border border-gray-100 dark:border-gray-700/50">
                     <p class="text-xs font-medium text-green-600 dark:text-green-500 uppercase tracking-widest mb-1">
-                        Toplam Tahsilat</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ number_format($collectedTotal, 2) }}₺
+                        Toplam Tahsilat ({{ $defaultCurrency }})</p>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white">
+                        {{ $financeService->formatCurrency($collectedTotal, $defaultCurrency) }}
                     </p>
                 </div>
                 <div
                     class="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-xl border border-gray-100 dark:border-gray-700/50">
                     <p class="text-xs font-medium text-rose-600 dark:text-rose-500 uppercase tracking-widest mb-1">
-                        Bekleyen Tahsilat</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ number_format($pendingTotal, 2) }}₺
+                        Vadesi Geçmiş ({{ $defaultCurrency }})</p>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white">
+                        {{ $financeService->formatCurrency($overdueTotal, $defaultCurrency) }}
                     </p>
                 </div>
                 <div
                     class="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-xl border border-gray-100 dark:border-gray-700/50">
                     <p
                         class="text-xs font-medium text-primary-600 dark:text-primary-500 uppercase tracking-widest mb-1">
-                        Ortalama Fatura</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">{{ number_format($avgInvoice, 2) }}₺</p>
+                        Ortalama Fatura ({{ $defaultCurrency }})</p>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white">
+                        {{ $financeService->formatCurrency($avgInvoice, $defaultCurrency) }}
+                    </p>
                 </div>
             </div>
 
+            <!-- Multi-Currency Breakdown Hub -->
+            @if(count($currencySummary) > 1)
+                <div class="mb-10">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Döviz Bazlı Finansal Özet</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach($currencySummary as $curr => $data)
+                            @if($curr != $defaultCurrency)
+                                <div
+                                    class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span
+                                            class="px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs font-bold">{{ $curr }}</span>
+                                        <span class="text-gray-400 text-xs">Ay:
+                                            {{ $financeService->formatCurrency($revenueMetrics[$curr] ?? 0, $curr) }}</span>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm text-gray-500">Tahsilat:</span>
+                                            <span
+                                                class="text-sm font-bold text-green-600">{{ $financeService->formatCurrency($data['receivable'], $curr) }}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm text-gray-500">Borç/Kalan:</span>
+                                            <span
+                                                class="text-sm font-bold text-rose-600">{{ $financeService->formatCurrency($data['payable'], $curr) }}</span>
+                                        </div>
+                                        <div
+                                            class="pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                                            <span class="text-xs font-medium text-gray-400">MRR:</span>
+                                            <span
+                                                class="text-sm font-bold text-gray-900 dark:text-white">{{ $financeService->formatCurrency($mrrMetrics[$curr] ?? 0, $curr) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <!-- Detailed Tables Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
                 <!-- Expiring Services -->
                 <x-card padding="p-0">
                     <div class="p-6 border-b border-gray-100 dark:border-gray-700/50 flex justify-between items-center">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Vadesi Yaklaşan Hizmetler</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Vadesi Yaklaşanlar</h3>
                         <a href="{{ route('services.index', ['expiring_soon' => 1]) }}"
-                            class="text-sm text-primary-600 hover:underline">Tümünü Gör</a>
+                            class="text-sm text-primary-600 hover:underline">Tümü</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
-                            <thead class="bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 font-medium">
-                                <tr>
-                                    <th class="px-6 py-3">Hizmet / Müşteri</th>
-                                    <th class="px-6 py-3">Bitiş Tarihi</th>
-                                    <th class="px-6 py-3 text-right">Durum</th>
-                                </tr>
-                            </thead>
                             <tbody class="divide-y divide-gray-100 dark:divide-gray-700/40">
                                 @forelse($expiringServices as $service)
                                     <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
                                         <td class="px-6 py-4">
-                                            <div class="font-medium text-gray-900 dark:text-white">{{ $service->name }}
+                                            <div class="font-medium text-gray-900 dark:text-white">
+                                                {{ Str::limit($service->name, 20) }}
                                             </div>
                                             <div class="text-gray-500 text-xs">{{ $service->customer->name }}</div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-gray-900 dark:text-white">
-                                                {{ $service->end_date->format('d.m.Y') }}
-                                            </div>
-                                            <div class="text-gray-500 text-xs">{{ $service->days_until_expiry }} gün kaldı
-                                            </div>
                                         </td>
                                         <td class="px-6 py-4 text-right">
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                                                                                            @if($service->days_until_expiry < 30) bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400
-                                                                                            @elseif($service->days_until_expiry < 60) bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400
-                                                                                            @else bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400 @endif">
-                                                {{ $service->days_until_expiry < 30 ? 'Acil' : ($service->days_until_expiry < 60 ? 'Yarım' : 'Normal') }}
+                                                                                                        @if($service->days_until_expiry < 30) bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400
+                                                                                                        @elseif($service->days_until_expiry < 60) bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400
+                                                                                                        @else bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400 @endif">
+                                                {{ $service->days_until_expiry }} gün
                                             </span>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="px-6 py-8 text-center text-gray-500">Kayıt bulunamadı.</td>
+                                        <td colspan="2" class="px-6 py-8 text-center text-gray-500">Kayıt bulunamadı.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+                </x-card>
+
+                <!-- Top Customers -->
+                <x-card padding="p-0">
+                    <div class="p-6 border-b border-gray-100 dark:border-gray-700/50 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">En Değerli Müşteriler</h3>
+                        <span class="text-xs text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Top 5
+                            ({{ $defaultCurrency }})</span>
+                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-4">
+                            @forelse($topCustomers as $index => $customer)
+                                <li class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <span
+                                            class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs mr-3">
+                                            {{ $index + 1 }}
+                                        </span>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                                {{ $customer->customer->company_name ?? $customer->customer->name }}
+                                            </p>
+                                            <p class="text-xs text-gray-500">{{ $customer->customer->name }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white">
+                                            {{ $financeService->formatCurrency($customer->total_paid, $defaultCurrency) }}
+                                        </p>
+                                    </div>
+                                </li>
+                            @empty
+                                <li class="text-center text-gray-500 text-sm py-4">Henüz veri yok.</li>
+                            @endforelse
+                        </ul>
                     </div>
                 </x-card>
 
@@ -224,21 +299,22 @@
                                             @endif
                                             <div class="relative flex space-x-3">
                                                 <div>
-                                                    <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-800 
-                                                                                                    @php
-                                                                                                        $color = 'bg-gray-400';
-                                                                                                        if (str_contains($activity->action, 'created'))
-                                                                                                            $color = 'bg-green-500';
-                                                                                                        if (str_contains($activity->action, 'updated'))
-                                                                                                            $color = 'bg-blue-500';
-                                                                                                        if (str_contains($activity->action, 'deleted'))
-                                                                                                            $color = 'bg-red-500';
-                                                                                                        if (str_contains($activity->action, 'sent'))
-                                                                                                            $color = 'bg-primary-500';
-                                                                                                        if (str_contains($activity->action, 'login'))
-                                                                                                            $color = 'bg-primary-500';
-                                                                                                    @endphp
-                                                                                                    {{ $color }}">
+                                                    <span
+                                                        class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-800 
+                                                                                                                @php
+                                                                                                                    $color = 'bg-gray-400';
+                                                                                                                    if (str_contains($activity->action, 'created'))
+                                                                                                                        $color = 'bg-green-500';
+                                                                                                                    if (str_contains($activity->action, 'updated'))
+                                                                                                                        $color = 'bg-blue-500';
+                                                                                                                    if (str_contains($activity->action, 'deleted'))
+                                                                                                                        $color = 'bg-red-500';
+                                                                                                                    if (str_contains($activity->action, 'sent'))
+                                                                                                                        $color = 'bg-primary-500';
+                                                                                                                    if (str_contains($activity->action, 'login'))
+                                                                                                                        $color = 'bg-primary-500';
+                                                                                                                @endphp
+                                                                                                                {{ $color }}">
                                                         @php
                                                             $icon = 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z';
                                                             if (str_contains($activity->action, 'invoice'))
@@ -257,22 +333,16 @@
                                                     <div>
                                                         <p class="text-sm text-gray-600 dark:text-gray-400">
                                                             <strong>{{ $activity->actor ? $activity->actor->name : 'Sistem' }}</strong>,
-                                                            {{ $activity->action == 'user.login' ? 'Giriş yaptı' : '' }}
-                                                            {{ $activity->action == 'user.logout' ? 'Çıkış yaptı' : '' }}
-                                                            {{ str_contains($activity->action, 'created') ? 'yeni bir kayıt oluşturdu' : '' }}
-                                                            {{ str_contains($activity->action, 'updated') ? 'kaydı güncelledi' : '' }}
-                                                            {{ str_contains($activity->action, 'deleted') ? 'bir kaydı sildi' : '' }}
-                                                            {{ str_contains($activity->action, 'sent') ? 'dokümanı gönderdi' : '' }}
-                                                            {{ str_contains($activity->action, 'paid') ? 'faturanın ödendiğini işaretledi' : '' }}
+                                                            {{ Str::limit($activity->action, 20) }}
                                                         </p>
                                                         <p
                                                             class="text-xs text-primary-600 dark:text-primary-400 font-medium">
-                                                            {{ $activity->metadata['name'] ?? '' }}
+                                                            {{ Str::limit($activity->metadata['name'] ?? '', 25) }}
                                                         </p>
                                                     </div>
                                                     <div class="text-right text-xs whitespace-nowrap text-gray-500">
                                                         <time
-                                                            datetime="{{ $activity->created_at }}">{{ $activity->created_at->diffForHumans() }}</time>
+                                                            datetime="{{ $activity->created_at }}">{{ $activity->created_at->diffForHumans(null, true, true) }}</time>
                                                     </div>
                                                 </div>
                                             </div>
@@ -364,7 +434,7 @@
                     labels: @json(collect($revenueTrend)->pluck('month')),
                     datasets: [
                         {
-                            label: 'Kesilen (₺)',
+                            label: 'Kesilen (' + @json($defaultCurrency) + ')',
                             data: @json(collect($revenueTrend)->pluck('billed')),
                             borderColor: '#a82244',
                             backgroundColor: 'rgba(168, 34, 68, 0.1)',
@@ -376,7 +446,7 @@
                             pointBorderWidth: 2
                         },
                         {
-                            label: 'Tahsil Edilen (₺)',
+                            label: 'Tahsil Edilen (' + @json($defaultCurrency) + ')',
                             data: @json(collect($revenueTrend)->pluck('collected')),
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(16, 185, 129, 0.05)',

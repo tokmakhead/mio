@@ -24,9 +24,8 @@ class StoreQuoteRequest extends FormRequest
         return [
             'customer_id' => ['required', 'exists:customers,id'],
             'valid_until' => ['required', 'date', 'after_or_equal:today'],
-            'currency' => ['required', 'in:TRY,USD,EUR,GBP'],
-            'notes' => ['nullable', 'string', 'max:1000'],
-            'discount_total' => ['nullable', 'numeric', 'min:0'],
+            'discount_type' => ['required', 'in:fixed,percentage'],
+            'discount_rate' => ['nullable', 'numeric', 'min:0'],
 
             // Items validation
             'items' => ['required', 'array', 'min:1'],

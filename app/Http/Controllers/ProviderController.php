@@ -29,7 +29,7 @@ class ProviderController extends Controller
 
         // KPIs
         $totalProviders = Provider::count();
-        $uniqueTypes = Provider::all()->pluck('types')->flatten()->unique()->count();
+        $uniqueTypes = Provider::pluck('types')->flatten()->unique()->count();
         $withWebsite = Provider::whereNotNull('website')->count();
 
         // Total Costs (Payables) to providers based on active services
@@ -70,10 +70,8 @@ class ProviderController extends Controller
         $data = $request->validated();
 
         // Handle custom type
-        if (in_array('other', $data['types']) && !empty($request->custom_type)) {
-            $data['types'] = array_diff($data['types'], ['other']);
-            $data['types'][] = $request->custom_type;
-        }
+        // We keep 'other' in types array if selected, and save custom string to custom_type column
+
         $data['types'] = array_values($data['types']);
 
         Provider::create($data);
@@ -106,10 +104,8 @@ class ProviderController extends Controller
         $data = $request->validated();
 
         // Handle custom type
-        if (in_array('other', $data['types']) && !empty($request->custom_type)) {
-            $data['types'] = array_diff($data['types'], ['other']);
-            $data['types'][] = $request->custom_type;
-        }
+        // We keep 'other' in types array if selected, and save custom string to custom_type column
+
         $data['types'] = array_values($data['types']);
 
         $provider->update($data);

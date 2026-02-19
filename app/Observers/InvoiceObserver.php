@@ -14,6 +14,7 @@ class InvoiceObserver
         if ((float) $invoice->grand_total > 0) {
             $this->syncToLedger($invoice);
         }
+        $this->clearDashboardCache();
     }
 
     /**
@@ -22,6 +23,7 @@ class InvoiceObserver
     public function updated(Invoice $invoice): void
     {
         $this->syncToLedger($invoice);
+        $this->clearDashboardCache();
     }
 
     /**
@@ -67,6 +69,7 @@ class InvoiceObserver
             ->where('ref_type', \App\Models\Invoice::class)
             ->where('ref_id', $invoice->id)
             ->delete();
+        $this->clearDashboardCache();
     }
 
     /**
@@ -83,5 +86,16 @@ class InvoiceObserver
     public function forceDeleted(Invoice $invoice): void
     {
         //
+    }
+
+    /**
+     * Clear dashboard cache for supported currencies
+     */
+    private function clearDashboardCache(): void
+    {
+        $currencies = ['TRY', 'USD', 'EUR', 'GBP'];
+        foreach ($currencies as $currency) {
+            \Illuminate\Support\Facades\Cache::forget('dashboard_stats_' . $currency);
+        }
     }
 }

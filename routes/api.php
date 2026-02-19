@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Master Panel Public API (Client Scripts Connect Here)
-Route::prefix('master')->group(function () {
+Route::prefix('master')->middleware([\App\Http\Middleware\EnsureMasterApiSignature::class])->group(function () {
     Route::post('/verify-license', [MasterApiController::class, 'verifyLicense']);
     Route::post('/check-update', [MasterApiController::class, 'checkUpdate']);
     Route::get('/announcements', [MasterApiController::class, 'announcements']);

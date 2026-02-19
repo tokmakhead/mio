@@ -29,7 +29,34 @@ class PaymentObserver
 
         if ($invoice->status === 'paid') {
             $invoice->logActivity('paid');
+
+            // Auto-extend services
+            foreach ($invoice->items as $item) {
+                if ($item->service) {
+                    $service = $item->service;
+                    $months = match ($service->cycle) {
+                        'monthly' => 1,
+                        'quarterly' => 3,
+                        'yearly' => 12,
+                        'biennial' => 24,
+                        default => 0
+                    };
+
+                    if ($months > 0) {
+                        $currentEnd = $service->end_date ?? now();
+                        // If it's already past, start from now
+                        if ($currentEnd->isPast())
+                            $currentEnd = now();
+
+                        $service->update([
+                            'end_date' => $currentEnd->addMonths($months),
+                            'status' => 'active'
+                        ]);
+                    }
+                }
+            }
         }
+        $this->clearDashboardCache();
     }
 
     /**
@@ -76,6 +103,7 @@ class PaymentObserver
                 $newInvoice->refresh()->updateStatus();
             }
         }
+        $this->clearDashboardCache();
     }
 
     /**
@@ -95,6 +123,7 @@ class PaymentObserver
             $invoice->decrement('paid_amount', $payment->amount);
             $invoice->refresh()->updateStatus();
         }
+        $this->clearDashboardCache();
     }
 
     /**
@@ -111,5 +140,16 @@ class PaymentObserver
     public function forceDeleted(Payment $payment): void
     {
         //
+    }
+
+    /**
+     * Clear dashboard cache for supported currencies
+     */
+    private function clearDashboardCache(): void
+    {
+        $currencies = ['TRY', 'USD', 'EUR', 'GBP'];
+        foreach ($currencies as $currency) {
+            \Illuminate\Support\Facades\Cache::forget('dashboard_stats_' . $currency);
+        }
     }
 }

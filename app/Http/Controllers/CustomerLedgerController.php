@@ -12,23 +12,44 @@ class CustomerLedgerController extends Controller
      */
     public function show(Customer $customer)
     {
-        $entries = $customer->ledgerEntries()
-            ->with('ref')
+        // 1. Get ALL entries sorted by date
+        $allEntries = $customer->ledgerEntries()
+            ->with(['ref']) // Load relationships
             ->orderBy('occurred_at')
             ->orderBy('id')
             ->get();
 
-        // Calculate running balance
-        $balance = 0;
-        foreach ($entries as $entry) {
-            if ($entry->type === 'debit') {
-                $balance += $entry->amount;
-            } else {
-                $balance -= $entry->amount;
-            }
-            $entry->balance = $balance;
-        }
+        // 2. Group by currency
+        $groupedEntries = $allEntries->groupBy('currency');
 
-        return view('customers.ledger', compact('customer', 'entries'));
+        // 3. Calculate running balance for EACH currency group independently
+        $groupedEntries->transform(function ($entries, $currency) {
+            $balance = 0;
+            foreach ($entries as $entry) {
+                if ($entry->type === 'debit') {
+                    $balance += $entry->amount;
+                } else {
+                    $balance -= $entry->amount;
+                }
+                $entry->balance = $balance; // Dynamically assign balance for view
+            }
+            return $entries;
+        });
+
+        // 4. Calculate Total Balances for Summary (e.g. ['TRY' => 100, 'USD' => 50])
+        $summaryBalances = $groupedEntries->map(function ($entries) {
+            return $entries->last()->balance ?? 0;
+        });
+
+        // 5. Get distinct currencies for tabs (sort TRY first if exists)
+        $currencies = $groupedEntries->keys()->sort(function ($a, $b) {
+            if ($a === 'TRY')
+                return -1;
+            if ($b === 'TRY')
+                return 1;
+            return strnatcmp($a, $b);
+        });
+
+        return view('customers.ledger', compact('customer', 'groupedEntries', 'summaryBalances', 'currencies'));
     }
 }

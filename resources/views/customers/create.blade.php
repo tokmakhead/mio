@@ -117,7 +117,15 @@
                             </div>
 
                             <!-- Tax/ID Number -->
-                            <div class="md:col-span-2">
+                            <div>
+                                <label for="tax_office"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vergi
+                                    Dairesi</label>
+                                <input type="text" name="tax_office" id="tax_office" value="{{ old('tax_office') }}"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+
+                            <div>
                                 <label for="tax_or_identity_number"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vergi / TC
                                     Kimlik No</label>
@@ -281,8 +289,29 @@
             </x-card>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Masking
+            $('#phone').inputmask('9999 999 99 99');
+            $('#mobile_phone').inputmask('9999 999 99 99');
+
+            const typeRadios = document.querySelectorAll('input[name="type"]');
+            const taxMask = $('#tax_or_identity_number');
+
+            function updateTaxMask() {
+                const type = document.querySelector('input[name="type"]:checked').value;
+                if (type === 'individual') {
+                    taxMask.inputmask('99999999999'); // 11 digits
+                } else {
+                    taxMask.inputmask('9999999999'); // 10 digits
+                }
+            }
+
+            typeRadios.forEach(r => r.addEventListener('change', updateTaxMask));
+            updateTaxMask();
+
             const copyCheckbox = document.getElementById('copy_address');
 
             if (!copyCheckbox) return;
@@ -312,7 +341,7 @@
             }
 
             copyCheckbox.addEventListener('change', copyAddressFields);
-            
+
             // Also run on click to be sure
             copyCheckbox.addEventListener('click', copyAddressFields);
         });

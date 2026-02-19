@@ -16,11 +16,20 @@ class ReportController extends Controller
 {
     public function index()
     {
+        $financeService = new \App\Services\FinanceService();
+        $globalSummary = $financeService->getGlobalSummary();
+
+        // Use default currency for the main card, but prepare for multi-currency list
+        $defaultCurrency = \App\Models\SystemSetting::first()->default_currency ?? 'TRY';
+        $totalRevenue = Payment::where('currency', $defaultCurrency)->sum('amount');
+
         $stats = [
             'total_customers' => Customer::count(),
             'active_services' => Service::active()->count(),
-            'total_revenue' => Payment::sum('amount'),
+            'total_revenue' => $totalRevenue,
             'total_providers' => Provider::count(),
+            'currency_summary' => $globalSummary,
+            'default_currency' => $defaultCurrency
         ];
 
         return view('reports.index', compact('stats'));
@@ -28,12 +37,14 @@ class ReportController extends Controller
 
     public function revenue(Request $request)
     {
-        $period = $request->input('period', 6); // Default 6 months
+        $period = $request->input('period', 6);
+        $currency = $request->input('currency', \App\Models\SystemSetting::first()->default_currency ?? 'TRY');
+
         $startDate = now()->subMonths($period)->startOfMonth();
         $endDate = now()->endOfMonth();
 
-        // Monthly Data
-        $monthlyData = $this->getMonthlyData($startDate, $endDate);
+        // Monthly Data (Filtered by currency)
+        $monthlyData = $this->getMonthlyData($startDate, $endDate, $currency);
 
         // Chart Data
         $labels = $monthlyData->pluck('month');
@@ -46,6 +57,9 @@ class ReportController extends Controller
         $totalPending = $monthlyData->sum('pending');
         $averageInvoice = $monthlyData->sum('invoice_count') > 0 ? $totalInvoiced / $monthlyData->sum('invoice_count') : 0;
 
+        // Available currencies for filter dropdown
+        $availableCurrencies = DB::table('invoices')->distinct()->pluck('currency');
+
         return view('reports.revenue', compact(
             'monthlyData',
             'labels',
@@ -55,19 +69,23 @@ class ReportController extends Controller
             'totalCollected',
             'totalPending',
             'averageInvoice',
-            'period'
+            'period',
+            'currency',
+            'availableCurrencies'
         ));
     }
 
     public function revenueCsv(Request $request)
     {
         $period = $request->input('period', 6);
+        $currency = $request->input('currency', \App\Models\SystemSetting::first()->default_currency ?? 'TRY');
+
         $startDate = now()->subMonths($period)->startOfMonth();
         $endDate = now()->endOfMonth();
 
-        $monthlyData = $this->getMonthlyData($startDate, $endDate);
+        $monthlyData = $this->getMonthlyData($startDate, $endDate, $currency);
 
-        $filename = "gelir-analizi-" . date('Y-m-d') . ".csv";
+        $filename = "gelir-analizi-{$currency}-" . date('Y-m-d') . ".csv";
         $handle = fopen('php://output', 'w');
 
         $headers = [
@@ -75,8 +93,8 @@ class ReportController extends Controller
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ];
 
-        return response()->stream(function () use ($handle, $monthlyData) {
-            fputcsv($handle, ['Ay', 'Kesilen Fatura (TL)', 'Tahsilat (TL)', 'Bekleyen (TL)', 'Fatura Adeti']);
+        return response()->stream(function () use ($handle, $monthlyData, $currency) {
+            fputcsv($handle, ['Ay', "Kesilen Fatura ($currency)", "Tahsilat ($currency)", "Bekleyen ($currency)", 'Fatura Adeti']);
 
             foreach ($monthlyData as $row) {
                 fputcsv($handle, [
@@ -95,10 +113,12 @@ class ReportController extends Controller
     public function revenuePdf(Request $request)
     {
         $period = $request->input('period', 6);
+        $currency = $request->input('currency', \App\Models\SystemSetting::first()->default_currency ?? 'TRY');
+
         $startDate = now()->subMonths($period)->startOfMonth();
         $endDate = now()->endOfMonth();
 
-        $monthlyData = $this->getMonthlyData($startDate, $endDate);
+        $monthlyData = $this->getMonthlyData($startDate, $endDate, $currency);
 
         $totalInvoiced = $monthlyData->sum('invoiced');
         $totalCollected = $monthlyData->sum('collected');
@@ -111,13 +131,14 @@ class ReportController extends Controller
             'totalCollected',
             'totalPending',
             'averageInvoice',
-            'period'
+            'period',
+            'currency'
         ));
 
-        return $pdf->download('gelir-analizi.pdf');
+        return $pdf->download("gelir-analizi-{$currency}.pdf");
     }
 
-    private function getMonthlyData($startDate, $endDate)
+    private function getMonthlyData($startDate, $endDate, $currency = 'TRY')
     {
         // Generate month range
         $months = [];
@@ -146,32 +167,135 @@ class ReportController extends Controller
             default => "DATE_FORMAT(paid_at, '%Y-%m')",
         };
 
-        // Fetch Invoiced Data
+        // Fetch Invoiced Data (Filtered by currency)
         $invoices = Invoice::whereBetween('issue_date', [$startDate, $endDate])
+            ->where('currency', $currency)
             ->selectRaw("$invoiceMonthFormat as month, SUM(grand_total) as total, COUNT(*) as count, SUM(grand_total - paid_amount) as pending")
             ->groupBy('month')
             ->get();
 
         foreach ($invoices as $inv) {
             if (isset($months[$inv->month])) {
-                $months[$inv->month]['invoiced'] = $inv->total;
+                $months[$inv->month]['invoiced'] = (float) $inv->total;
                 $months[$inv->month]['invoice_count'] = $inv->count;
-                $months[$inv->month]['pending'] = $inv->pending;
+                $months[$inv->month]['pending'] = (float) $inv->pending;
             }
         }
 
-        // Fetch Collected Data (Payments)
+        // Fetch Collected Data (Payments - Filtered by currency)
         $payments = Payment::whereBetween('paid_at', [$startDate, $endDate])
+            ->where('currency', $currency)
             ->selectRaw("$paymentMonthFormat as month, SUM(amount) as total")
             ->groupBy('month')
             ->get();
 
         foreach ($payments as $pym) {
             if (isset($months[$pym->month])) {
-                $months[$pym->month]['collected'] = $pym->total;
+                $months[$pym->month]['collected'] = (float) $pym->total;
             }
         }
 
         return collect($months)->values();
+    }
+
+    public function profit(Request $request)
+    {
+        $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : now()->startOfMonth();
+        $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date')) : now()->endOfMonth();
+        $currency = $request->input('currency', 'TRY');
+
+        // Manual Exchange Rates (Default 1 if same currency)
+        $rateUsd = (float) $request->input('rate_usd', 34.50);
+        $rateEur = (float) $request->input('rate_eur', 37.20);
+
+        // 1. Get Invoices (Income)
+        $invoices = Invoice::with(['items.service'])
+            ->whereBetween('issue_date', [$startDate, $endDate])
+            ->where('currency', $currency)
+            ->get();
+
+        $report = [
+            'total_revenue' => 0,
+            'total_cost' => 0,
+            'net_profit' => 0,
+            'items' => []
+        ];
+
+        foreach ($invoices as $invoice) {
+            foreach ($invoice->items as $item) {
+                // Calculate Revenue (Excluding VAT usually, but for simplicity taking line_subtotal)
+                // line_subtotal = qty * unit_price (without tax)
+                $revenue = $item->line_subtotal;
+
+                // Calculate Cost
+                $cost = 0;
+                $buyingPrice = 0;
+                $buyingCurrency = $currency;
+
+                if ($item->service) {
+                    $buyingPrice = (float) $item->service->buying_price;
+                    $buyingCurrency = $item->service->buying_currency ?? $currency;
+
+                    // Convert cost to report currency
+                    if ($buyingCurrency !== $currency) {
+                        if ($currency === 'TRY') {
+                            if ($buyingCurrency === 'USD')
+                                $buyingPrice *= $rateUsd;
+                            elseif ($buyingCurrency === 'EUR')
+                                $buyingPrice *= $rateEur;
+                        } elseif ($currency === 'USD') {
+                            if ($buyingCurrency === 'TRY')
+                                $buyingPrice /= $rateUsd;
+                            elseif ($buyingCurrency === 'EUR')
+                                $buyingPrice = ($buyingPrice * $rateEur) / $rateUsd;
+                        } elseif ($currency === 'EUR') {
+                            if ($buyingCurrency === 'TRY')
+                                $buyingPrice /= $rateEur;
+                            elseif ($buyingCurrency === 'USD')
+                                $buyingPrice = ($buyingPrice * $rateUsd) / $rateEur;
+                        }
+                    }
+
+                    $cost = $buyingPrice * $item->qty;
+                }
+
+                $profit = $revenue - $cost;
+
+                $report['total_revenue'] += $revenue;
+                $report['total_cost'] += $cost;
+                $report['net_profit'] += $profit;
+
+                // Detail Item
+                $report['items'][] = [
+                    'invoice_number' => $invoice->number,
+                    'invoice_date' => $invoice->issue_date->format('d.m.Y'),
+                    'customer' => $invoice->customer->name,
+                    'service_name' => $item->description,
+                    'qty' => $item->qty,
+                    'revenue' => $revenue,
+                    'cost' => $cost,
+                    'profit' => $profit,
+                    'margin' => $revenue > 0 ? ($profit / $revenue) * 100 : 0
+                ];
+            }
+        }
+
+        // Sort by highest profit
+        usort($report['items'], function ($a, $b) {
+            return $b['profit'] <=> $a['profit'];
+        });
+
+        // Available currencies for filter dropdown
+        $availableCurrencies = DB::table('invoices')->distinct()->pluck('currency');
+
+        return view('reports.profit', compact(
+            'report',
+            'startDate',
+            'endDate',
+            'currency',
+            'rateUsd',
+            'rateEur',
+            'availableCurrencies'
+        ));
     }
 }

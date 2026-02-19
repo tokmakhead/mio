@@ -16,6 +16,8 @@ class Quote extends Model
         'number',
         'status',
         'currency',
+        'discount_type',
+        'discount_rate',
         'discount_total',
         'subtotal',
         'tax_total',
@@ -48,9 +50,16 @@ class Quote extends Model
 
     public function calculateTotals()
     {
-        $this->subtotal = number_format($this->items->sum('line_subtotal'), 2, '.', '');
-        $this->tax_total = number_format($this->items->sum('line_tax'), 2, '.', '');
-        $this->grand_total = number_format((float) $this->subtotal + (float) $this->tax_total - (float) $this->discount_total, 2, '.', '');
+        $this->subtotal = (float) number_format($this->items->sum('line_subtotal'), 2, '.', '');
+        $this->tax_total = (float) number_format($this->items->sum('line_tax'), 2, '.', '');
+
+        if ($this->discount_type === 'percentage') {
+            $this->discount_total = (float) number_format((float) $this->subtotal * ($this->discount_rate / 100), 2, '.', '');
+        } else {
+            $this->discount_total = (float) number_format((float) $this->discount_rate, 2, '.', '');
+        }
+
+        $this->grand_total = (float) number_format((float) $this->subtotal + (float) $this->tax_total - (float) $this->discount_total, 2, '.', '');
         $this->save();
     }
 
@@ -60,6 +69,7 @@ class Quote extends Model
             'draft' => 'Taslak',
             'sent' => 'Gönderildi',
             'accepted' => 'Kabul Edildi',
+            'invoiced' => 'Faturalandı',
             'rejected' => 'Reddedildi',
             'expired' => 'Süresi Dolmuş',
             default => $status,
@@ -72,6 +82,7 @@ class Quote extends Model
             'draft' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
             'sent' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
             'accepted' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+            'invoiced' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
             'rejected' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
             'expired' => 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
             default => 'bg-gray-100 text-gray-800',
@@ -83,20 +94,29 @@ class Quote extends Model
      */
     public static function generateNumber()
     {
-        $year = now()->year;
-        $prefix = 'TK';
+        $settings = \App\Models\SystemSetting::first();
+        $prefix = $settings->quote_prefix ?? 'TK';
+        $startNumber = $settings->quote_start_number ?? 1;
 
-        $lastRecord = self::where('number', 'like', "{$prefix}-{$year}-%")
-            ->orderByRaw('CAST(SUBSTRING_INDEX(number, "-", -1) AS UNSIGNED) DESC')
+        $year = now()->year;
+
+        // Handle dynamic placeholders
+        $prefix = str_replace(['{YEAR}', '{Y}'], [$year, substr($year, -2)], $prefix);
+
+        $lastRecord = self::where('number', 'like', "{$prefix}%")
+            ->orderByRaw('LENGTH(number) DESC')
+            ->orderBy('number', 'desc')
             ->first();
 
-        $nextSequence = 1;
+        // Extract sequence
         if ($lastRecord) {
-            $parts = explode('-', $lastRecord->number);
-            $lastSequence = (int) end($parts);
-            $nextSequence = $lastSequence + 1;
+            $sequencePart = substr($lastRecord->number, strlen($prefix));
+            $currentSequence = (int) $sequencePart;
+            $nextSequence = $currentSequence + 1;
+        } else {
+            $nextSequence = $startNumber;
         }
 
-        return "{$prefix}-{$year}-" . str_pad($nextSequence, 5, '0', STR_PAD_LEFT);
+        return $prefix . str_pad($nextSequence, 5, '0', STR_PAD_LEFT);
     }
 }

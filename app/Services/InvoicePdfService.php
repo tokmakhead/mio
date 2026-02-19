@@ -25,12 +25,25 @@ class InvoicePdfService
             'due_date' => $invoice->due_date->format('d.m.Y'),
         ];
 
+        // Fetch Bank Accounts for the Invoice Currency
+        $bankAccounts = \App\Models\BankAccount::active()
+            ->where('currency', $invoice->currency)
+            ->get();
+
+        // If no specific currency account found, maybe show default TRY accounts or all?
+        // Let's fallback to TRY if empty, or just show nothing? 
+        // Better: If empty, show TRY accounts as fallback.
+        if ($bankAccounts->isEmpty()) {
+            $bankAccounts = \App\Models\BankAccount::active()->where('currency', 'TRY')->get();
+        }
+
         return [
             'invoice' => $invoice,
             'brandSettings' => $brandSettings,
             'totals' => $totals,
             'dates' => $dates,
-            'qrBase64' => $qrBase64
+            'qrBase64' => $qrBase64,
+            'bankAccounts' => $bankAccounts,
         ];
     }
 
@@ -39,7 +52,7 @@ class InvoicePdfService
         return [
             'subtotal' => number_format($invoice->subtotal, 2),
             'tax_total' => number_format($invoice->tax_total, 2),
-            'discount_total' => number_format($invoice_discount_total ?? 0, 2),
+            'discount_total' => number_format($invoice->discount_total ?? 0, 2),
             'grand_total' => number_format($invoice->grand_total, 2),
             'remaining_amount' => number_format($invoice->remaining_amount, 2),
             'currency' => $invoice->currency,

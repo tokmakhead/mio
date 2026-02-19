@@ -15,9 +15,14 @@ class EmailSetting extends Model
         'encryption',
         'from_email',
         'from_name',
+        'use_queue',
     ];
 
     protected $hidden = [
         'password_encrypted',
+    ];
+
+    protected $casts = [
+        'use_queue' => 'boolean',
     ];
 }

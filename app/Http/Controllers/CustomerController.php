@@ -35,46 +35,55 @@ class CustomerController extends Controller
             $query->where('type', $request->type);
         }
 
-        // Balance Status Filter (Subquery for consistency)
+        // Balance Status Filter (ANY Currency)
         if ($request->filled('balance_status')) {
-            $defaultCurrency = 'TRY'; // Could be dynamic from settings
-
-            $query->addSelect([
-                'balance' => \App\Models\LedgerEntry::selectRaw('SUM(CASE WHEN type = \'debit\' THEN amount ELSE -amount END)')
-                    ->whereColumn('customer_id', 'customers.id')
-                    ->where('currency', $defaultCurrency)
-            ]);
-
             if ($request->balance_status === 'debit') {
-                $query->having('balance', '>', 0);
+                // Customers who have MORE debits than credits in at least one currency
+                $query->whereHas('ledgerEntries', function ($q) {
+                    $q->select('currency')
+                        ->groupBy('currency')
+                        ->havingRaw('SUM(CASE WHEN type = "debit" THEN amount ELSE -amount END) > 0');
+                });
             } elseif ($request->balance_status === 'credit') {
-                $query->having('balance', '<', 0);
+                // Customers who have MORE credits than debits in at least one currency
+                $query->whereHas('ledgerEntries', function ($q) {
+                    $q->select('currency')
+                        ->groupBy('currency')
+                        ->havingRaw('SUM(CASE WHEN type = "debit" THEN amount ELSE -amount END) < 0');
+                });
             } elseif ($request->balance_status === 'balanced') {
-                $query->having('balance', '=', 0)
-                    ->orHavingRaw('balance IS NULL');
+                // Customers with no active balance (either no entries or perfect 0)
+                $query->whereDoesntHave('ledgerEntries', function ($q) {
+                    $q->select('currency')
+                        ->groupBy('currency')
+                        ->havingRaw('SUM(CASE WHEN type = "debit" THEN amount ELSE -amount END) != 0');
+                });
             }
         }
 
         // Get customers with pagination
         $customers = $query->withCount('services')->latest()->paginate(15)->withQueryString();
 
-        // KPIs
+        // Financial KPIs using FinanceService
+        $financeService = new \App\Services\FinanceService();
+        $globalSummary = $financeService->getGlobalSummary();
+
+        // For now, we show TRY totals if available, otherwise 0
+        // Future improvement: Show multi-currency cards or a selector
+        $trySummary = $globalSummary['TRY'] ?? ['receivable' => 0, 'payable' => 0];
+        $totalReceivable = $trySummary['receivable'];
+        $totalPayable = $trySummary['payable'];
+
         $totalCustomers = Customer::count();
         $activeCustomers = Customer::active()->count();
-
-        // Actual calculations for KPIs (Default Currency: TRY)
-        $defaultCurrency = 'TRY';
-        $customerBalances = Customer::all()->map(fn($c) => $c->balances[$defaultCurrency] ?? 0);
-
-        $totalReceivable = $customerBalances->filter(fn($b) => $b > 0)->sum();
-        $totalPayable = abs($customerBalances->filter(fn($b) => $b < 0)->sum());
 
         return view('customers.index', compact(
             'customers',
             'totalCustomers',
             'activeCustomers',
             'totalReceivable',
-            'totalPayable'
+            'totalPayable',
+            'globalSummary' // Pass the whole summary for potentially showing USD/EUR cards too
         ));
     }
 

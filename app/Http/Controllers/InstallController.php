@@ -177,7 +177,21 @@ class InstallController extends Controller
 
         // Run Migrations & Seeds
         try {
-            Artisan::call('migrate:fresh', ['--force' => true]);
+            // Check if system is already installed (tables exist)
+            $hasTables = false;
+            try {
+                $hasTables = count(DB::select('SHOW TABLES')) > 0;
+            } catch (\Exception $e) {
+                // Connection error or no DB
+            }
+
+            if ($hasTables) {
+                // If tables exist, don't use migrate:fresh unless explicitly forced or handle safely
+                // For now, let's just use regular migrate to be safe
+                Artisan::call('migrate', ['--force' => true]);
+            } else {
+                Artisan::call('migrate:fresh', ['--force' => true]);
+            }
             Artisan::call('db:seed', ['--force' => true]);
         } catch (\Exception $e) {
             return back()->with('error', 'Migration failed: ' . $e->getMessage());

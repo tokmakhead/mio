@@ -44,6 +44,31 @@
                                 <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $provider->name }}</p>
                             </div>
 
+                            <!-- Corporate Info -->
+                            @if($provider->tax_office || $provider->tax_number)
+                                <div>
+                                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Fatura
+                                        Bilgileri</label>
+                                    <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                        @if($provider->tax_office)
+                                            <div><span class="text-gray-500">V.D.:</span> {{ $provider->tax_office }}</div>
+                                        @endif
+                                        @if($provider->tax_number)
+                                            <div><span class="text-gray-500">V.No:</span> {{ $provider->tax_number }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if($provider->address)
+                                <div>
+                                    <label
+                                        class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Adres</label>
+                                    <p class="mt-1 text-sm text-gray-900 dark:text-white whitespace-pre-line">
+                                        {{ $provider->address }}</p>
+                                </div>
+                            @endif
+
                             <!-- Types -->
                             <div>
                                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Hizmet
@@ -120,8 +145,10 @@
                                             <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Müşteri</th>
                                             <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Durum</th>
                                             <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Vade</th>
-                                            <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase text-right">Tutar
-                                            </th>
+                                            <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase text-right">Maliyet</th>
+                                            <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase text-right">Net Kâr</th>
+                                            <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase text-right">Tutar</th>
+                                            <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase">Panel</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -148,9 +175,23 @@
                                                 <td class="px-4 py-3 text-xs text-gray-600 dark:text-gray-400">
                                                     {{ $service->end_date->format('d.m.Y') }}
                                                 </td>
-                                                <td
-                                                    class="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white text-right">
+                                                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-right">
+                                                    {{ number_format($service->buying_price, 2) }} {{ $service->currency }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm font-bold text-right {{ ($service->price - $service->buying_price) > 0 ? 'text-success-600' : 'text-danger-600' }}">
+                                                     {{ number_format($service->price - $service->buying_price, 2) }} {{ $service->currency }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white text-right">
                                                     {{ number_format($service->price, 2) }} {{ $service->currency }}
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    @if($provider->website)
+                                                        <a href="{{ $provider->website }}" target="_blank" class="text-gray-400 hover:text-primary-600 transition-colors" title="Panel'e Git">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                                        </a>
+                                                    @else
+                                                        <span class="text-gray-300">-</span>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach

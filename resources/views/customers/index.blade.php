@@ -8,18 +8,33 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- KPI Cards Grid -->
+            <!-- KPI Cards Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <x-kpi-card title="Toplam Müşteri" value="{{ $totalCustomers }}" tone="primary"
+                <x-kpi-card title="Toplam Cari" value="{{ $totalCustomers }}" tone="primary"
                     icon='<svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>' />
 
-                <x-kpi-card title="Aktif Müşteri" value="{{ $activeCustomers }}" tone="success"
-                    icon='<svg class="w-6 h-6 text-success-600 dark:text-success-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
+                @php $summaryCount = 0; @endphp
+                @foreach($globalSummary as $currency => $amounts)
+                    @if($amounts['receivable'] > 0 || $amounts['payable'] > 0)
+                        @php $summaryCount++; @endphp
+                        @if($summaryCount <= 3) {{-- Limit to 3 more cards to keep 4-grid --}}
+                            <x-kpi-card title="Alacak ({{ $currency }})"
+                                value="{{ number_format($amounts['receivable'], 2, ',', '.') }}{{ $currency == 'TRY' ? '₺' : ' ' . $currency }}"
+                                tone="warning"
+                                icon='<svg class="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
+                        @endif
+                    @endif
+                @endforeach
 
-                <x-kpi-card title="Toplam Alacak" value="{{ number_format($totalReceivable, 2) }}₺" tone="warning"
-                    icon='<svg class="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
+                @if($summaryCount == 0)
+                    <x-kpi-card title="Toplam Alacak" value="0,00 ₺" tone="warning"
+                        icon='<svg class="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
+                @endif
 
-                <x-kpi-card title="Toplam Borç" value="{{ number_format($totalPayable, 2) }}₺" tone="danger"
-                    icon='<svg class="w-6 h-6 text-danger-600 dark:text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
+                @if($summaryCount < 3)
+                    <x-kpi-card title="Aktif Müşteri" value="{{ $activeCustomers }}" tone="success"
+                        icon='<svg class="w-6 h-6 text-success-600 dark:text-success-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
+                @endif
             </div>
 
             <!-- Filter Card -->
@@ -217,6 +232,14 @@
                                         <!-- Actions -->
                                         <td class="px-4 py-4 text-right">
                                             <div class="flex items-center justify-end space-x-2">
+                                                <a href="{{ route('customers.ledger', $customer) }}"
+                                                    class="inline-flex items-center justify-center w-8 h-8 bg-blue-50/50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg transition-all duration-200 hover:scale-110 hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                                                    title="Ekstre Görüntüle">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                </a>
                                                 <a href="{{ route('customers.show', $customer) }}"
                                                     class="inline-flex items-center justify-center w-8 h-8 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg transition-all duration-200 hover:scale-110 hover:bg-indigo-100 dark:hover:bg-indigo-900/40"
                                                     title="Görüntüle">

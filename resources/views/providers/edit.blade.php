@@ -22,6 +22,44 @@
                         @enderror
                     </div>
 
+                    <!-- Corporate Information -->
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Kurumsal Bilgiler</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Tax Office -->
+                            <div>
+                                <label for="tax_office"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Vergi Dairesi
+                                </label>
+                                <input type="text" name="tax_office" id="tax_office"
+                                    value="{{ old('tax_office', $provider->tax_office) }}"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+
+                            <!-- Tax Number -->
+                            <div>
+                                <label for="tax_number"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Vergi Numarası
+                                </label>
+                                <input type="text" name="tax_number" id="tax_number"
+                                    value="{{ old('tax_number', $provider->tax_number) }}"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+
+                            <!-- Address -->
+                            <div class="md:col-span-2">
+                                <label for="address"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Adres
+                                </label>
+                                <textarea name="address" id="address" rows="2"
+                                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500">{{ old('address', $provider->address) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Types (Checkbox Group) -->
                     @php
                         $standardTypes = ['hosting', 'domain', 'ssl', 'email'];

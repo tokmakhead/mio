@@ -357,8 +357,16 @@
 
                         <div style="font-size: 8pt; color: #6b7280;">
                             <strong>BANKA BİLGİLERİ:</strong><br>
-                            Garanti BBVA - TR00 0000 0000 0000 0000 0000 00<br>
-                            Alıcı: {{ $brandSettings['company_name'] ?? 'MIONEX' }}
+                            @foreach($bankAccounts as $account)
+                                <div style="margin-top: 4px;">
+                                    <span style="font-weight: bold; color: #374151;">{{ $account->bank_name }}</span>
+                                    - <span style="font-family: monospace;">{{ $account->formatted_iban }}</span><br>
+                                    @if($account->account_number)
+                                        <span style="font-size: 7pt;">Şube: {{ $account->branch_name }}
+                                            ({{ $account->branch_code }}) - Hesap: {{ $account->account_number }}</span>
+                                    @endif
+                                </div>
+                            @endforeach
                         </div>
                     </td>
 

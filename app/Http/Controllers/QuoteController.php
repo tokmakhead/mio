@@ -38,13 +38,28 @@ class QuoteController extends Controller
 
         $quotes = $query->latest()->paginate(15);
 
-        // KPIs
+        // KPIs (Counts)
         $totalQuotes = Quote::count();
         $draftCount = Quote::where('status', 'draft')->count();
         $sentCount = Quote::where('status', 'sent')->count();
         $acceptedCount = Quote::where('status', 'accepted')->count();
 
-        return view('quotes.index', compact('quotes', 'totalQuotes', 'draftCount', 'sentCount', 'acceptedCount'));
+        // KPIs (Financials)
+        $rawFinancials = Quote::select('currency', 'status', DB::raw('SUM(grand_total) as total'))
+            ->groupBy('currency', 'status')
+            ->get();
+
+        $financials = [];
+        foreach ($rawFinancials as $row) {
+            $financials[$row->currency][$row->status] = $row->total;
+            if (!isset($financials[$row->currency]['total']))
+                $financials[$row->currency]['total'] = 0;
+            $financials[$row->currency]['total'] += $row->total;
+        }
+
+        $defaultCurrency = \App\Models\SystemSetting::first()->default_currency ?? 'TRY';
+
+        return view('quotes.index', compact('quotes', 'totalQuotes', 'draftCount', 'sentCount', 'acceptedCount', 'financials', 'defaultCurrency'));
     }
 
     /**
@@ -72,7 +87,8 @@ class QuoteController extends Controller
                 'number' => $number,
                 'status' => 'draft',
                 'currency' => $request->currency,
-                'discount_total' => $request->discount_total ?? 0,
+                'discount_type' => $request->discount_type,
+                'discount_rate' => $request->discount_rate ?? 0,
                 'valid_until' => $request->valid_until,
                 'notes' => $request->notes,
             ]);
@@ -137,7 +153,8 @@ class QuoteController extends Controller
             $quote->update([
                 'customer_id' => $request->customer_id,
                 'currency' => $request->currency,
-                'discount_total' => $request->discount_total ?? 0,
+                'discount_type' => $request->discount_type,
+                'discount_rate' => $request->discount_rate ?? 0,
                 'valid_until' => $request->valid_until,
                 'notes' => $request->notes,
             ]);
@@ -207,8 +224,33 @@ class QuoteController extends Controller
 
         // Trigger real email
         if ($quote->customer->email) {
-            \Illuminate\Support\Facades\Mail::to($quote->customer->email)
-                ->send(new \App\Mail\QuoteMail($quote));
+            try {
+                $settings = \App\Models\EmailSetting::first();
+                $useQueue = $settings && $settings->use_queue;
+                $mailable = new \App\Mail\QuoteMail($quote);
+
+                if ($useQueue) {
+                    \Illuminate\Support\Facades\Mail::to($quote->customer->email)->queue($mailable);
+                    \App\Models\EmailLog::create([
+                        'to' => $quote->customer->email,
+                        'subject' => 'Teklif #' . $quote->number,
+                        'body' => 'Queued for sending',
+                        'status' => 'queued',
+                        'sent_at' => now(),
+                    ]);
+                } else {
+                    \Illuminate\Support\Facades\Mail::to($quote->customer->email)->send($mailable);
+                }
+            } catch (\Exception $e) {
+                \App\Models\EmailLog::create([
+                    'to' => $quote->customer->email,
+                    'subject' => 'Teklif #' . $quote->number,
+                    'status' => 'failed',
+                    'error_message' => $e->getMessage(),
+                    'sent_at' => now(),
+                ]);
+                return back()->with('error', 'Teklif durumu güncellendi ancak e-posta gönderilemedi: ' . $e->getMessage());
+            }
         }
 
         return back()->with('success', 'Teklif başarıyla gönderildi.');
@@ -255,6 +297,8 @@ class QuoteController extends Controller
                 'number' => $number,
                 'status' => 'sent',
                 'currency' => $quote->currency,
+                'discount_type' => $quote->discount_type ?? 'fixed',
+                'discount_rate' => $quote->discount_rate ?? 0,
                 'discount_total' => $quote->discount_total,
                 'subtotal' => $quote->subtotal,
                 'tax_total' => $quote->tax_total,
@@ -278,10 +322,41 @@ class QuoteController extends Controller
                 ]);
             }
 
+            $quote->update(['status' => 'invoiced']);
             $quote->logActivity('converted', ['invoice_id' => $invoice->id]);
 
             return redirect()->route('invoices.show', $invoice)
                 ->with('success', 'Teklif başarıyla faturaya dönüştürüldü.');
         });
+    }
+
+    public function bulkExport(Request $request, \App\Services\QuotePdfService $pdfService)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:quotes,id',
+        ]);
+
+        $quotes = Quote::whereIn('id', $request->ids)->get();
+
+        if ($quotes->isEmpty()) {
+            return back()->with('error', 'Teklif seçilmedi.');
+        }
+
+        $zip = new \ZipArchive;
+        $fileName = 'teklifler_' . now()->format('Y-m-d_H-i') . '.zip';
+        $path = storage_path('app/public/' . $fileName);
+
+        if ($zip->open($path, \ZipArchive::CREATE) === TRUE) {
+            foreach ($quotes as $quote) {
+                $data = $pdfService->prepareData($quote);
+                $pdf = Pdf::loadView('quotes.premium', $data);
+                $content = $pdf->output();
+                $zip->addFromString($quote->number . '.pdf', $content);
+            }
+            $zip->close();
+        }
+
+        return response()->download($path)->deleteFileAfterSend(true);
     }
 }

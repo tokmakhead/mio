@@ -20,7 +20,14 @@ class SystemSetting extends Model
         'invoice_start_number',
         'quote_prefix',
         'quote_start_number',
+        'default_payment_due_days',
+        'currency_position',
+        'thousand_separator',
+        'decimal_separator',
+        'currency_precision',
+        'rounding_rule',
         'timezone',
         'locale',
+        'license_key',
     ];
 }

@@ -7,7 +7,7 @@ use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
-Route::get('/fix-config', function () {
+Route::middleware(['auth', 'can:manage-settings'])->get('/fix-config', function () {
     Artisan::call('config:clear');
     Artisan::call('cache:clear');
     Artisan::call('view:clear');
@@ -76,6 +76,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/invoices/reconciliation/fix', [\App\Http\Controllers\ReconciliationController::class, 'fix'])->name('accounting.reconciliation.fix');
 
     // Customers resource
+    Route::get('/customers/{customer}/ledger/pdf', [\App\Http\Controllers\CustomerLedgerController::class, 'pdf'])->name('customers.ledger.pdf');
+    Route::get('/customers/api-search', [\App\Http\Controllers\CustomerController::class, 'apiSearch'])->name('customers.api_search');
     Route::resource('customers', \App\Http\Controllers\CustomerController::class);
 
     // Providers resource
@@ -85,6 +87,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('services', \App\Http\Controllers\ServiceController::class);
 
     // Quotes resource
+    Route::post('quotes/bulk-export', [\App\Http\Controllers\QuoteController::class, 'bulkExport'])->name('quotes.bulk_export');
     Route::resource('quotes', \App\Http\Controllers\QuoteController::class);
     Route::get('quotes/{quote}/pdf', [\App\Http\Controllers\QuoteController::class, 'pdf'])->name('quotes.pdf');
     Route::post('quotes/{quote}/send', [\App\Http\Controllers\QuoteController::class, 'send'])->name('quotes.send');
@@ -92,6 +95,7 @@ Route::middleware('auth')->group(function () {
     Route::post('quotes/{quote}/convert', [\App\Http\Controllers\QuoteController::class, 'convertToInvoice'])->name('quotes.convert');
 
     // Invoices resource and extra actions
+    Route::post('invoices/bulk-export', [\App\Http\Controllers\InvoiceController::class, 'bulkExport'])->name('invoices.bulk_export');
     Route::post('invoices/{invoice}/send', [\App\Http\Controllers\InvoiceController::class, 'send'])->name('invoices.send');
     Route::post('invoices/{invoice}/payment', [\App\Http\Controllers\InvoiceController::class, 'addPayment'])->name('invoices.payment');
     Route::get('invoices/{invoice}/pdf', [\App\Http\Controllers\InvoiceController::class, 'pdf'])->name('invoices.pdf');
@@ -103,6 +107,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/revenue', [\App\Http\Controllers\ReportController::class, 'revenue'])->name('revenue');
         Route::get('/revenue/csv', [\App\Http\Controllers\ReportController::class, 'revenueCsv'])->name('revenue.csv');
         Route::get('/revenue/pdf', [\App\Http\Controllers\ReportController::class, 'revenuePdf'])->name('revenue.pdf');
+        Route::get('/profit', [\App\Http\Controllers\ReportController::class, 'profit'])->name('profit');
     });
 
     // Settings
@@ -122,11 +127,13 @@ Route::middleware('auth')->group(function () {
         // Payment Gateways
         Route::get('/gateways', [SettingsController::class, 'gateways'])->name('gateways');
         Route::put('/gateways', [SettingsController::class, 'updateGateways'])->name('gateways.update');
+        Route::post('/gateways/test/{provider}', [SettingsController::class, 'testGateway'])->name('gateways.test');
 
         // SMTP
         Route::get('/smtp', [SettingsController::class, 'smtp'])->name('smtp');
         Route::post('/smtp', [SettingsController::class, 'updateSmtp'])->name('smtp.update');
         Route::post('/smtp/test', [SettingsController::class, 'testSmtp'])->name('smtp.test');
+        Route::get('/smtp/logs', [SettingsController::class, 'emailLogs'])->name('smtp.logs');
 
         // Email Templates
         Route::get('/email-templates', [\App\Http\Controllers\SettingsController::class, 'emailTemplates'])->name('templates');
@@ -140,6 +147,11 @@ Route::middleware('auth')->group(function () {
         // Financial
         Route::get('/financial', [\App\Http\Controllers\SettingsController::class, 'financial'])->name('financial');
         Route::post('/financial', [\App\Http\Controllers\SettingsController::class, 'updateFinancial'])->name('financial.update');
+
+        // Bank Accounts
+        Route::post('/financial/bank-accounts', [\App\Http\Controllers\SettingsController::class, 'storeBankAccount'])->name('bank-accounts.store');
+        Route::put('/financial/bank-accounts/{bankAccount}', [\App\Http\Controllers\SettingsController::class, 'updateBankAccount'])->name('bank-accounts.update');
+        Route::delete('/financial/bank-accounts/{bankAccount}', [\App\Http\Controllers\SettingsController::class, 'destroyBankAccount'])->name('bank-accounts.destroy');
 
         // System Settings
         Route::get('/system', [SettingsController::class, 'system'])->name('system');

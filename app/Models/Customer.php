@@ -10,7 +10,7 @@ use App\Traits\LogsActivity;
 
 class Customer extends Model
 {
-    use HasFactory, SoftDeletes; //, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'type',
@@ -24,6 +24,7 @@ class Customer extends Model
         'district',
         'postal_code',
         'country',
+        'tax_office',
         'tax_or_identity_number',
         'invoice_address',
         'status',

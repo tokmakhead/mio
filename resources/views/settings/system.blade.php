@@ -61,6 +61,59 @@
                 </div>
             </div>
 
+            <!-- Server Status -->
+            <div class="md:grid md:grid-cols-3 md:gap-6">
+                <div class="md:col-span-1">
+                    <div class="px-4 sm:px-0">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Sunucu Durumu</h3>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                            Disk kullanımı ve sistem bilgileri.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-5 md:mt-0 md:col-span-2">
+                    <div
+                        class="shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:overflow-hidden bg-white dark:bg-gray-800">
+                        <div class="px-4 py-5 space-y-6 sm:p-6">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Disk Kullanımı</h4>
+                                <div class="relative pt-1">
+                                    <div class="flex mb-2 items-center justify-between">
+                                        <div>
+                                            <span
+                                                class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-primary-600 bg-primary-200 uppercase last:mr-0 mr-1">
+                                                {{ $diskUsage['percent'] }}% Dolu
+                                            </span>
+                                        </div>
+                                        <div class="text-right">
+                                            <span
+                                                class="text-xs font-semibold inline-block text-gray-600 dark:text-gray-400">
+                                                {{ $diskUsage['used'] }} / {{ $diskUsage['total'] }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-primary-200 dark:bg-gray-700">
+                                        <div style="width:{{ $diskUsage['percent'] }}%"
+                                            class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary-500">
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                                        <span>Boş Alan: {{ $diskUsage['free'] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hidden sm:block" aria-hidden="true">
+                <div class="py-5">
+                    <div class="border-t border-gray-200 dark:border-gray-700"></div>
+                </div>
+            </div>
+
             <!-- Maintenance Actions -->
             <div class="md:grid md:grid-cols-3 md:gap-6">
                 <div class="md:col-span-1">
@@ -83,8 +136,7 @@
 
                         <div class="p-6">
                             @if(session('update_info'))
-                                <div
-                                    class="mb-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                                <div class="mb-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                                     <div class="flex items-start">
                                         <div class="flex-shrink-0">
                                             <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none"
@@ -97,8 +149,7 @@
                                             <h3 class="text-lg font-medium text-blue-900 dark:text-blue-200">
                                                 Yeni Sürüm Mevcut: v{{ session('update_info')['version'] }}
                                             </h3>
-                                            <div
-                                                class="mt-2 text-sm text-blue-800 dark:text-blue-300 prose prose-sm dark:prose-invert max-w-none">
+                                            <div class="mt-2 text-sm text-blue-800 dark:text-blue-300 prose prose-sm dark:prose-invert max-w-none">
                                                 {!! session('update_info')['release_notes_html'] ?? '' !!}
                                             </div>
                                             <div class="mt-4">
@@ -110,10 +161,33 @@
                                         </div>
                                     </div>
                                 </div>
-                            @else
-                                <div class="flex items-center justify-between">
+                            @endif
+
+                            <div class="space-y-6">
+                                <form action="{{ route('settings.system.update') }}" method="POST" class="space-y-4">
+                                    @csrf
                                     <div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Mevcut Sürüm</div>
+                                        <x-input-label for="license_key" value="Lisans Anahtarı" />
+                                        <div class="mt-1 flex rounded-md shadow-sm">
+                                            <input type="text" name="license_key" id="license_key"
+                                                class="flex-1 block w-full rounded-none rounded-l-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                                                placeholder="MIO-XXXX-XXXX-XXXX"
+                                                value="{{ $settings->license_key ? str_repeat('*', 8) . substr(Crypt::decryptString($settings->license_key), -4) : '' }}">
+                                            <button type="submit"
+                                                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-r-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                Kaydet
+                                            </button>
+                                        </div>
+                                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Güncellemeleri
+                                            alabilmek için geçerli bir lisans anahtarı gereklidir.</p>
+                                    </div>
+                                </form>
+
+                                <div
+                                    class="pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Mevcut Sürüm
+                                        </div>
                                         <div class="text-sm text-gray-500 dark:text-gray-400">
                                             v{{ config('app.version', '1.0.0') }}</div>
                                     </div>
@@ -131,7 +205,7 @@
                                         </button>
                                     </form>
                                 </div>
-                            @endif
+                            </div>
                         </div>
                     </div>
 
