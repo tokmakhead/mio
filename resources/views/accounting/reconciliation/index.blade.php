@@ -151,7 +151,11 @@
                                             </a>
                                         </td>
                                         <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">
-                                            {{ $invoice->customer->name }}
+                                            @if($invoice->customer)
+                                                {{ $invoice->customer->name }}
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4">
                                             <span
@@ -217,7 +221,11 @@
                             @foreach($customers as $data)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                     <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">
-                                        {{ $data['customer']->name }}
+                                        @if($data['customer'])
+                                            {{ $data['customer']->name }}
+                                        @else
+                                            <span class="text-gray-400">-</span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 text-sm text-right text-red-600 font-mono">
                                         {{ number_format($data['debit'], 2) }}
@@ -232,14 +240,18 @@
                                             class="text-xs font-normal ml-1">{{ $data['balance'] > 0 ? '(B)' : '(A)' }}</span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <a href="{{ route('customers.ledger', $data['customer']) }}"
-                                            class="inline-flex items-center justify-center w-8 h-8 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg transition-all duration-200 hover:scale-110 hover:bg-indigo-100 dark:hover:bg-indigo-900/40"
-                                            title="Ekstre">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                                    d="M9 5l7 7-7 7"></path>
-                                            </svg>
-                                        </a>
+                                        @if($data['customer'])
+                                            <a href="{{ route('customers.ledger', $data['customer']) }}"
+                                                class="inline-flex items-center justify-center w-8 h-8 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg transition-all duration-200 hover:scale-110 hover:bg-indigo-100 dark:hover:bg-indigo-900/40"
+                                                title="Ekstre">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                        d="M9 5l7 7-7 7"></path>
+                                                </svg>
+                                            </a>
+                                        @else
+                                            <span class="text-gray-400">-</span>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
