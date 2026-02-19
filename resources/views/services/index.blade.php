@@ -176,19 +176,21 @@
                                                     @endphp
 
                                                     @if($isSameCurrency)
-                                                        <span class="text-sm font-medium {{ $profit >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400' }}">
-                                                            {{ number_format($profit, 2) }} {{ $service->currency }}
-                                                        </span>
-                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                            (Maliyet: {{ number_format($service->buying_price, 2) }} {{ $service->buying_currency ?? 'TRY' }})
-                                                        </span>
+                                                        <div class="flex flex-col">
+                                                            <span class="text-sm font-bold {{ $profit >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400' }}">
+                                                                {{ $profit >= 0 ? '+' : '' }}{{ number_format($profit, 2) }} {{ $service->currency }}
+                                                            </span>
+                                                            <span class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-tighter">Net Kâr</span>
+                                                        </div>
                                                     @else
-                                                        <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                                            {{ number_format($service->price, 2) }} {{ $service->currency }}
-                                                        </span>
-                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                            - {{ number_format($service->buying_price, 2) }} {{ $service->buying_currency ?? 'TRY' }}
-                                                        </span>
+                                                        <div class="flex flex-col">
+                                                            <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                                                {{ number_format($service->price, 2) }} {{ $service->currency }}
+                                                            </span>
+                                                            <span class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-tighter">
+                                                                Maliyet: {{ number_format($service->buying_price, 2) }} {{ $service->buying_currency ?? 'TRY' }}
+                                                            </span>
+                                                        </div>
                                                     @endif
                                                 </div>
                                             @else

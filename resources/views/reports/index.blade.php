@@ -42,7 +42,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                 <!-- Gelir Analizi -->
-                <x-card class="flex flex-col">
+                <x-card class="flex flex-col border-t-4 border-t-primary-500">
                     <div class="flex items-center justify-between mb-4">
                         <div
                             class="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center text-primary-600">
@@ -62,6 +62,30 @@
                     <a href="{{ route('reports.revenue') }}"
                         class="inline-flex justify-center items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm">
                         Görüntüle
+                    </a>
+                </x-card>
+
+                <!-- Kâr / Zarar Analizi -->
+                <x-card class="flex flex-col border-t-4 border-t-indigo-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <div
+                            class="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg flex items-center justify-center text-indigo-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <span
+                            class="px-2 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-bold rounded uppercase tracking-wider">Performans</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Kâr / Zarar Analizi</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mb-6 flex-grow">
+                        Hizmet maliyetleri ve net kârlılık oranlarını detaylı inceleyin.
+                    </p>
+                    <a href="{{ route('reports.profit') }}"
+                        class="inline-flex justify-center items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm">
+                        Verileri Analiz Et
                     </a>
                 </x-card>
 

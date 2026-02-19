@@ -71,19 +71,18 @@ class ReconciliationController extends Controller
         $customerIds = $allCustomers->pluck('id')->toArray();
 
         $financeService = new \App\Services\FinanceService();
-        $balances = $financeService->getCustomersBalances($customerIds);
+        $balances = $financeService->getCustomersDetailedBalances($customerIds);
 
         $customers = $allCustomers->map(function ($customer) use ($balances) {
             $customerBalances = $balances->get($customer->id, collect());
-
-            // For reconciliation, we might want a primary balance (TRY) or sum of all
-            // But let's stay consistent with the single 'balance' column for now
-            $balance = $customerBalances->get('TRY', 0);
+            $tryBalance = $customerBalances->get('TRY', ['debit' => 0, 'credit' => 0, 'balance' => 0]);
 
             return [
                 'customer' => $customer,
-                'balances' => $customerBalances, // All currencies
-                'balance' => $balance, // Legacy compat
+                'balances' => $customerBalances, // All currencies with details
+                'debit' => $tryBalance['debit'],
+                'credit' => $tryBalance['credit'],
+                'balance' => $tryBalance['balance'],
             ];
         });
 

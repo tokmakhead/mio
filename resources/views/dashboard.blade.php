@@ -22,12 +22,12 @@
                 <div class="space-y-4 mb-8">
                     @foreach($announcements as $announcement)
                         <div class="rounded-md p-4 border-l-4 shadow-sm
-                                                                                    @if($announcement['type'] == 'info') bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500
-                                                                                    @elseif($announcement['type'] == 'success') bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-500
-                                                                                    @elseif($announcement['type'] == 'warning') bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500
-                                                                                    @elseif($announcement['type'] == 'danger') bg-red-50 border-red-400 dark:bg-red-900/20 dark:border-red-500
-                                                                                    @else bg-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-500 @endif
-                                                                                ">
+                                                                                            @if($announcement['type'] == 'info') bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500
+                                                                                            @elseif($announcement['type'] == 'success') bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-500
+                                                                                            @elseif($announcement['type'] == 'warning') bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500
+                                                                                            @elseif($announcement['type'] == 'danger') bg-red-50 border-red-400 dark:bg-red-900/20 dark:border-red-500
+                                                                                            @else bg-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-500 @endif
+                                                                                        ">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     @if($announcement['type'] == 'info')
@@ -62,21 +62,21 @@
                                 </div>
                                 <div class="ml-3">
                                     <h3 class="text-sm font-medium 
-                                                                                                @if($announcement['type'] == 'info') text-blue-800 dark:text-blue-200
-                                                                                                @elseif($announcement['type'] == 'success') text-green-800 dark:text-green-200
-                                                                                                @elseif($announcement['type'] == 'warning') text-yellow-800 dark:text-yellow-200
-                                                                                                @elseif($announcement['type'] == 'danger') text-red-800 dark:text-red-200
-                                                                                                @else text-gray-800 dark:text-gray-200 @endif
-                                                                                            ">
+                                                                                                        @if($announcement['type'] == 'info') text-blue-800 dark:text-blue-200
+                                                                                                        @elseif($announcement['type'] == 'success') text-green-800 dark:text-green-200
+                                                                                                        @elseif($announcement['type'] == 'warning') text-yellow-800 dark:text-yellow-200
+                                                                                                        @elseif($announcement['type'] == 'danger') text-red-800 dark:text-red-200
+                                                                                                        @else text-gray-800 dark:text-gray-200 @endif
+                                                                                                    ">
                                         {{ $announcement['title'] }}
                                     </h3>
                                     <div class="mt-2 text-sm 
-                                                                                                @if($announcement['type'] == 'info') text-blue-700 dark:text-blue-300
-                                                                                                @elseif($announcement['type'] == 'success') text-green-700 dark:text-green-300
-                                                                                                @elseif($announcement['type'] == 'warning') text-yellow-700 dark:text-yellow-300
-                                                                                                @elseif($announcement['type'] == 'danger') text-red-700 dark:text-red-300
-                                                                                                @else text-gray-700 dark:text-gray-300 @endif
-                                                                                            ">
+                                                                                                        @if($announcement['type'] == 'info') text-blue-700 dark:text-blue-300
+                                                                                                        @elseif($announcement['type'] == 'success') text-green-700 dark:text-green-300
+                                                                                                        @elseif($announcement['type'] == 'warning') text-yellow-700 dark:text-yellow-300
+                                                                                                        @elseif($announcement['type'] == 'danger') text-red-700 dark:text-red-300
+                                                                                                        @else text-gray-700 dark:text-gray-300 @endif
+                                                                                                    ">
                                         <p>{{ $announcement['message'] }}</p>
                                     </div>
                                 </div>
@@ -96,10 +96,13 @@
 
                 <x-kpi-card title="Bu Ay Gelir ({{ $defaultCurrency }})"
                     value="{{ $financeService->formatCurrency($thisMonthRevenue, $defaultCurrency) }}" tone="warning"
+                    sub-value="{{ count($revenueMetrics) > 1 ? $revenueMetrics->except($defaultCurrency)->map(fn($v, $k) => $financeService->formatCurrency($v, $k))->join(' | ') : '' }}"
                     icon='<svg class="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
 
-                <x-kpi-card title="Vadesi Geçen" value="{{ $overdueInvoices }}" tone="danger"
-                    icon='<svg class="w-6 h-6 text-danger-600 dark:text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
+                <x-kpi-card title="Tahmini MRR ({{ $defaultCurrency }})"
+                    value="{{ $financeService->formatCurrency($mrr, $defaultCurrency) }}" tone="danger"
+                    sub-value="{{ count($mrrMetrics) > 1 ? $mrrMetrics->except($defaultCurrency)->map(fn($v, $k) => $financeService->formatCurrency($v, $k))->join(' | ') : '' }}"
+                    icon='<svg class="w-6 h-6 text-danger-600 dark:text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>' />
             </div>
 
             <!-- Charts Section -->
@@ -129,39 +132,52 @@
             </div>
 
             <!-- Financial Summary Cards -->
+            {{-- Financial Summary Grid with Multi-Currency Hints --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 <div
-                    class="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-xl border border-gray-100 dark:border-gray-700/50">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-widest mb-1">Toplam Kesilen
+                    class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Toplam Tahsilat
                         ({{ $defaultCurrency }})</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">
-                        {{ $financeService->formatCurrency($billedTotal, $defaultCurrency) }}
-                    </p>
-                </div>
-                <div
-                    class="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-xl border border-gray-100 dark:border-gray-700/50">
-                    <p class="text-xs font-medium text-green-600 dark:text-green-500 uppercase tracking-widest mb-1">
-                        Toplam Tahsilat ({{ $defaultCurrency }})</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">
+                    <p class="text-xl font-black text-gray-900 dark:text-white">
                         {{ $financeService->formatCurrency($collectedTotal, $defaultCurrency) }}
                     </p>
+                    @if(count($currencySummary) > 1)
+                        <p class="text-[10px] text-gray-500 mt-1">
+                            +
+                            {{ $currencySummary->except($defaultCurrency)->map(fn($v, $k) => $financeService->formatCurrency($v['receivable'], $k))->join(' | ') }}
+                        </p>
+                    @endif
                 </div>
                 <div
-                    class="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-xl border border-gray-100 dark:border-gray-700/50">
-                    <p class="text-xs font-medium text-rose-600 dark:text-rose-500 uppercase tracking-widest mb-1">
-                        Vadesi Geçmiş ({{ $defaultCurrency }})</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">
+                    class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-2">Borç/Kalan
+                        ({{ $defaultCurrency }})</p>
+                    <p class="text-xl font-black text-rose-600 dark:text-rose-400">
+                        {{ $financeService->formatCurrency($pendingTotal, $defaultCurrency) }}
+                    </p>
+                    @if(count($currencySummary) > 1)
+                        <p class="text-[10px] text-gray-500 mt-1">
+                            +
+                            {{ $currencySummary->except($defaultCurrency)->map(fn($v, $k) => $financeService->formatCurrency($v['payable'], $k))->join(' | ') }}
+                        </p>
+                    @endif
+                </div>
+                <div
+                    class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <p class="text-[10px] font-bold text-warning-500 uppercase tracking-widest mb-2">Vadesi Geçmiş
+                        ({{ $defaultCurrency }})</p>
+                    <p class="text-xl font-black text-warning-600 dark:text-warning-400">
                         {{ $financeService->formatCurrency($overdueTotal, $defaultCurrency) }}
                     </p>
+                    <p class="text-[10px] text-gray-500 mt-1">Geciken toplam alacak tutarı.</p>
                 </div>
                 <div
-                    class="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-xl border border-gray-100 dark:border-gray-700/50">
-                    <p
-                        class="text-xs font-medium text-primary-600 dark:text-primary-500 uppercase tracking-widest mb-1">
-                        Ortalama Fatura ({{ $defaultCurrency }})</p>
-                    <p class="text-xl font-bold text-gray-900 dark:text-white">
+                    class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <p class="text-[10px] font-bold text-primary-500 uppercase tracking-widest mb-2">Ortalama Fatura</p>
+                    <p class="text-xl font-black text-primary-900 dark:text-white">
                         {{ $financeService->formatCurrency($avgInvoice, $defaultCurrency) }}
                     </p>
+                    <p class="text-[10px] text-gray-500 mt-1">İşlem başına düşen hacim.</p>
                 </div>
             </div>
 
@@ -228,9 +244,9 @@
                                         <td class="px-6 py-4 text-right">
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                                                                                                            @if($service->days_until_expiry < 30) bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400
-                                                                                                            @elseif($service->days_until_expiry < 60) bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400
-                                                                                                            @else bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400 @endif">
+                                                                                                                @if($service->days_until_expiry < 30) bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400
+                                                                                                                @elseif($service->days_until_expiry < 60) bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400
+                                                                                                                @else bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400 @endif">
                                                 {{ $service->days_until_expiry }} gün
                                             </span>
                                         </td>
@@ -301,20 +317,20 @@
                                                 <div>
                                                     <span
                                                         class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-800 
-                                                                                                                    @php
-                                                                                                                        $color = 'bg-gray-400';
-                                                                                                                        if (str_contains($activity->action, 'created'))
-                                                                                                                            $color = 'bg-green-500';
-                                                                                                                        if (str_contains($activity->action, 'updated'))
-                                                                                                                            $color = 'bg-blue-500';
-                                                                                                                        if (str_contains($activity->action, 'deleted'))
-                                                                                                                            $color = 'bg-red-500';
-                                                                                                                        if (str_contains($activity->action, 'sent'))
-                                                                                                                            $color = 'bg-primary-500';
-                                                                                                                        if (str_contains($activity->action, 'login'))
-                                                                                                                            $color = 'bg-primary-500';
-                                                                                                                    @endphp
-                                                                                                                    {{ $color }}">
+                                                                                                                        @php
+                                                                                                                            $color = 'bg-gray-400';
+                                                                                                                            if (str_contains($activity->action, 'created'))
+                                                                                                                                $color = 'bg-green-500';
+                                                                                                                            if (str_contains($activity->action, 'updated'))
+                                                                                                                                $color = 'bg-blue-500';
+                                                                                                                            if (str_contains($activity->action, 'deleted'))
+                                                                                                                                $color = 'bg-red-500';
+                                                                                                                            if (str_contains($activity->action, 'sent'))
+                                                                                                                                $color = 'bg-primary-500';
+                                                                                                                            if (str_contains($activity->action, 'login'))
+                                                                                                                                $color = 'bg-primary-500';
+                                                                                                                        @endphp
+                                                                                                                        {{ $color }}">
                                                         @php
                                                             $icon = 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z';
                                                             if (str_contains($activity->action, 'invoice'))

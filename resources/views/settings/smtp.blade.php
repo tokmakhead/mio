@@ -154,7 +154,7 @@
                                             </label>
                                         </div>
                                         <div>
-                                            <a href="{{ route('smtp.logs') }}"
+                                            <a href="{{ route('settings.smtp.logs') }}"
                                                 class="text-sm text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold">
                                                 Gönderim Geçmişini Görüntüle &rarr;
                                             </a>

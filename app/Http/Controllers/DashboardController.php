@@ -51,10 +51,10 @@ class DashboardController extends Controller
                 // Average invoice
                 $data['avgInvoice'] = \App\Models\Invoice::where('currency', $defaultCurrency)->avg('grand_total') ?? 0;
 
-                // MRR Distribution
+                // MRR Distribution (Aggregate all currencies or group by type regardless of currency for the chart)
                 $mrrDistribution = \App\Models\Service::active()
                     ->select('type', \DB::raw('SUM(price) as total_price'))
-                    ->where('currency', $defaultCurrency)
+                    // ->where('currency', $defaultCurrency) // REMOVED FILTER to show global distribution
                     ->groupBy('type')
                     ->get()
                     ->map(function ($item) {

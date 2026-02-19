@@ -850,4 +850,22 @@ class SettingsController extends Controller
 
         return back()->with('success', 'Sisteminiz güncel! Mevcut Sürüm: ' . ($result['current_version'] ?? 'Unknown'));
     }
+
+    /**
+     * Placeholder for Stripe Webhook
+     */
+    public function stripeWebhook(Request $request)
+    {
+        // To be implemented
+        return response('Webhook Handled', 200);
+    }
+
+    /**
+     * Placeholder for PayTR Webhook
+     */
+    public function paytrWebhook(Request $request)
+    {
+        // To be implemented
+        return response('OK', 200);
+    }
 }

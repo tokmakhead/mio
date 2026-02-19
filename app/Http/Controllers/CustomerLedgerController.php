@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CustomerLedgerController extends Controller
 {
@@ -51,5 +52,53 @@ class CustomerLedgerController extends Controller
         });
 
         return view('customers.ledger', compact('customer', 'groupedEntries', 'summaryBalances', 'currencies'));
+    }
+
+    /**
+     * Generate PDF statement for the customer ledger.
+     */
+    public function pdf(Customer $customer)
+    {
+        // 1. Get ALL entries sorted by date
+        $allEntries = $customer->ledgerEntries()
+            ->with(['ref'])
+            ->orderBy('occurred_at')
+            ->orderBy('id')
+            ->get();
+
+        // 2. Group by currency
+        $groupedEntries = $allEntries->groupBy('currency');
+
+        // 3. Calculate running balance for EACH currency group independently
+        $groupedEntries->transform(function ($entries, $currency) {
+            $balance = 0;
+            foreach ($entries as $entry) {
+                if ($entry->type === 'debit') {
+                    $balance += $entry->amount;
+                } else {
+                    $balance -= $entry->amount;
+                }
+                $entry->balance = $balance;
+            }
+            return $entries;
+        });
+
+        // 4. Calculate Total Balances for Summary
+        $summaryBalances = $groupedEntries->map(function ($entries) {
+            return $entries->last()->balance ?? 0;
+        });
+
+        // 5. Get distinct currencies for tabs
+        $currencies = $groupedEntries->keys()->sort(function ($a, $b) {
+            if ($a === 'TRY')
+                return -1;
+            if ($b === 'TRY')
+                return 1;
+            return strnatcmp($a, $b);
+        });
+
+        $pdf = Pdf::loadView('customers.ledger_pdf', compact('customer', 'groupedEntries', 'summaryBalances', 'currencies'));
+
+        return $pdf->download("cari-ekstre-{$customer->id}-" . now()->format('Ymd') . ".pdf");
     }
 }

@@ -44,6 +44,32 @@ class FinanceService
     }
 
     /**
+     * Get detailed balances (debit, credit, balance) for multiple customers.
+     *
+     * @param array $customerIds
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCustomersDetailedBalances(array $customerIds)
+    {
+        return LedgerEntry::whereIn('customer_id', $customerIds)
+            ->select('customer_id', 'currency')
+            ->selectRaw('SUM(CASE WHEN type = "debit" THEN amount ELSE 0 END) as debit')
+            ->selectRaw('SUM(CASE WHEN type = "credit" THEN amount ELSE 0 END) as credit')
+            ->groupBy('customer_id', 'currency')
+            ->get()
+            ->groupBy('customer_id')
+            ->map(function ($group) {
+                return $group->keyBy('currency')->map(function ($row) {
+                    return [
+                        'debit' => (float) $row->debit,
+                        'credit' => (float) $row->credit,
+                        'balance' => (float) ($row->debit - $row->credit),
+                    ];
+                });
+            });
+    }
+
+    /**
      * Get global financial summary (Receivables and Payables) grouped by currency.
      * This replaces inefficient PHP-side summation in controllers.
      *

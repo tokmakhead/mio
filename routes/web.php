@@ -66,6 +66,11 @@ Route::middleware('auth')->group(function () {
     Route::get('invoices/{invoice}/payments/create', [\App\Http\Controllers\PaymentController::class, 'create'])->name('invoices.payments.create');
     Route::post('invoices/{invoice}/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('invoices.payments.store');
     Route::get('customers/{customer}/ledger', [\App\Http\Controllers\CustomerLedgerController::class, 'show'])->name('customers.ledger');
+    Route::get('/customers/{customer}/ledger/pdf', [\App\Http\Controllers\CustomerLedgerController::class, 'pdf'])->name('customers.ledger.pdf');
+
+    // Webhooks
+    Route::post('/webhooks/stripe', [\App\Http\Controllers\SettingsController::class, 'stripeWebhook'])->name('webhooks.stripe');
+    Route::post('/webhooks/paytr', [\App\Http\Controllers\SettingsController::class, 'paytrWebhook'])->name('webhooks.paytr');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
