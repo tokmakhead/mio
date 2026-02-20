@@ -3,7 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Invoice;
+use App\Models\Service;
+use App\Models\Payment;
+use App\Models\SystemSetting;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -23,9 +30,9 @@ class DashboardController extends Controller
 
                 // Robust counts
                 $data = [
-                    'totalCustomers' => \App\Models\Customer::count(),
-                    'activeServicesCount' => \App\Models\Service::active()->count(),
-                    'overdueInvoices' => \App\Models\Invoice::where('status', 'overdue')->count(),
+                    'totalCustomers' => Customer::count(),
+                    'activeServicesCount' => Service::active()->count(),
+                    'overdueInvoices' => Invoice::where('status', 'overdue')->count(),
                 ];
 
                 // Optimized Financial Metrics
@@ -37,39 +44,39 @@ class DashboardController extends Controller
                 // Specific metrics
                 $primarySummary = $currencySummary[$defaultCurrency] ?? ['receivable' => 0, 'payable' => 0, 'net' => 0];
 
-                $data['thisMonthRevenue'] = \App\Models\Payment::where('currency', $defaultCurrency)
+                $data['thisMonthRevenue'] = Payment::where('currency', $defaultCurrency)
                     ->whereMonth('paid_at', $now->month)
                     ->whereYear('paid_at', $now->year)
                     ->sum('amount');
 
-                $data['mrr'] = \App\Models\Service::active()
+                $data['mrr'] = Service::active()
                     ->where('currency', $defaultCurrency)
                     ->isRecurring()
                     ->get()
                     ->sum('mrr');
 
                 // Average invoice
-                $data['avgInvoice'] = \App\Models\Invoice::where('currency', $defaultCurrency)->avg('grand_total') ?? 0;
+                $data['avgInvoice'] = Invoice::where('currency', $defaultCurrency)->avg('grand_total') ?? 0;
 
                 // MRR Distribution (Aggregate all currencies or group by type regardless of currency for the chart)
-                $mrrDistribution = \App\Models\Service::active()
-                    ->select('type', \DB::raw('SUM(price) as total_price'))
+                $mrrDistribution = Service::active()
+                    ->select('type', DB::raw('SUM(price) as total_price'))
                     // ->where('currency', $defaultCurrency) // REMOVED FILTER to show global distribution
                     ->groupBy('type')
                     ->get()
                     ->map(function ($item) {
                         return [
-                            'label' => \App\Models\Service::getTypeLabel($item->type),
+                            'label' => Service::getTypeLabel($item->type),
                             'value' => (float) $item->total_price,
                         ];
                     });
 
                 // Overdue Total
-                $overdueTotal = \App\Models\Invoice::where('currency', $defaultCurrency)
+                $overdueTotal = Invoice::where('currency', $defaultCurrency)
                     ->where('status', '!=', 'paid')
                     ->where('status', '!=', 'cancelled')
                     ->where('due_date', '<', $now->startOfDay())
-                    ->sum(\DB::raw('grand_total - paid_amount'));
+                    ->sum(DB::raw('grand_total - paid_amount'));
 
                 // Merge all
                 return array_merge($data, [
@@ -78,18 +85,18 @@ class DashboardController extends Controller
                     'collectedTotal' => $primarySummary['receivable'],
                     'pendingTotal' => $primarySummary['payable'],
                     'overdueTotal' => $overdueTotal,
-                    'expiringServices' => \App\Models\Service::with('customer:id,name')->active()->expiringSoon(90)->orderBy('end_date')->limit(10)->get(),
-                    'recentActivities' => \App\Models\ActivityLog::with('actor:id,name', 'subject')->latest()->limit(10)->get(),
-                    'topCustomers' => \App\Models\Payment::with('customer:id,name,email')
-                        ->select('customer_id', \DB::raw('SUM(amount) as total_paid'))
+                    'expiringServices' => Service::with('customer:id,name')->active()->expiringSoon(90)->orderBy('end_date')->limit(10)->get(),
+                    'recentActivities' => ActivityLog::with('actor:id,name', 'subject')->latest()->limit(10)->get(),
+                    'topCustomers' => Payment::with('customer:id,name,email')
+                        ->select('customer_id', DB::raw('SUM(amount) as total_paid'))
                         ->where('currency', $defaultCurrency)
                         ->groupBy('customer_id')
                         ->orderByDesc('total_paid')
                         ->limit(5)
                         ->get(),
                     'currencySummary' => $currencySummary,
-                    'revenueMetrics' => \App\Models\Payment::select('currency', \DB::raw('SUM(amount) as total'))->whereMonth('paid_at', $now->month)->whereYear('paid_at', $now->year)->groupBy('currency')->pluck('total', 'currency'),
-                    'mrrMetrics' => \App\Models\Service::active()->select('currency', \DB::raw('SUM(price) as total'))->groupBy('currency')->pluck('total', 'currency'),
+                    'revenueMetrics' => Payment::select('currency', DB::raw('SUM(amount) as total'))->whereMonth('paid_at', $now->month)->whereYear('paid_at', $now->year)->groupBy('currency')->pluck('total', 'currency'),
+                    'mrrMetrics' => Service::active()->select('currency', DB::raw('SUM(price) as total'))->groupBy('currency')->pluck('total', 'currency'),
                 ]);
             });
 
@@ -119,12 +126,12 @@ class DashboardController extends Controller
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i)->startOfMonth();
 
-            $billed = \App\Models\Invoice::whereYear('issue_date', $date->year)
+            $billed = Invoice::whereYear('issue_date', $date->year)
                 ->whereMonth('issue_date', $date->month)
                 ->where('currency', $currency)
                 ->sum('grand_total');
 
-            $collected = \App\Models\Payment::whereYear('paid_at', $date->year)
+            $collected = Payment::whereYear('paid_at', $date->year)
                 ->whereMonth('paid_at', $date->month)
                 ->where('currency', $currency)
                 ->sum('amount');

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,15 @@ class AppServiceProvider extends ServiceProvider
         try {
             // Fix MySQL utf8mb4 index key length issue
             Schema::defaultStringLength(191);
+
+            // Morph map for polymorphic relationships
+            Relation::morphMap([
+                'Invoice' => \App\Models\Invoice::class,
+                'Customer' => \App\Models\Customer::class,
+                'Payment' => \App\Models\Payment::class,
+                'Service' => \App\Models\Service::class,
+                'Quote' => \App\Models\Quote::class,
+            ]);
 
             // Force HTTPS in production
             if (config('app.env') === 'production') {
