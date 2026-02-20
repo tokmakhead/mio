@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\EmailTemplate;
 use App\Models\Quote;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,38 +15,41 @@ class QuoteMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
+    public string $body;
+    public string $renderedSubject;
+    public bool $useTemplate;
+
     public function __construct(public Quote $quote)
     {
+        $template = EmailTemplate::where('type', 'quote')->where('enabled', true)->first();
+
+        if ($template) {
+            $vars = [
+                'customer_name' => $quote->customer->name ?? 'Müşteri',
+                'quote_number' => $quote->number,
+            ];
+            $this->body = $template->render($vars);
+            $this->renderedSubject = $template->renderSubject($vars);
+            $this->useTemplate = true;
+        } else {
+            $this->body = '';
+            $this->renderedSubject = 'Teklif: ' . $quote->number;
+            $this->useTemplate = false;
+        }
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'Teklif Formu: ' . $this->quote->number,
-        );
+        return new Envelope(subject: $this->renderedSubject);
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
-            view: 'emails.quote',
+            view: $this->useTemplate ? 'emails.dynamic' : 'emails.quote',
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         $pdfService = app(\App\Services\QuotePdfService::class);
@@ -53,8 +57,10 @@ class QuoteMail extends Mailable implements ShouldQueue
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('quotes.premium', $data);
 
         return [
-            \Illuminate\Mail\Mailables\Attachment::fromData(fn() => $pdf->output(), $this->quote->number . '.pdf')
-                ->withMime('application/pdf'),
+            \Illuminate\Mail\Mailables\Attachment::fromData(
+                fn() => $pdf->output(),
+                $this->quote->number . '.pdf'
+            )->withMime('application/pdf'),
         ];
     }
 }

@@ -243,14 +243,20 @@ class SettingsController extends Controller
                 'mail.from.name' => $settings->from_name,
             ]);
 
-            // Simple replacement for test
-            $body = $template->html_body;
-            $body = str_replace('{{customer_name}}', 'Test Müşteri', $body);
-            $body = str_replace('{{service_name}}', 'Test Hizmeti', $body);
+            // Replace all known variables with sample values for testing
+            $sampleVars = [
+                'customer_name' => 'Test Müşteri',
+                'invoice_number' => 'FAT-2026-00001',
+                'quote_number' => 'TEK-2026-00001',
+                'service_name' => 'Test Hizmeti',
+                'expiry_date' => now()->addDays(30)->format('d.m.Y'),
+            ];
+            $body = $template->render($sampleVars);
+            $subject = $template->renderSubject($sampleVars);
 
-            Mail::html($body, function ($message) use ($request, $template) {
+            Mail::html($body, function ($message) use ($request, $subject) {
                 $message->to($request->to)
-                    ->subject('[TEST] ' . $template->subject);
+                    ->subject('[TEST] ' . $subject);
             });
 
             return back()->with('success', 'Test e-postası başarıyla gönderildi.');
