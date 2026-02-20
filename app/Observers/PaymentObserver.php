@@ -33,28 +33,29 @@ class PaymentObserver
             if ($invoice->status === 'paid') {
                 $invoice->logActivity('paid');
 
-            // Auto-extend services
-            foreach ($invoice->items as $item) {
-                if ($item->service) {
-                    $service = $item->service;
-                    $months = match ($service->cycle) {
-                        'monthly' => 1,
-                        'quarterly' => 3,
-                        'yearly' => 12,
-                        'biennial' => 24,
-                        default => 0
-                    };
+                // Auto-extend services
+                foreach ($invoice->items as $item) {
+                    if ($item->service) {
+                        $service = $item->service;
+                        $months = match ($service->cycle) {
+                            'monthly' => 1,
+                            'quarterly' => 3,
+                            'yearly' => 12,
+                            'biennial' => 24,
+                            default => 0
+                        };
 
-                    if ($months > 0) {
-                        $currentEnd = $service->end_date ?? now();
-                        // If it's already past, start from now
-                        if ($currentEnd->isPast())
-                            $currentEnd = now();
+                        if ($months > 0) {
+                            $currentEnd = $service->end_date ?? now();
+                            // If it's already past, start from now
+                            if ($currentEnd->isPast())
+                                $currentEnd = now();
 
-                        $service->update([
-                            'end_date' => $currentEnd->addMonths($months),
-                            'status' => 'active'
-                        ]);
+                            $service->update([
+                                'end_date' => $currentEnd->addMonths($months),
+                                'status' => 'active'
+                            ]);
+                        }
                     }
                 }
             }
