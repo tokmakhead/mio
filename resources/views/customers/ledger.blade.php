@@ -1,3 +1,4 @@
+<x-app-layout>
     <x-page-banner :title="__('Cari Hesap Ekstresi')" :subtitle="$customer->name">
         <x-slot name="actions">
             <a href="{{ route('customers.ledger.pdf', $customer->id) }}" 
