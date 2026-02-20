@@ -48,8 +48,9 @@ class PaymentObserver
                         if ($months > 0) {
                             $currentEnd = $service->end_date ?? now();
                             // If it's already past, start from now
-                            if ($currentEnd->isPast())
+                            if ($currentEnd->isPast()) {
                                 $currentEnd = now();
+                            }
 
                             $service->update([
                                 'end_date' => $currentEnd->addMonths($months),
