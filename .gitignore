@@ -18,6 +18,8 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitignore
 
 # MIONEX distribution and standalone
 mionex-v1.0-dist.zip
