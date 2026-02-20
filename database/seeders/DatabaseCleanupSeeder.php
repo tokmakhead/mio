@@ -41,6 +41,9 @@ class DatabaseCleanupSeeder extends Seeder
 
         Schema::enableForeignKeyConstraints();
 
-        $this->command->info('Database cleanup completed successfully!');
+        // Clear dashboard cache
+        \Illuminate\Support\Facades\Cache::flush();
+
+        $this->command->info('Database cleanup and Cache flush completed successfully!');
     }
 }
