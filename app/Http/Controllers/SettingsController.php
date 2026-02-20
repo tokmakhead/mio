@@ -206,7 +206,10 @@ class SettingsController extends Controller
             $templates = EmailTemplate::all();
         }
 
-        return view('settings.email_templates', compact('templates'));
+        $brandSettings = BrandSetting::all()->pluck('value', 'key');
+        $settings = SystemSetting::first();
+
+        return view('settings.email_templates', compact('templates', 'brandSettings', 'settings'));
     }
 
     public function updateEmailTemplate(Request $request, EmailTemplate $template)
