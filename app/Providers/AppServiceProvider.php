@@ -20,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        /*
         // Fix MySQL utf8mb4 index key length issue
         Schema::defaultStringLength(191);
 
@@ -161,5 +162,6 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // Ignore during migration or if table missing
         }
+        */
     }
 }
