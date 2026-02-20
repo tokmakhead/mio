@@ -235,23 +235,33 @@
     </div>
 
     @push('scripts')
-        <script src="https://cdn.tiny.cloud/1/kd3cecfkjuc1bpqdwj8bjccn1rvf1oa9k20y6jdu63wdrm65/tinymce/6/tinymce.min.js"
-            referrerpolicy="origin"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.5/jodit.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.5/jodit.min.js"></script>
         <script>
-            tinymce.init({
-                selector: '.email-editor',
-                height: 400,
-                menubar: false,
-                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-                content_style: 'body { font-family: Outfit, sans-serif; font-size: 14px; }',
-                skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
-                content_css: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default',
+            const joditEditors = {};
+            document.querySelectorAll('.email-editor').forEach(function(textarea) {
+                joditEditors[textarea.id] = Jodit.make('#' + textarea.id, {
+                    height: 400,
+                    language: 'tr',
+                    toolbarButtonSize: 'small',
+                    theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+                    buttons: [
+                        'bold', 'italic', 'underline', 'strikethrough', '|',
+                        'font', 'fontsize', 'paragraph', '|',
+                        'align', '|',
+                        'ul', 'ol', 'indent', 'outdent', '|',
+                        'link', 'image', 'table', '|',
+                        'undo', 'redo', '|',
+                        'source'
+                    ],
+                    style: { font: '14px Outfit, sans-serif' },
+                });
             });
 
             function previewTemplate(id) {
                 const frame = document.getElementById('previewFrame');
-                const content = document.getElementById('html_body_' + id).value;
+                const editorKey = 'html_body_' + id;
+                const content = joditEditors[editorKey] ? joditEditors[editorKey].value : document.getElementById(editorKey).value;
                 const subject = document.getElementById('subject_' + id).value;
 
                 // Professional email wrapper for preview
