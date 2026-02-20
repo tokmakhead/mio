@@ -2,84 +2,78 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-echo "<html><head><title>MIONEX Diagnostic</title><style>
+echo "<html><head><title>MIONEX Deep Diagnostic</title><style>
     body { font-family: sans-serif; line-height: 1.6; padding: 20px; background: #f4f4f4; }
-    .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     h1 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-    .status { font-weight: bold; }
+    .status { font-weight: bold; margin-bottom: 10px; }
     .ok { color: green; }
-    .error { color: red; }
-    pre { background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    .error { color: red; background: #fff0f0; padding: 5px; border-left: 3px solid red; }
+    pre { background: #222; color: #0f0; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 13px; }
+    .step { padding: 10px; margin-bottom: 5px; border: 1px solid #ddd; border-radius: 4px; }
+    .step-name { font-weight: bold; }
 </style></head><body><div class='container'>";
 
-echo "<h1>MIONEX Diagnostic Tool</h1>";
+echo "<h1>MIONEX Deep Diagnostic Tool</h1>";
 
-echo "<h3>Environment Info</h3>";
-echo "<ul>";
-echo "<li>PHP Version: " . PHP_VERSION . "</li>";
-echo "<li>SAPI: " . php_sapi_name() . "</li>";
-echo "<li>User: " . (function_exists('get_current_user') ? get_current_user() : 'Unknown') . "</li>";
-echo "<li>OS: " . PHP_OS . "</li>";
-echo "</ul>";
-
-echo "<h3>Critical Extensions Check</h3>";
-$extensions = ['pdo_sqlite', 'sqlite3', 'mbstring', 'openssl', 'xml', 'ctype', 'bcmath', 'json', 'tokenizer'];
-echo "<ul>";
-foreach ($extensions as $ext) {
-    $loaded = extension_loaded($ext);
-    echo "<li>$ext: " . ($loaded ? "<span class='ok'>✅ LOADED</span>" : "<span class='error'>❌ MISSING</span>") . "</li>";
-}
-echo "</ul>";
-
-echo "<h3>Syntax Check (Manual Tokenization)</h3>";
-$files = [
-    '../app/Providers/AppServiceProvider.php',
-    '../app/Observers/PaymentObserver.php',
-    '../app/Observers/InvoiceObserver.php',
-    '../routes/web.php',
-    '../routes/auth.php',
-    '../bootstrap/app.php',
-    '../bootstrap/providers.php',
-    '../config/app.php',
-    '../config/database.php',
-];
-
-echo "<ul>";
-foreach ($files as $file) {
-    echo "<li><b>$file</b>: ";
-    if (!file_exists($file)) {
-        echo "<span class='error'>File not found</span>";
-    } else {
-        $content = file_get_contents($file);
-        try {
-            // Check for syntax errors by tokenizing
-            // This is safer than including files that rely on the Laravel framework
-            // If there's a serious parse error, this might still catch something or at least show we can read the file
-            $tokens = token_get_all($content);
-            echo "<span class='ok'>Tokenization Successful</span> (" . count($tokens) . " tokens)";
-        } catch (Throwable $e) {
-            echo "<span class='error'>SYNTAX ERROR: " . $e->getMessage() . "</span>";
-        }
+function run_step($name, $callback)
+{
+    echo "<div class='step'><span class='step-name'>$name:</span> ";
+    try {
+        $result = $callback();
+        echo "<span class='ok'>✅ SUCCESS</span>";
+        if ($result)
+            echo "<pre>" . htmlspecialchars($result) . "</pre>";
+    } catch (Throwable $e) {
+        echo "<span class='error'>❌ FAILED</span>";
+        echo "<pre>ERROR: " . $e->getMessage() . "\nFILE: " . $e->getFile() . "\nLINE: " . $e->getLine() . "\n\nTRACE:\n" . $e->getTraceAsString() . "</pre>";
     }
-    echo "</li>";
-}
-echo "</ul>";
-
-echo "<h3>Maintenance Mode Check</h3>";
-$maintenance = '../storage/framework/maintenance.php';
-if (file_exists($maintenance)) {
-    echo "<p class='error'>⚠️ Maintenance mode is ACTIVE! Delete $maintenance to restore.</p>";
-} else {
-    echo "<p class='ok'>✅ Maintenance mode is INACTIVE.</p>";
+    echo "</div>";
 }
 
-echo "<h3>Storage Permissions</h3>";
-$paths = ['../storage', '../storage/logs', '../storage/framework', '../storage/framework/views', '../database'];
+run_step("Checking .env existence", function () {
+    return file_exists('../.env') ? "Found" : throw new Exception(".env file missing!");
+});
+
+run_step("Checking Database file", function () {
+    $db = '../database/database.sqlite';
+    if (!file_exists($db))
+        return "Missing (might be normal if not using sqlite)";
+    return "Found: " . realpath($db) . " (" . filesize($db) . " bytes)";
+});
+
+run_step("Loading Composer Autoloader", function () {
+    require '../vendor/autoload.php';
+    return "Autoloader loaded";
+});
+
+run_step("Bootstrapping Application", function () {
+    $app = require_once '../bootstrap/app.php';
+    return "Application instance created";
+});
+
+run_step("Resolving Kernel", function () {
+    global $app;
+    if (!$app)
+        return "App not globally available";
+    // For Laravel 11+, we check handleRequest ability
+    return method_exists($app, 'handleRequest') ? "Modern Application structure confirmed" : "Legacy or different structure";
+});
+
+run_step("Maintenance Check (Internal)", function () {
+    $maintenance = '../storage/framework/maintenance.php';
+    if (file_exists($maintenance)) {
+        $data = json_decode(file_get_contents($maintenance), true);
+        return "Maintenance is ACTIVE. Data: " . print_r($data, true);
+    }
+    return "Maintenance is INACTIVE.";
+});
+
+echo "<h3>PHP Info Snippets</h3>";
 echo "<ul>";
-foreach ($paths as $path) {
-    $writable = is_writable($path);
-    echo "<li>$path: " . ($writable ? "<span class='ok'>Writable</span>" : "<span class='error'>NOT Writable</span>") . "</li>";
-}
+echo "<li>Memory Limit: " . ini_get('memory_limit') . "</li>";
+echo "<li>Max Execution Time: " . ini_get('max_execution_time') . "</li>";
+echo "<li>Extensions: " . implode(', ', get_loaded_extensions()) . "</li>";
 echo "</ul>";
 
 echo "</div></body></html>";
