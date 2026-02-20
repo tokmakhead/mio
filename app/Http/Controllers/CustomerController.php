@@ -143,4 +143,33 @@ class CustomerController extends Controller
         return redirect()->route('customers.index')
             ->with('success', 'Müşteri başarıyla silindi.');
     }
+
+    /**
+     * TomSelect AJAX search endpoint.
+     * Returns JSON: [{id, text, name, email, tax_number}]
+     */
+    public function apiSearch(Request $request)
+    {
+        $q = $request->input('q', '');
+
+        $customers = Customer::query()
+            ->when($q, fn($query) => $query->where(function ($q2) use ($q) {
+                $q2->where('name', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%")
+                    ->orWhere('tax_or_identity_number', 'like', "%{$q}%");
+            }))
+            ->orderBy('name')
+            ->limit(30)
+            ->get(['id', 'name', 'email', 'tax_or_identity_number']);
+
+        return response()->json(
+            $customers->map(fn($c) => [
+                'id' => $c->id,
+                'text' => $c->name,
+                'name' => $c->name,
+                'email' => $c->email ?? '',
+                'tax_number' => $c->tax_or_identity_number ?? '',
+            ])
+        );
+    }
 }

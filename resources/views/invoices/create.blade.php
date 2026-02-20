@@ -264,6 +264,7 @@
                         valueField: 'id',
                         labelField: 'text',
                         searchField: ['name', 'email', 'tax_number'],
+                        preload: true,
                         load: function (query, callback) {
                             var url = '{{ route("customers.api_search") }}?q=' + encodeURIComponent(query);
                             fetch(url)
@@ -278,9 +279,9 @@
                         render: {
                             option: function (item, escape) {
                                 return `<div>
-                                                    <span class="font-bold">${escape(item.name)}</span>
-                                                    <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
-                                                </div>`;
+                                                        <span class="font-bold">${escape(item.name)}</span>
+                                                        <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
+                                                    </div>`;
                             },
                             item: function (item, escape) {
                                 return `<div>${escape(item.name)}</div>`;
