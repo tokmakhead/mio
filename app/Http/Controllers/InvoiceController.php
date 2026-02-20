@@ -248,7 +248,14 @@ class InvoiceController extends Controller
                         'sent_at' => now(),
                     ]);
                 } else {
-                    \Illuminate\Support\Facades\Mail::to($invoice->customer->email)->send($mailable);
+                    \Illuminate\Support\Facades\Mail::to($invoice->customer->email)->sendNow($mailable);
+                    \App\Models\EmailLog::create([
+                        'to' => $invoice->customer->email,
+                        'subject' => 'Fatura #' . $invoice->number,
+                        'body' => 'Sent successfully (Direct)',
+                        'status' => 'sent',
+                        'sent_at' => now(),
+                    ]);
                 }
             } catch (\Exception $e) {
                 \App\Models\EmailLog::create([

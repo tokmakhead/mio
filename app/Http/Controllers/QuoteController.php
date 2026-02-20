@@ -239,7 +239,7 @@ class QuoteController extends Controller
                         'sent_at' => now(),
                     ]);
                 } else {
-                    \Illuminate\Support\Facades\Mail::to($quote->customer->email)->send($mailable);
+                    \Illuminate\Support\Facades\Mail::to($quote->customer->email)->sendNow($mailable);
                 }
             } catch (\Exception $e) {
                 \App\Models\EmailLog::create([
