@@ -99,105 +99,17 @@ class SettingsController extends Controller
                 [
                     'type' => 'service_expiry',
                     'subject' => 'Hizmet Süresi Doluyor: {{service_name}}',
-                    'html_body' => '<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        @media only screen and (max-width: 600px) {
-            .container { width: 100% !important; }
-            .content { padding: 20px !important; }
-            .cta-button { width: 100% !important; display: block !important; margin-bottom: 10px !important; }
-        }
-        @media (prefers-color-scheme: dark) {
-            body { background-color: #111827 !important; color: #f9fafb !important; }
-            .container { background-color: #1f2937 !important; border-color: #374151 !important; }
-            .info-box { background-color: #374151 !important; }
-            .text-gray-600 { color: #9ca3af !important; }
-            .text-gray-900 { color: #f9fafb !important; }
-            .bank-info { background-color: #111827 !important; border-color: #374151 !important; }
-        }
-    </style>
-</head>
-<body style="margin: 0; padding: 0; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; color: #1f2937;">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-        <tr>
-            <td align="center" style="padding: 40px 0;">
-                <table class="container" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
-                    <tr>
-                        <td align="center" style="padding: 40px 40px 20px 40px; background-color: #a82244;">
-                            <img src="{{logo_url}}" alt="MIONEX" width="120" style="display: block; margin-bottom: 20px; filter: brightness(0) invert(1);">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">Hizmet Süresi Dolma Uyarısı</h1>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="content" style="padding: 40px;">
-                            <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Sayın <strong>{{customer_name}}</strong>,</p>
-                            <p style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.6;">Aşağıda detayları belirtilen hizmetinizin süresi dolmak üzeredir. Kesinti yaşamamanız için süresi dolmadan yenilemenizi öneririz.</p>
-                            <div class="info-box" style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 30px; border: 1px solid #f3f4f6;">
-                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                    <tr>
-                                        <td style="padding-bottom: 10px;" width="120"><span style="color: #6b7280; font-size: 14px;">Hizmet Türü:</span></td>
-                                        <td style="padding-bottom: 10px;"><span style="color: #111827; font-size: 14px; font-weight: 600;">{{service_type}}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding-bottom: 10px;"><span style="color: #6b7280; font-size: 14px;">Hizmet Adı:</span></td>
-                                        <td style="padding-bottom: 10px;"><span style="color: #111827; font-size: 14px; font-weight: 600;">{{service_name}}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><span style="color: #6b7280; font-size: 14px;">Bitiş Tarihi:</span></td>
-                                        <td><span style="color: #ef4444; font-size: 14px; font-weight: 600;">{{end_date}}</span></td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <div style="background-color: {{days_left_color}}; border-radius: 6px; padding: 12px; text-align: center; margin-bottom: 30px;">
-                                <span style="color: #ffffff; font-weight: 700; font-size: 16px;">Hizmetin dolmasına {{days_left}} gün kaldı!</span>
-                            </div>
-                            <h3 style="font-size: 18px; margin: 0 0 15px 0;">Yenileme Seçenekleri</h3>
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 30px; border-collapse: collapse;">
-                                <tr>
-                                    <td style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px 0 0 8px;">1 Yıllık Yenileme</td>
-                                    <td align="right" style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 0 8px 8px 0; font-weight: 700;">{{renewal_price_1y}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 12px; border: 1px solid #e5e7eb; border-top: none;">2 Yıllık Yenileme</td>
-                                    <td align="right" style="padding: 12px; border: 1px solid #e5e7eb; border-top: none; font-weight: 700;">{{renewal_price_2y}}</td>
-                                </tr>
-                            </table>
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                    <td align="center">
-                                        <a href="{{service_url}}" class="cta-button" style="display: inline-block; padding: 14px 24px; background-color: #ffffff; color: #a82244; text-decoration: none; border: 2px solid #a82244; border-radius: 8px; font-weight: 600; font-size: 14px; margin-right: 10px;">Hizmeti Görüntüle</a>
-                                        <a href="{{renew_url}}" class="cta-button" style="display: inline-block; padding: 14px 24px; background-color: #a82244; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; box-shadow: 0 4px 6px rgba(168, 34, 68, 0.2);">Hizmeti Yenile</a>
-                                    </td>
-                                </tr>
-                            </table>
-                            <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #e5e7eb;">
-                                <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Banka Bilgileri</h4>
-                                <div class="bank-info" style="background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 15px;">
-                                    <p style="margin: 0; font-size: 14px; line-height: 1.6;">
-                                        <strong>Banka:</strong> {{bank_name}}<br>
-                                        <strong>IBAN:</strong> <span style="font-family: monospace;">{{iban}}</span><br>
-                                        <strong>Not:</strong> {{bank_info}}
-                                    </p>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 30px 40px; background-color: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center;">
-                            <p style="margin: 0; font-size: 12px; color: #9ca3af; line-height: 1.5;">Bu otomatik bir bilgilendirme mesajıdır. Lütfen bu e-postayı yanıtlamayınız.</p>
-                            <p style="margin: 10px 0 0 0; font-size: 12px; color: #9ca3af;">E-posta düzgün görüntülenmiyorsa <a href="{{fallback_url}}" style="color: #a82244; text-decoration: underline;">buraya tıklayarak</a> tarayıcıda görüntüleyebilirsiniz.</p>
-                            <p style="margin: 20px 0 0 0; font-size: 12px; color: #d1d5db;">&copy; {{year}} MIONEX. Tüm hakları saklıdır.</p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>'
+                    'html_body' => '<p>Sayın <strong>{{customer_name}}</strong>,</p>
+<p>Aşağıda detayları belirtilen hizmetinizin süresi dolmak üzeredir. Kesinti yaşamamanız için süresi dolmadan yenilemenizi öneririz.</p>
+<div style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 20px; border: 1px solid #f3f4f6;">
+    <p style="margin:0"><strong>Hizmet:</strong> {{service_name}}</p>
+    <p style="margin:0"><strong>Bitiş Tarihi:</strong> <span style="color: #ef4444;">{{end_date}}</span></p>
+    <p style="margin:0"><strong>Kalan Gün:</strong> {{days_left}}</p>
+</div>
+<p>Yenileme yapmak veya detayları incelemek için aşağıdaki butonu kullanabilirsiniz.</p>
+<p align="center">
+    <a href="{{renew_url}}" style="display: inline-block; padding: 12px 24px; background-color: {{brand_color}}; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600;">Hizmeti Yenile</a>
+</p>'
                 ],
             ];
             foreach ($defaults as $default) {
