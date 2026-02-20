@@ -24,9 +24,19 @@ class QuoteMail extends Mailable implements ShouldQueue
         $template = EmailTemplate::where('type', 'quote')->where('enabled', true)->first();
 
         if ($template) {
+            $settings = \App\Models\SystemSetting::first();
+            $brand = \App\Models\BrandSetting::all()->pluck('value', 'key');
+
             $vars = [
                 'customer_name' => $quote->customer->name ?? 'Müşteri',
                 'quote_number' => $quote->number,
+                'quote_date' => $quote->created_at ? $quote->created_at->format('d.m.Y') : now()->format('d.m.Y'),
+                'grand_total' => number_format($quote->grand_total, 2) . ' ' . $quote->currency,
+                'brand_name' => $brand['site_title'] ?? ($settings->site_name ?? 'MIONEX'),
+                'brand_logo' => $brand['logo_path'] ?? ($settings->logo_path ?? ''),
+                'brand_color' => $brand['primary_color'] ?? '#dc2626',
+                'app_name' => $settings->site_name ?? 'MIONEX',
+                'app_url' => config('app.url'),
             ];
             $this->body = $template->render($vars);
             $this->renderedSubject = $template->renderSubject($vars);

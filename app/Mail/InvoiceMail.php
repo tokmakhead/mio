@@ -24,9 +24,20 @@ class InvoiceMail extends Mailable implements ShouldQueue
         $template = EmailTemplate::where('type', 'invoice')->where('enabled', true)->first();
 
         if ($template) {
+            $settings = \App\Models\SystemSetting::first();
+            $brand = \App\Models\BrandSetting::all()->pluck('value', 'key');
+
             $vars = [
                 'customer_name' => $invoice->customer->name ?? 'Müşteri',
                 'invoice_number' => $invoice->number,
+                'invoice_date' => $invoice->issue_date ? $invoice->issue_date->format('d.m.Y') : now()->format('d.m.Y'),
+                'due_date' => $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '-',
+                'grand_total' => number_format((float) $invoice->grand_total, 2) . ' ' . $invoice->currency,
+                'brand_name' => $brand['site_title'] ?? ($settings->site_name ?? 'MIONEX'),
+                'brand_logo' => $brand['logo_path'] ?? ($settings->logo_path ?? ''),
+                'brand_color' => $brand['primary_color'] ?? '#dc2626',
+                'app_name' => $settings->site_name ?? 'MIONEX',
+                'app_url' => config('app.url'),
             ];
             $this->body = $template->render($vars);
             $this->renderedSubject = $template->renderSubject($vars);

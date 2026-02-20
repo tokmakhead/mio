@@ -12,6 +12,8 @@ class InvoicePdfService
     {
         $invoice->load(['customer', 'items.service']);
         $brandSettings = BrandSetting::all()->pluck('value', 'key');
+        $settings = \App\Models\SystemSetting::first();
+        $brandSettings['app_name'] = $settings->site_name ?? 'MIONEX';
 
         // Calculate Totals
         $totals = $this->calculateTotals($invoice);
