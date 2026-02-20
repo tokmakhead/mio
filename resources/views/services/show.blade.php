@@ -140,8 +140,8 @@
                                     {{ $service->customer->email ?? '-' }}
                                 </p>
                             </div>
-                            @if($service->customer)
-                                <a href="{{ route('customers.show', $service->customer) }}"
+                            @if($service->customer && $service->customer->id)
+                                <a href="{{ route('customers.show', $service->customer->id) }}"
                                     class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                     Müşteriye Git
                                 </a>

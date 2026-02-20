@@ -216,8 +216,8 @@
 
                                         <!-- Customer -->
                                         <td class="px-4 py-4">
-                                            @if($service->customer)
-                                                <a href="{{ route('customers.show', $service->customer) }}"
+                                            @if($service->customer && $service->customer->id)
+                                                <a href="{{ route('customers.show', $service->customer->id) }}"
                                                     class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
                                                     {{ $service->customer->name }}
                                                 </a>
