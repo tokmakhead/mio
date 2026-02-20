@@ -108,45 +108,50 @@
 
                     <!-- Table -->
                     <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
                                 <tr>
+                                    <th class="px-4 py-4 w-4">
+                                        <input type="checkbox" id="selectAll"
+                                            class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50">
+                                    </th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        class="px-4 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
                                         Hizmet</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        class="px-4 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
                                         Net Kâr</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        Kod</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        class="px-4 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
                                         Tür</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        class="px-4 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
                                         Müşteri</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        class="px-4 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
                                         Sağlayıcı</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        class="px-4 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
                                         Dönem</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        class="px-4 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300 text-center">
                                         Durum</th>
                                     <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        class="px-4 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
                                         Vade</th>
                                     <th
-                                        class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        class="px-4 py-4 text-sm font-semibold text-gray-700 dark:text-gray-300 text-right">
                                         İşlemler</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach($services as $service)
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150">
-                                        <!-- Service Name + Price -->
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-150">
+                                        <td class="px-4 py-4 w-4">
+                                            <input type="checkbox" name="ids[]" value="{{ $service->id }}"
+                                                class="row-checkbox rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50">
+                                        </td>
+                                        <!-- Service Name + Price + Code -->
                                         <td class="px-4 py-4">
                                             <div class="flex items-center space-x-3">
                                                 <div class="w-10 h-10 rounded-lg {{ $service->type == 'domain' ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : ($service->type == 'hosting' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400') }} flex items-center justify-center flex-shrink-0">
@@ -159,9 +164,15 @@
                                                     @endif
                                                 </div>
                                                 <div>
-                                                    <div class="font-medium text-gray-900 dark:text-white">{{ $service->name }}</div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                        {{ number_format($service->price, 2) }} {{ $service->currency }}</div>
+                                                    <div class="font-medium text-gray-900 dark:text-white leading-tight mb-0.5">{{ $service->name }}</div>
+                                                    <div class="flex items-center space-x-2">
+                                                        <span class="text-xs font-semibold text-primary-600 dark:text-primary-400">
+                                                            {{ number_format($service->price, 2) }} {{ $service->currency }}
+                                                        </span>
+                                                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-mono">
+                                                            {{ $service->identifier_code }}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -180,7 +191,7 @@
                                                             <span class="text-sm font-bold {{ $profit >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400' }}">
                                                                 {{ $profit >= 0 ? '+' : '' }}{{ number_format($profit, 2) }} {{ $service->currency }}
                                                             </span>
-                                                            <span class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-tighter">Net Kâr</span>
+                                                            <span class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-tighter font-semibold">Net Kâr</span>
                                                         </div>
                                                     @else
                                                         <div class="flex flex-col">
@@ -198,14 +209,6 @@
                                             @endif
                                         </td>
 
-                                        <!-- Identifier Code Pill -->
-                                        <td class="px-4 py-4">
-                                            <span
-                                                class="px-2 py-1 text-xs font-mono font-medium rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                                                {{ $service->identifier_code }}
-                                            </span>
-                                        </td>
-
                                         <!-- Type Badge -->
                                         <td class="px-4 py-4">
                                             <span
@@ -218,7 +221,7 @@
                                         <td class="px-4 py-4">
                                             @if($service->customer && $service->customer->id)
                                                 <a href="{{ route('customers.show', $service->customer->id) }}"
-                                                    class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
+                                                    class="text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline">
                                                     {{ $service->customer->name }}
                                                 </a>
                                             @else
@@ -230,7 +233,7 @@
                                         <td class="px-4 py-4">
                                             @if($service->provider && $service->provider->id)
                                                 <a href="{{ route('providers.show', $service->provider->id) }}"
-                                                    class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
+                                                    class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
                                                     {{ $service->provider->name }}
                                                 </a>
                                             @else
@@ -246,11 +249,11 @@
                                         </td>
 
                                         <!-- Status Dot -->
-                                        <td class="px-4 py-4">
-                                            <div class="flex items-center space-x-2 whitespace-nowrap">
+                                        <td class="px-4 py-4 text-center">
+                                            <div class="flex flex-col items-center justify-center space-y-1">
                                                 <span
                                                     class="w-2 h-2 rounded-full flex-shrink-0 {{ \App\Models\Service::getStatusDotColor($service->status) }}"></span>
-                                                <span class="text-sm text-gray-700 dark:text-gray-300">
+                                                <span class="text-[10px] font-medium text-gray-700 dark:text-gray-300 uppercase">
                                                     {{ \App\Models\Service::getStatusLabel($service->status) }}
                                                 </span>
                                             </div>
@@ -259,15 +262,15 @@
                                         <!-- Expiry Date with Color -->
                                         <td class="px-4 py-4">
                                             <div class="flex flex-col">
-                                                <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                                <span class="text-sm font-bold text-gray-900 dark:text-white">
                                                     {{ $service->end_date ? $service->end_date->format('d.m.Y') : '-' }}
                                                 </span>
                                                 @if($service->days_until_expiry >= 0)
-                                                    <span class="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $service->days_until_expiry <= 30 ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' }}">
+                                                    <span class="text-[10px] text-gray-500 dark:text-gray-400">
                                                         {{ $service->days_until_expiry }} gün kaldı
                                                     </span>
                                                 @else
-                                                    <span class="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400">
+                                                    <span class="text-[10px] text-rose-500 font-bold uppercase">
                                                         Süresi doldu
                                                     </span>
                                                 @endif
@@ -297,7 +300,7 @@
                                                 </a>
                                                 <x-delete-modal title="Hizmeti Sil"
                                                     message="Bu hizmeti silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
-                                                    :action="route('services.destroy', $service)" title="Sil" />
+                                                    :action="route('services.destroy', $service)" />
                                             </div>
                                         </td>
                                     </tr>
