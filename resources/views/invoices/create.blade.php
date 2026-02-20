@@ -1,6 +1,65 @@
 <x-app-layout>
     <x-page-banner title="Yeni Fatura Oluştur" subtitle="Müşteriniz için manuel fatura kaydı yapın." />
 
+    <!-- Currency Mismatch Warning Modal -->
+    <div x-data="{ open: false, serviceCurrency: '', invoiceCurrency: '', price: 0 }"
+        x-on:open-currency-warning.window="open = true; serviceCurrency = $event.detail.serviceCurrency; invoiceCurrency = $event.detail.invoiceCurrency; price = $event.detail.price"
+        x-show="open" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="open = false"></div>
+
+        <!-- Modal -->
+        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+            <!-- Top accent -->
+            <div class="h-1 bg-gradient-to-r from-warning-400 to-warning-600"></div>
+
+            <div class="p-6">
+                <!-- Icon + Title -->
+                <div class="flex items-center gap-4 mb-4">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-xl bg-warning-50 dark:bg-warning-900/20 text-warning-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.539-1.333-3.308 0L3.732 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Para Birimi Uyumsuzluğu</h3>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">Dikkat — fiyat farkı oluşabilir</p>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                    <p>
+                        Seçilen hizmetin para birimi
+                        <span class="font-bold text-warning-600 dark:text-warning-400" x-text="serviceCurrency"></span>
+                        iken faturanın para birimi
+                        <span class="font-bold text-primary-600 dark:text-primary-400" x-text="invoiceCurrency"></span>
+                        olarak ayarlandı.
+                    </p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">
+                        Hizmet fiyatı
+                        (<span x-text="price"></span>)
+                        fatura para birimine göre kur farkı içerebilir. Birim fiyatı manuel olarak güncellemeniz
+                        önerilir.
+                    </p>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end mt-6">
+                    <button @click="open = false"
+                        class="px-6 py-2.5 bg-warning-500 hover:bg-warning-600 text-white text-sm font-bold rounded-xl transition-colors shadow-sm shadow-warning-500/30">
+                        Anladım
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="py-12" x-data="invoiceForm()">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <form action="{{ route('invoices.store') }}" method="POST" class="space-y-6">
@@ -281,9 +340,9 @@
                         render: {
                             option: function (item, escape) {
                                 return `<div>
-                                                            <span class="font-bold">${escape(item.name)}</span>
-                                                            <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
-                                                        </div>`;
+                                                                <span class="font-bold">${escape(item.name)}</span>
+                                                                <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
+                                                            </div>`;
                             },
                             item: function (item, escape) {
                                 return `<div>${escape(item.name)}</div>`;
@@ -315,7 +374,9 @@
 
                         // Currency Check
                         if (serviceCurrency && serviceCurrency !== this.currency) {
-                            alert(`DİKKAT: Seçilen hizmetin para birimi (${serviceCurrency}) ile fatura para birimi (${this.currency}) farklı!\n\nFiyatı (${price}) kur çevrimine göre manuel olarak güncellemeniz önerilir.`);
+                            window.dispatchEvent(new CustomEvent('open-currency-warning', {
+                                detail: { serviceCurrency, invoiceCurrency: this.currency, price }
+                            }));
                         }
 
                         this.items[index].unit_price = price;
