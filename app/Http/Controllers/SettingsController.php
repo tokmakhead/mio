@@ -159,15 +159,20 @@ class SettingsController extends Controller
             ]);
 
             $brand = \App\Models\BrandSetting::all()->pluck('value', 'key');
+            $brandColor = $brand['primary_color'] ?? '#dc2626';
+            $logoPath = $brand['logo_path'] ?? ($settings->logo_path ?? '');
+            $brandLogo = !empty($logoPath) ? (str_starts_with($logoPath, 'http') ? $logoPath : asset('storage/' . $logoPath)) : '';
+            $brandName = $brand['site_title'] ?? ($settings->site_name ?? 'MIONEX');
+
             $sampleVars = [
                 'customer_name' => 'Test Müşteri',
                 'invoice_number' => 'FAT-2026-00001',
                 'quote_number' => 'TEK-2026-00001',
                 'service_name' => 'Test Hizmeti',
                 'expiry_date' => now()->addDays(30)->format('d.m.Y'),
-                'brand_name' => $brand['site_title'] ?? ($settings->site_name ?? 'MIONEX'),
-                'brand_logo' => $brand['logo_path'] ?? ($settings->logo_path ?? ''),
-                'brand_color' => $brand['primary_color'] ?? '#dc2626',
+                'brand_name' => $brandName,
+                'brand_logo' => $brandLogo,
+                'brand_color' => $brandColor,
                 'app_name' => $settings->site_name ?? 'MIONEX',
                 'app_url' => config('app.url'),
             ];

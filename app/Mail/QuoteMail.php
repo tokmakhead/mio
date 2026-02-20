@@ -29,7 +29,8 @@ class QuoteMail extends Mailable implements ShouldQueue
         $brand = \App\Models\BrandSetting::all()->pluck('value', 'key');
 
         $this->brand_color = $brand['primary_color'] ?? '#dc2626';
-        $this->brand_logo = $brand['logo_path'] ?? ($settings->logo_path ?? '');
+        $logoPath = $brand['logo_path'] ?? ($settings->logo_path ?? '');
+        $this->brand_logo = !empty($logoPath) ? (str_starts_with($logoPath, 'http') ? $logoPath : asset('storage/' . $logoPath)) : '';
         $this->brand_name = $brand['site_title'] ?? ($settings->site_name ?? 'MIONEX');
 
         if ($template) {

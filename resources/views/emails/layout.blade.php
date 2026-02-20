@@ -85,24 +85,30 @@
     </style>
 </head>
 
-<body>
-    <div class="wrapper">
-        <div class="container">
-            <div class="header">
+<body style="margin: 0; padding: 0; background-color: #f4f7f9;">
+    <div class="wrapper" style="padding: 40px 10px;">
+        <div class="container"
+            style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eef2f5;">
+            <div class="header"
+                style="background: {{ $brand_color ?? '#dc2626' }}; padding: 30px; text-align: center; color: #ffffff;">
                 @if(!empty($brand_logo))
-                    <img src="{{ $brand_logo }}" alt="{{ $brand_name ?? 'MIONEX' }}" class="logo">
+                    <img src="{{ $brand_logo }}" alt="{{ $brand_name ?? 'MIONEX' }}"
+                        style="max-height: 50px; width: auto; filter: brightness(0) invert(1);">
                 @else
-                    <div class="logo-text">{{ $brand_name ?? 'MIONEX' }}</div>
+                    <div style="font-size: 24px; font-weight: 800; letter-spacing: -1px;">{{ $brand_name ?? 'MIONEX' }}
+                    </div>
                 @endif
             </div>
 
-            <div class="body">
+            <div class="body" style="padding: 40px; line-height: 1.6; color: #334455; font-size: 15px;">
                 @yield('content')
             </div>
 
-            <div class="footer">
-                <p>Bu bir sistem bildirimidir. Lütfen bu e-postayı yanıtlamayın.</p>
-                <p>&copy; {{ date('Y') }} <strong>{{ $brand_name ?? 'MIONEX' }}</strong>. Tüm hakları saklıdır.</p>
+            <div class="footer"
+                style="background: #f8fafc; padding: 25px; text-align: center; color: #94a3b8; font-size: 11px; border-top: 1px solid #edf2f7; line-height: 1.5;">
+                <p style="margin: 0 0 10px 0;">Bu bir sistem bildirimidir. Lütfen bu e-postayı yanıtlamayın.</p>
+                <p style="margin: 0;">&copy; {{ date('Y') }} <strong>{{ $brand_name ?? 'MIONEX' }}</strong>. Tüm hakları
+                    saklıdır.</p>
             </div>
         </div>
     </div>
