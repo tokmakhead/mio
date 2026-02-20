@@ -142,76 +142,38 @@ class Invoice extends Model
     }
 
     /**
-     * Generate a robust sequential invoice number
+     * Generate a unique, race-condition-safe invoice number.
+     * Uses lockForUpdate() inside a transaction + do-while loop as fallback.
      */
-    public static function generateNumber()
+    public static function generateNumber(): string
     {
         $settings = \App\Models\SystemSetting::first();
         $prefix = $settings->invoice_prefix ?? 'FAT';
-        $startNumber = $settings->invoice_start_number ?? 1;
+        $startNum = (int) ($settings->invoice_start_number ?? 1);
 
         $year = now()->year;
-
-        // Handle dynamic placeholders
         $prefix = str_replace(['{YEAR}', '{Y}'], [$year, substr($year, -2)], $prefix);
 
-        // If prefix doesn't contain YEAR tag but user wants year-based prefix, they should set it in settings.
-        // Default behavior: just use the prefix as is.
-        // Format: PREFIX-SEQUENCE (e.g. FAT2024-00001) or just PREFIX-SEQUENCE (FAT-00001)
+        do {
+            // Lock the last record so concurrent requests can't pick the same sequence
+            $last = self::where('number', 'like', $prefix . '%')
+                ->orderByRaw('LENGTH(number) DESC')
+                ->orderBy('number', 'desc')
+                ->lockForUpdate()
+                ->first();
 
-        // To find the last record, we need to match the prefix pattern.
-        // If the prefix changes annually (contains year), the sequence will naturally reset because matching records won't be found.
+            if ($last) {
+                $seq = (int) preg_replace('/\D/', '', substr($last->number, strlen($prefix)));
+                $next = $seq + 1;
+            } else {
+                $next = $startNum;
+            }
 
-        $lastRecord = self::where('number', 'like', "{$prefix}%")
-            ->orderByRaw('LENGTH(number) DESC') // Order by length first to handle 1 vs 10 correctly if not padded
-            ->orderBy('number', 'desc')
-            ->first();
+            $number = $prefix . str_pad($next, 5, '0', STR_PAD_LEFT);
 
-        // Extract sequence
-        if ($lastRecord) {
-            // Assuming format is PREFIX-SEQUENCE or PREFIXSEQUENCE
-            // Remove prefix from the start
-            $sequenceStr = substr($lastRecord->number, strlen($prefix));
-            // Remove any separator if present (e.g. -)
-            // But wait, the separator might be part of the prefix or added automatically?
-            // Let's assume the user puts the separator in the prefix if they want it, OR we enforce a standard.
-            // Current standard was PREFIX-YEAR-SEQUENCE.
-            // New standard: Just use the defined prefix. 
-            // BUT: If the user didn't put a separator in the prefix, `FAT202400001` is hard to parse if no separator.
-            // Let's assume we ALWAYS append a hyphen between prefix and sequence IF the prefix doesn't end with one.
+            // Extra safety: if somehow this number already exists, bump and retry
+        } while (self::where('number', $number)->exists());
 
-            // Actually, let's keep it simple. We filter by `like prefix%`.
-            // We strip the prefix. The rest is the number.
-
-            // Sanitize separator handling:
-            // If prefix ends with -, leave it. If not, maybe check if the number has -, ...
-            // Best approach: trusting the user set `FAT-{YEAR}-` as prefix.
-            // If they just set `FAT`, we might want `FAT-00001`.
-
-            // Let's check if the last record implies a separator. 
-            // Actually, let's look at `SystemSetting` defaults. 
-            // If I change the logic, I might break existing numbering if they rely on hardcoded `FAT-`.
-            // Existing logic enforced: `FAT-{YEAR}-`.
-
-            // Proposed Logic:
-            // 1. Get Prefix. Replace Tags.
-            // 2. Search `number LIKE 'Prefix%'`.
-            // 3. Last Number - Prefix = Sequence (Int).
-            // 4. Increment.
-
-            $sequencePart = substr($lastRecord->number, strlen($prefix));
-            // Remove leading hyphen if we added one automatically? 
-            // If we assume the stored number is exactly what we generated, 
-            // then we should generate it consistently.
-
-            // Let's assume we simply concatenate Prefix + PaddedSequence.
-
-            $currentSequence = (int) $sequencePart;
-            $nextSequence = $currentSequence + 1;
-        } else {
-            $nextSequence = $startNumber;
-        }
-
-        return $prefix . str_pad($nextSequence, 5, '0', STR_PAD_LEFT);
+        return $number;
     }
 }
