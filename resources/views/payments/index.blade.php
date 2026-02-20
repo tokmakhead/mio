@@ -39,7 +39,7 @@
                                 @forelse ($payments as $payment)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            {{ $payment->paid_at->format('d.m.Y') }}
+                                            {{ $payment->paid_at ? $payment->paid_at->format('d.m.Y') : '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             @if($payment->invoice)

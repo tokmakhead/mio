@@ -38,10 +38,11 @@
                                     Detayları</h4>
                                 <div class="text-sm text-gray-600 dark:text-gray-400">
                                     <span class="font-bold">Düzenleme:</span>
-                                    {{ $invoice->issue_date->format('d.m.Y') }}
+                                    {{ $invoice->issue_date ? $invoice->issue_date->format('d.m.Y') : now()->format('d.m.Y') }}
                                 </div>
                                 <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                    <span class="font-bold">Vade:</span> {{ $invoice->due_date->format('d.m.Y') }}
+                                    <span class="font-bold">Vade:</span>
+                                    {{ $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '-' }}
                                 </div>
                                 <div class="text-sm text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-tighter">
                                     <span class="font-bold">Para Birimi:</span> {{ $invoice->currency }}

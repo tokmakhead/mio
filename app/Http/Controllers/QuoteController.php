@@ -223,7 +223,7 @@ class QuoteController extends Controller
         $quote->logActivity('sent');
 
         // Trigger real email
-        if ($quote->customer->email) {
+        if ($quote->customer_id && filter_var($quote->customer->email, FILTER_VALIDATE_EMAIL)) {
             try {
                 $settings = \App\Models\EmailSetting::first();
                 $useQueue = $settings && $settings->use_queue;
@@ -249,8 +249,10 @@ class QuoteController extends Controller
                     'error_message' => $e->getMessage(),
                     'sent_at' => now(),
                 ]);
-                return back()->with('error', 'Teklif durumu güncellendi ancak e-posta gönderilemedi: ' . $e->getMessage());
+                return back()->with('warning', 'Teklif durumu güncellendi ancak e-posta gönderilemedi: ' . $e->getMessage());
             }
+        } else {
+            return back()->with('warning', 'Teklif durumu güncellendi ancak geçerli bir müşteri e-posta adresi bulunamadığı için e-posta gönderilemedi.');
         }
 
         return back()->with('success', 'Teklif başarıyla gönderildi.');

@@ -45,7 +45,10 @@ class Invoice extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class)->withDefault([
+            'name' => 'Silinmiş Müşteri',
+            'email' => '-',
+        ]);
     }
 
     public function items()
@@ -60,7 +63,9 @@ class Invoice extends Model
 
     public function quote()
     {
-        return $this->belongsTo(Quote::class);
+        return $this->belongsTo(Quote::class)->withDefault([
+            'number' => 'Silinmiş Teklif',
+        ]);
     }
 
     public function getRemainingAmountAttribute()

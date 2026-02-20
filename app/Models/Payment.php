@@ -28,11 +28,16 @@ class Payment extends Model
 
     public function invoice(): BelongsTo
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->belongsTo(Invoice::class)->withDefault([
+            'number' => 'Silinmiş Fatura',
+        ]);
     }
 
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class)->withDefault([
+            'name' => 'Silinmiş Müşteri',
+            'email' => '-',
+        ]);
     }
 }

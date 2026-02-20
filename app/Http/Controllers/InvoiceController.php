@@ -232,7 +232,7 @@ class InvoiceController extends Controller
         $invoice->logActivity('sent');
 
         // Trigger real email
-        if ($invoice->customer->email) {
+        if ($invoice->customer_id && filter_var($invoice->customer->email, FILTER_VALIDATE_EMAIL)) {
             try {
                 $settings = \App\Models\EmailSetting::first();
                 $useQueue = $settings && $settings->use_queue;
@@ -240,13 +240,9 @@ class InvoiceController extends Controller
 
                 if ($useQueue) {
                     \Illuminate\Support\Facades\Mail::to($invoice->customer->email)->queue($mailable);
-                    // Log 'queued' status manually since Event won't fire 'MessageSent' immediately? 
-                    // Actually MessageSent fires when sent. MessageQueued fires when queued.
-                    // Let's rely on MessageSent for success. 
-                    // But for queue, we might want to know it's queued.
                     \App\Models\EmailLog::create([
                         'to' => $invoice->customer->email,
-                        'subject' => 'Fatura #' . $invoice->number, // Approximation
+                        'subject' => 'Fatura #' . $invoice->number,
                         'body' => 'Queued for sending',
                         'status' => 'queued',
                         'sent_at' => now(),
@@ -262,8 +258,10 @@ class InvoiceController extends Controller
                     'error_message' => $e->getMessage(),
                     'sent_at' => now(),
                 ]);
-                return back()->with('error', 'Fatura durumu güncellendi ancak e-posta gönderilemedi: ' . $e->getMessage());
+                return back()->with('warning', 'Fatura durumu güncellendi ancak e-posta gönderilemedi: ' . $e->getMessage());
             }
+        } else {
+            return back()->with('warning', 'Fatura durumu güncellendi ancak geçerli bir müşteri e-posta adresi bulunamadığı için e-posta gönderilemedi.');
         }
 
         return back()->with('success', 'Fatura başarıyla gönderildi.');
@@ -311,8 +309,10 @@ class InvoiceController extends Controller
 
         if ($zip->open($path, \ZipArchive::CREATE) === TRUE) {
             foreach ($invoices as $invoice) {
+                if (!$invoice instanceof Invoice)
+                    continue;
                 $data = $pdfService->prepareData($invoice);
-                $pdf = Pdf::loadView('invoices.premium', $data);
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.premium', $data);
                 $content = $pdf->output();
                 $zip->addFromString($invoice->number . '.pdf', $content);
             }

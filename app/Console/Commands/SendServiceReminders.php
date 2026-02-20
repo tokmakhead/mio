@@ -41,14 +41,10 @@ class SendServiceReminders extends Command
                 ->get();
 
             foreach ($services as $service) {
-                // Check if customer has email
-                if ($service->customer && $service->customer->email) {
+                // Check if customer exists and has a valid email
+                if ($service->customer_id && filter_var($service->customer->email, FILTER_VALIDATE_EMAIL)) {
                     // Ideally use Notification system:
                     // $service->customer->notify(new ServiceExpiryReminder($service, $days));
-
-                    // For now, let's log it to simulate sending (since mail config might not be ready)
-                    // Or simpler: Just Log it as a proof of concept for the user.
-                    // The user asked for "kurgusu" (setup).
 
                     Log::info("Reminder: Service #{$service->id} '{$service->name}' expires in {$days} days. Sent to {$service->customer->email}");
                     $this->info("Sent reminder for service #{$service->id} to {$service->customer->email} ({$days} days left)");

@@ -40,7 +40,10 @@ class Quote extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class)->withDefault([
+            'name' => 'Silinmiş Müşteri',
+            'email' => '-',
+        ]);
     }
 
     public function items()

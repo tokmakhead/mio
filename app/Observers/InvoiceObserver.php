@@ -31,6 +31,10 @@ class InvoiceObserver
      */
     private function syncToLedger(Invoice $invoice): void
     {
+        if (!$invoice->customer_id || !$invoice->customer->exists) {
+            return;
+        }
+
         $ledgerEntry = $invoice->customer->ledgerEntries()
             ->where('ref_type', Invoice::class)
             ->where('ref_id', $invoice->id)
@@ -65,10 +69,12 @@ class InvoiceObserver
      */
     public function deleted(\App\Models\Invoice $invoice): void
     {
-        $invoice->customer->ledgerEntries()
-            ->where('ref_type', \App\Models\Invoice::class)
-            ->where('ref_id', $invoice->id)
-            ->delete();
+        if ($invoice->customer_id && $invoice->customer->exists) {
+            $invoice->customer->ledgerEntries()
+                ->where('ref_type', \App\Models\Invoice::class)
+                ->where('ref_id', $invoice->id)
+                ->delete();
+        }
         $this->clearDashboardCache();
     }
 

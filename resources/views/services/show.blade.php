@@ -111,14 +111,14 @@
                                     <label
                                         class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Başlangıç</label>
                                     <p class="mt-1 text-sm text-gray-900 dark:text-white">
-                                        {{ $service->start_date->format('d.m.Y') }}
+                                        {{ $service->start_date ? $service->start_date->format('d.m.Y') : '-' }}
                                     </p>
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Bitiş
                                         (Vade)</label>
                                     <p class="mt-1 text-sm font-semibold {{ $service->expiry_color }}">
-                                        {{ $service->end_date->format('d.m.Y') }}
+                                        {{ $service->end_date ? $service->end_date->format('d.m.Y') : '-' }}
                                     </p>
                                 </div>
                             </div>
@@ -137,7 +137,8 @@
                                     {{ $service->customer->name ?? '-' }}
                                 </p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $service->customer->email ?? '-' }}</p>
+                                    {{ $service->customer->email ?? '-' }}
+                                </p>
                             </div>
                             @if($service->customer)
                                 <a href="{{ route('customers.show', $service->customer) }}"

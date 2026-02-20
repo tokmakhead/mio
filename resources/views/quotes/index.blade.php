@@ -188,7 +188,7 @@
                                             </span>
                                         </td>
                                         <td class="px-4 py-4 text-sm text-gray-600 dark:text-gray-400">
-                                            {{ $quote->valid_until->format('d.m.Y') }}
+                                            {{ $quote->valid_until ? $quote->valid_until->format('d.m.Y') : '-' }}
                                         </td>
                                         <td class="px-4 py-4 text-right">
                                             <div class="flex justify-end space-x-2">

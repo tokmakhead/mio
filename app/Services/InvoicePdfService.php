@@ -21,8 +21,8 @@ class InvoicePdfService
 
         // Format Date
         $dates = [
-            'issue_date' => $invoice->issue_date->format('d.m.Y'),
-            'due_date' => $invoice->due_date->format('d.m.Y'),
+            'issue_date' => $invoice->issue_date ? $invoice->issue_date->format('d.m.Y') : now()->format('d.m.Y'),
+            'due_date' => $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '-',
         ];
 
         // Fetch Bank Accounts for the Invoice Currency
@@ -50,12 +50,12 @@ class InvoicePdfService
     protected function calculateTotals(Invoice $invoice)
     {
         return [
-            'subtotal' => number_format($invoice->subtotal, 2),
-            'tax_total' => number_format($invoice->tax_total, 2),
-            'discount_total' => number_format($invoice->discount_total ?? 0, 2),
-            'grand_total' => number_format($invoice->grand_total, 2),
-            'remaining_amount' => number_format($invoice->remaining_amount, 2),
-            'currency' => $invoice->currency,
+            'subtotal' => number_format((float) ($invoice->subtotal ?? 0), 2),
+            'tax_total' => number_format((float) ($invoice->tax_total ?? 0), 2),
+            'discount_total' => number_format((float) ($invoice->discount_total ?? 0), 2),
+            'grand_total' => number_format((float) ($invoice->grand_total ?? 0), 2),
+            'remaining_amount' => number_format((float) ($invoice->remaining_amount ?? 0), 2),
+            'currency' => $invoice->currency ?? 'TRY',
         ];
     }
 

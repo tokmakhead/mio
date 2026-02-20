@@ -124,7 +124,7 @@
                                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Kayıt
                                     Tarihi</label>
                                 <p class="mt-1 text-sm text-gray-900 dark:text-white">
-                                    {{ $provider->created_at->format('d.m.Y H:i') }}
+                                    {{ $provider->created_at ? $provider->created_at->format('d.m.Y H:i') : '-' }}
                                 </p>
                             </div>
                         </div>
@@ -177,7 +177,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="px-4 py-3 text-xs text-gray-600 dark:text-gray-400">
-                                                    {{ $service->end_date->format('d.m.Y') }}
+                                                    {{ $service->end_date ? $service->end_date->format('d.m.Y') : '-' }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-right">
                                                     {{ number_format($service->buying_price, 2) }} {{ $service->currency }}

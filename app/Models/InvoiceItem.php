@@ -31,11 +31,15 @@ class InvoiceItem extends Model
 
     public function invoice()
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->belongsTo(Invoice::class)->withDefault([
+            'number' => 'Silinmiş Fatura',
+        ]);
     }
 
     public function service()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(Service::class)->withDefault([
+            'name' => 'Silinmiş Hizmet',
+        ]);
     }
 }

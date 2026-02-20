@@ -42,12 +42,18 @@ class Service extends Model
      */
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class)->withDefault([
+            'name' => 'Silinmiş Müşteri',
+            'email' => '-',
+        ]);
     }
 
     public function provider()
     {
-        return $this->belongsTo(Provider::class);
+        return $this->belongsTo(Provider::class)->withDefault([
+            'name' => 'Silinmiş Sağlayıcı',
+            'website' => '-',
+        ]);
     }
 
     /**

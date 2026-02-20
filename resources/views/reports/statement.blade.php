@@ -170,7 +170,7 @@
                     }
                 @endphp
                 <tr>
-                    <td>{{ $entry->occurred_at->format('d.m.Y') }}</td>
+                    <td>{{ $entry->occurred_at ? $entry->occurred_at->format('d.m.Y') : '-' }}</td>
                     <td>
                         <span class="badge {{ $entry->type == 'debit' ? 'badge-invoice' : 'badge-payment' }}">
                             {{ $entry->type_label }}
@@ -211,7 +211,8 @@
                 <td class="text-right">{{ number_format($entries->where('type', 'debit')->sum('amount'), 2, ',', '.') }}
                 </td>
                 <td class="text-right">
-                    {{ number_format($entries->where('type', 'credit')->sum('amount'), 2, ',', '.') }}</td>
+                    {{ number_format($entries->where('type', 'credit')->sum('amount'), 2, ',', '.') }}
+                </td>
                 <td class="text-right">
                     <span class="{{ $balance >= 0 ? 'debit' : 'credit' }}">
                         {{ number_format(abs($balance), 2, ',', '.') }}

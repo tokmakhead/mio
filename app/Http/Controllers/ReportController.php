@@ -269,7 +269,7 @@ class ReportController extends Controller
                 $report['items'][] = [
                     'invoice_number' => $invoice->number,
                     'invoice_date' => $invoice->issue_date->format('d.m.Y'),
-                    'customer' => $invoice->customer->name,
+                    'customer' => $invoice->customer->name ?? 'Silinmiş Müşteri',
                     'service_name' => $item->description,
                     'qty' => $item->qty,
                     'revenue' => $revenue,

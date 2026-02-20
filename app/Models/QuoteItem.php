@@ -31,11 +31,15 @@ class QuoteItem extends Model
 
     public function quote()
     {
-        return $this->belongsTo(Quote::class);
+        return $this->belongsTo(Quote::class)->withDefault([
+            'number' => 'Silinmiş Teklif',
+        ]);
     }
 
     public function service()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(Service::class)->withDefault([
+            'name' => 'Silinmiş Hizmet',
+        ]);
     }
 }

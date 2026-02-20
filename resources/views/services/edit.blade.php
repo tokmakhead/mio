@@ -207,7 +207,8 @@
                                 Başlangıç Tarihi *
                             </label>
                             <input type="date" name="start_date" id="start_date"
-                                value="{{ old('start_date', $service->start_date->format('Y-m-d')) }}" required
+                                value="{{ old('start_date', $service->start_date ? $service->start_date->format('Y-m-d') : '') }}"
+                                required
                                 class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500 @error('start_date') border-danger-500 @enderror">
                             @error('start_date')
                                 <p class="mt-1 text-sm text-danger-600 dark:text-danger-400">{{ $message }}</p>
@@ -221,7 +222,8 @@
                                 Bitiş Tarihi *
                             </label>
                             <input type="date" name="end_date" id="end_date"
-                                value="{{ old('end_date', $service->end_date->format('Y-m-d')) }}" required
+                                value="{{ old('end_date', $service->end_date ? $service->end_date->format('Y-m-d') : '') }}"
+                                required
                                 class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500 @error('end_date') border-danger-500 @enderror">
                             @error('end_date')
                                 <p class="mt-1 text-sm text-danger-600 dark:text-danger-400">{{ $message }}</p>

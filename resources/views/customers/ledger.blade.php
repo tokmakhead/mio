@@ -87,8 +87,8 @@
                                         @foreach ($entries as $entry)
                                             <tr class="group hover:bg-gray-50/50 dark:hover:bg-gray-900/30 transition-all duration-200">
                                                 <td class="px-6 py-5">
-                                                    <div class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ $entry->occurred_at->format('d/m/Y') }}</div>
-                                                    <div class="text-[10px] font-medium text-gray-400">{{ $entry->occurred_at->format('H:i') }}</div>
+                                                    <div class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ $entry->occurred_at ? $entry->occurred_at->format('d/m/Y') : '-' }}</div>
+                                                    <div class="text-[10px] font-medium text-gray-400">{{ $entry->occurred_at ? $entry->occurred_at->format('H:i') : '' }}</div>
                                                 </td>
                                                 <td class="px-6 py-5">
                                                     @if ($entry->type === 'debit')

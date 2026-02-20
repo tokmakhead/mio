@@ -12,23 +12,26 @@ class PaymentObserver
     public function created(Payment $payment): void
     {
         // 1. Ledger Entry (Credit)
-        $payment->customer->ledgerEntries()->create([
-            'type' => 'credit',
-            'amount' => $payment->amount,
-            'currency' => $payment->currency,
-            'ref_type' => Payment::class,
-            'ref_id' => $payment->id,
-            'occurred_at' => $payment->paid_at ?? now(),
-            'description' => "Ödeme (Fatura #{$payment->invoice->number})",
-        ]);
+        if ($payment->customer_id && $payment->customer->exists) {
+            $payment->customer->ledgerEntries()->create([
+                'type' => 'credit',
+                'amount' => $payment->amount,
+                'currency' => $payment->currency,
+                'ref_type' => Payment::class,
+                'ref_id' => $payment->id,
+                'occurred_at' => $payment->paid_at ?? now(),
+                'description' => "Ödeme (Fatura #{$payment->invoice->number})",
+            ]);
+        }
 
         // 2. Update Invoice
         $invoice = $payment->invoice;
-        $invoice->increment('paid_amount', $payment->amount);
-        $invoice->refresh()->updateStatus();
+        if ($invoice && $invoice->exists) {
+            $invoice->increment('paid_amount', $payment->amount);
+            $invoice->refresh()->updateStatus();
 
-        if ($invoice->status === 'paid') {
-            $invoice->logActivity('paid');
+            if ($invoice->status === 'paid') {
+                $invoice->logActivity('paid');
 
             // Auto-extend services
             foreach ($invoice->items as $item) {
@@ -65,18 +68,20 @@ class PaymentObserver
     public function updated(\App\Models\Payment $payment): void
     {
         // 1. Update Ledger Entry
-        $ledgerEntry = $payment->customer->ledgerEntries()
-            ->where('ref_type', \App\Models\Payment::class)
-            ->where('ref_id', $payment->id)
-            ->first();
+        if ($payment->customer_id && $payment->customer->exists) {
+            $ledgerEntry = $payment->customer->ledgerEntries()
+                ->where('ref_type', \App\Models\Payment::class)
+                ->where('ref_id', $payment->id)
+                ->first();
 
-        if ($ledgerEntry) {
-            $ledgerEntry->update([
-                'amount' => $payment->amount,
-                'currency' => $payment->currency,
-                'occurred_at' => $payment->paid_at ?? now(),
-                'description' => "Ödeme (Fatura #{$payment->invoice->number}) [Güncellendi]",
-            ]);
+            if ($ledgerEntry) {
+                $ledgerEntry->update([
+                    'amount' => $payment->amount,
+                    'currency' => $payment->currency,
+                    'occurred_at' => $payment->paid_at ?? now(),
+                    'description' => "Ödeme (Fatura #{$payment->invoice->number}) [Güncellendi]",
+                ]);
+            }
         }
 
         // 2. Adjust Invoices if amount or invoice_id changed
@@ -112,10 +117,12 @@ class PaymentObserver
     public function deleted(\App\Models\Payment $payment): void
     {
         // 1. Delete Ledger Entry
-        $payment->customer->ledgerEntries()
-            ->where('ref_type', \App\Models\Payment::class)
-            ->where('ref_id', $payment->id)
-            ->delete();
+        if ($payment->customer_id && $payment->customer->exists) {
+            $payment->customer->ledgerEntries()
+                ->where('ref_type', \App\Models\Payment::class)
+                ->where('ref_id', $payment->id)
+                ->delete();
+        }
 
         // 2. Decrement Invoice Paid Amount
         $invoice = $payment->invoice;

@@ -260,7 +260,7 @@
                                         <td class="px-4 py-4">
                                             <div class="flex flex-col">
                                                 <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    {{ $service->end_date->format('d.m.Y') }}
+                                                    {{ $service->end_date ? $service->end_date->format('d.m.Y') : '-' }}
                                                 </span>
                                                 @if($service->days_until_expiry >= 0)
                                                     <span class="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $service->days_until_expiry <= 30 ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' }}">

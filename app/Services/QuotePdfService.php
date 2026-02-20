@@ -47,11 +47,11 @@ class QuotePdfService
     protected function calculateTotals(Quote $quote)
     {
         return [
-            'subtotal' => number_format((float) $quote->subtotal, 2),
-            'tax_total' => number_format((float) $quote->tax_total, 2),
+            'subtotal' => number_format((float) ($quote->subtotal ?? 0), 2),
+            'tax_total' => number_format((float) ($quote->tax_total ?? 0), 2),
             'discount_total' => number_format((float) ($quote->discount_total ?? 0), 2),
-            'grand_total' => number_format((float) $quote->grand_total, 2),
-            'currency' => $quote->currency,
+            'grand_total' => number_format((float) ($quote->grand_total ?? 0), 2),
+            'currency' => $quote->currency ?? 'TRY',
         ];
     }
 

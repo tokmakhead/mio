@@ -13,7 +13,8 @@
                         {{ \App\Models\Quote::getStatusLabel($quote->status) }}
                     </span>
                     @if($quote->sent_at)
-                        <span class="text-xs text-gray-500">Gönderildi: {{ $quote->sent_at->format('d.m.Y H:i') }}</span>
+                        <span class="text-xs text-gray-500">Gönderildi:
+                            {{ $quote->sent_at ? $quote->sent_at->format('d.m.Y H:i') : '-' }}</span>
                     @endif
                 </div>
 
@@ -111,7 +112,8 @@
                                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Müşteri
                                     Bilgileri</h4>
                                 <p class="text-lg font-bold text-gray-900 dark:text-white">
-                                    {{ $quote->customer->name ?? '-' }}</p>
+                                    {{ $quote->customer->name ?? '-' }}
+                                </p>
                                 <p class="text-sm text-gray-500">{{ $quote->customer->email ?? '-' }}</p>
                                 <p class="text-sm text-gray-500">{{ $quote->customer->phone ?? '-' }}</p>
                             </div>
@@ -119,10 +121,10 @@
                                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Teklif
                                     Tarihleri</h4>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Oluşturma: <span
-                                        class="font-semibold text-gray-900 dark:text-white">{{ $quote->created_at->format('d.m.Y') }}</span>
+                                        class="font-semibold text-gray-900 dark:text-white">{{ $quote->created_at ? $quote->created_at->format('d.m.Y') : '-' }}</span>
                                 </p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Son Geçerlilik: <span
-                                        class="font-semibold text-danger-600">{{ $quote->valid_until->format('d.m.Y') }}</span>
+                                        class="font-semibold text-danger-600">{{ $quote->valid_until ? $quote->valid_until->format('d.m.Y') : '-' }}</span>
                                 </p>
                             </div>
                         </div>
@@ -221,7 +223,8 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                <span>Bu teklif {{ $quote->valid_until->format('d.m.Y') }} tarihine kadar
+                                <span>Bu teklif {{ $quote->valid_until ? $quote->valid_until->format('d.m.Y') : '-' }}
+                                    tarihine kadar
                                     geçerlidir.</span>
                             </div>
                         </div>

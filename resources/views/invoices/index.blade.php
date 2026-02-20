@@ -208,7 +208,7 @@
                                         <td class="px-6 py-4">
                                             <div
                                                 class="text-sm {{ $invoice->due_date < now() && $invoice->remaining_amount > 0 ? 'text-danger-600 font-bold' : 'text-gray-600 dark:text-gray-400' }}">
-                                                {{ $invoice->due_date->format('d.m.Y') }}
+                                                {{ $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '-' }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 text-right">

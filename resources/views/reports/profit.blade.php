@@ -23,12 +23,12 @@
                     <div class="space-y-2">
                         <label
                             class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">BAŞLANGIÇ</label>
-                        <x-text-input id="start_date" type="date" name="start_date" :value="$startDate->format('Y-m-d')"
+                        <x-text-input id="start_date" type="date" name="start_date" :value="$startDate ? $startDate->format('Y-m-d') : ''"
                             class="block w-full !rounded-xl !border-gray-100 dark:!border-gray-700" />
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">BİTİŞ</label>
-                        <x-text-input id="end_date" type="date" name="end_date" :value="$endDate->format('Y-m-d')"
+                        <x-text-input id="end_date" type="date" name="end_date" :value="$endDate ? $endDate->format('Y-m-d') : ''"
                             class="block w-full !rounded-xl !border-gray-100 dark:!border-gray-700" />
                     </div>
 

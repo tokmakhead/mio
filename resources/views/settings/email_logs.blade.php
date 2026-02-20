@@ -61,11 +61,12 @@
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            {{ $log->to }}</td>
+                                            {{ $log->to }}
+                                        </td>
                                         <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $log->subject }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            {{ $log->created_at->format('d.m.Y H:i:s') }}
+                                            {{ $log->created_at ? $log->created_at->format('d.m.Y H:i:s') : '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <button onclick="showLogDetails('{{ $log->id }}')"
