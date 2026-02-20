@@ -257,6 +257,8 @@
     </div>
 
     @push('scripts')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 if (document.getElementById('customer_select')) {
@@ -279,9 +281,9 @@
                         render: {
                             option: function (item, escape) {
                                 return `<div>
-                                                        <span class="font-bold">${escape(item.name)}</span>
-                                                        <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
-                                                    </div>`;
+                                                            <span class="font-bold">${escape(item.name)}</span>
+                                                            <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
+                                                        </div>`;
                             },
                             item: function (item, escape) {
                                 return `<div>${escape(item.name)}</div>`;
