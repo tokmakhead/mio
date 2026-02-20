@@ -274,13 +274,13 @@
                 // Variable replacement for preview
                 let previewContent = content;
                 const replacements = {
-                    '{{customer_name}}': 'Ahmet Yılmaz',
-                    '{{invoice_number}}': 'INV-2026-00123',
-                    '{{quote_number}}': 'TEKLIF-98765',
-                    '{{service_name}}': 'MIONEX Premium Paket',
-                    '{{expiry_date}}': '27.02.2026',
-                    '{{grand_total}}': '4,500.00 TRY',
-                    '{{brand_name}}': brandConfig.name
+                    '@{{customer_name}}': 'Ahmet Yılmaz',
+                    '@{{invoice_number}}': 'INV-2026-00123',
+                    '@{{quote_number}}': 'TEKLIF-98765',
+                    '@{{service_name}}': 'MIONEX Premium Paket',
+                    '@{{expiry_date}}': '27.02.2026',
+                    '@{{grand_total}}': '4,500.00 TRY',
+                    '@{{brand_name}}': brandConfig.name
                 };
 
                 Object.keys(replacements).forEach(key => {
@@ -289,33 +289,33 @@
 
                 // Professional email wrapper for preview
                 const styledContent = `<html>
-                                                <head>
-                                                    <style>
-                                                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; padding: 40px 20px; margin: 0; }
-                                                        .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eef2f5; }
-                                                        .email-header { background: ${brandConfig.color}; padding: 30px; text-align: center; color: white; }
-                                                        .email-body { padding: 40px; line-height: 1.6; color: #334455; font-size: 15px; }
-                                                        .email-footer { background: #f8fafc; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #edf2f7; }
-                                                        .email-logo-img { max-height: 50px; width: auto; filter: brightness(0) invert(1); }
-                                                        .email-logo-text { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
-                                                        h1, h2, h3 { color: #1e293b; margin-top: 0; }
-                                                        p { margin-bottom: 20px; }
-                                                        a { color: ${brandConfig.color}; text-decoration: underline; }
-                                                    </style>
-                                                </head>
-                                                <body>
-                                                    <div class="email-container">
-                                                        <div class="email-header">
-                                                            ${brandConfig.logo ? `<img src="${brandConfig.logo}" class="email-logo-img">` : `<div class="email-logo-text">${brandConfig.name}</div>`}
+                                                    <head>
+                                                        <style>
+                                                            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; padding: 40px 20px; margin: 0; }
+                                                            .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #eef2f5; }
+                                                            .email-header { background: ${brandConfig.color}; padding: 30px; text-align: center; color: white; }
+                                                            .email-body { padding: 40px; line-height: 1.6; color: #334455; font-size: 15px; }
+                                                            .email-footer { background: #f8fafc; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #edf2f7; }
+                                                            .email-logo-img { max-height: 50px; width: auto; filter: brightness(0) invert(1); }
+                                                            .email-logo-text { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+                                                            h1, h2, h3 { color: #1e293b; margin-top: 0; }
+                                                            p { margin-bottom: 20px; }
+                                                            a { color: ${brandConfig.color}; text-decoration: underline; }
+                                                        </style>
+                                                    </head>
+                                                    <body>
+                                                        <div class="email-container">
+                                                            <div class="email-header">
+                                                                ${brandConfig.logo ? `<img src="${brandConfig.logo}" class="email-logo-img">` : `<div class="email-logo-text">${brandConfig.name}</div>`}
+                                                            </div>
+                                                            <div class="email-body">${previewContent}</div>
+                                                            <div class="email-footer">
+                                                                Bu bir sistem bildirimidir. Lütfen bu e-postayı yanıtlamayın.<br>
+                                                                &copy; {{ date('Y') }} ${brandConfig.name}. Tüm hakları saklıdır.
+                                                            </div>
                                                         </div>
-                                                        <div class="email-body">${previewContent}</div>
-                                                        <div class="email-footer">
-                                                            Bu bir sistem bildirimidir. Lütfen bu e-postayı yanıtlamayın.<br>
-                                                            &copy; {{ date('Y') }} ${brandConfig.name}. Tüm hakları saklıdır.
-                                                        </div>
-                                                    </div>
-                                                </body>
-                                            </html>`;
+                                                    </body>
+                                                </html>`;
 
                 const doc = frame.contentWindow.document;
                 doc.open();
