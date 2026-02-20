@@ -294,13 +294,17 @@
                         <div class="info-card">
                             <div class="card-header">SAYIN M&#220;&#351;TER&#304;</div>
                             <div class="card-body">
-                                <strong
-                                    style="font-size: 11pt; color: #111;">{{ $invoice->customer->name }}</strong><br>
-                                <div style="margin-top: 5px; color: #555;">
-                                    {{ $invoice->customer->address }}<br>
-                                    {{ $invoice->customer->email }}<br>
-                                    {{ $invoice->customer->phone }}
-                                </div>
+                                @if($invoice->customer)
+                                    <strong
+                                        style="font-size: 11pt; color: #111;">{{ $invoice->customer->name }}</strong><br>
+                                    <div style="margin-top: 5px; color: #555;">
+                                        {{ $invoice->customer->address }}<br>
+                                        {{ $invoice->customer->email }}<br>
+                                        {{ $invoice->customer->phone }}
+                                    </div>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
                             </div>
                         </div>
                     </td>

@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8">
-    <title>{{ $quote->number }} - {{ $quote->customer->name }}</title>
+    <title>{{ $quote->number }} - {{ $quote->customer->name ?? '-' }}</title>
     <style>
         @page {
             margin: 0;
@@ -250,10 +250,14 @@
             <div class="col-6" style="padding-left: 10px;">
                 <div class="info-card" style="background: white; border: 1px solid #e2e8f0;">
                     <span class="label">Sayın</span>
-                    <div class="value font-bold" style="font-size: 13px;">{{ $quote->customer->name }}</div>
-                    <div class="value">{{ $quote->customer->address }}</div>
-                    <div class="value">{{ $quote->customer->phone }}</div>
-                    <div class="value">{{ $quote->customer->email }}</div>
+                    @if($quote->customer)
+                        <div class="value font-bold" style="font-size: 13px;">{{ $quote->customer->name }}</div>
+                        <div class="value">{{ $quote->customer->address }}</div>
+                        <div class="value">{{ $quote->customer->phone }}</div>
+                        <div class="value">{{ $quote->customer->email }}</div>
+                    @else
+                        <div class="value">-</div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -347,7 +351,8 @@
                         <tr>
                             <td style="color: #ef4444;">İndirim</td>
                             <td style="color: #ef4444;">-{{ number_format($quote->discount_total, 2) }}
-                                {{ $quote->currency }}</td>
+                                {{ $quote->currency }}
+                            </td>
                         </tr>
                     @endif
                     <tr>

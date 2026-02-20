@@ -272,10 +272,14 @@
             <div class="col-6" style="padding-left: 10px;">
                 <div class="info-card" style="background: white; border: 1px solid #e2e8f0;">
                     <span class="label">Sayın</span>
-                    <div class="value font-bold" style="font-size: 13px;">{{ $invoice->customer->name }}</div>
-                    <div class="value">{{ $invoice->customer->address }}</div>
-                    <div class="value">{{ $invoice->customer->phone }}</div>
-                    <div class="value">{{ $invoice->customer->email }}</div>
+                    @if($invoice->customer)
+                        <div class="value font-bold" style="font-size: 13px;">{{ $invoice->customer->name }}</div>
+                        <div class="value">{{ $invoice->customer->address }}</div>
+                        <div class="value">{{ $invoice->customer->phone }}</div>
+                        <div class="value">{{ $invoice->customer->email }}</div>
+                    @else
+                        <div class="value font-semi-bold">Müşteri Bulunamadı</div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -367,7 +371,8 @@
                         <tr>
                             <td style="color: #ef4444;">İndirim</td>
                             <td style="color: #ef4444;">-{{ number_format($invoice->discount_total, 2) }}
-                                {{ $invoice->currency }}</td>
+                                {{ $invoice->currency }}
+                            </td>
                         </tr>
                     @endif
                     <tr>
