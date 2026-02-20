@@ -158,18 +158,31 @@ class SettingsController extends Controller
                 'mail.from.name' => $settings->from_name,
             ]);
 
-            // Replace all known variables with sample values for testing
+            $brand = \App\Models\BrandSetting::all()->pluck('value', 'key');
             $sampleVars = [
                 'customer_name' => 'Test Müşteri',
                 'invoice_number' => 'FAT-2026-00001',
                 'quote_number' => 'TEK-2026-00001',
                 'service_name' => 'Test Hizmeti',
                 'expiry_date' => now()->addDays(30)->format('d.m.Y'),
+                'brand_name' => $brand['site_title'] ?? ($settings->site_name ?? 'MIONEX'),
+                'brand_logo' => $brand['logo_path'] ?? ($settings->logo_path ?? ''),
+                'brand_color' => $brand['primary_color'] ?? '#dc2626',
+                'app_name' => $settings->site_name ?? 'MIONEX',
+                'app_url' => config('app.url'),
             ];
+
             $body = $template->render($sampleVars);
             $subject = $template->renderSubject($sampleVars);
 
-            Mail::html($body, function ($message) use ($request, $subject) {
+            $viewData = [
+                'body' => $body,
+                'brand_color' => $sampleVars['brand_color'],
+                'brand_logo' => $sampleVars['brand_logo'],
+                'brand_name' => $sampleVars['brand_name'],
+            ];
+
+            Mail::send('emails.dynamic', $viewData, function ($message) use ($request, $subject) {
                 $message->to($request->to)
                     ->subject('[TEST] ' . $subject);
             });
