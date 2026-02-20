@@ -7,6 +7,10 @@ use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
+Route::get('/ping', function () {
+    return 'pong';
+});
+
 Route::middleware(['auth', 'can:manage-settings'])->get('/fix-config', function () {
     Artisan::call('config:clear');
     Artisan::call('cache:clear');
