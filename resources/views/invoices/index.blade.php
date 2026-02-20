@@ -118,166 +118,120 @@
                     </div>
                 </div>
 
-                <form id="bulkForm" method="POST" action="{{ route('invoices.bulk_export') }}">
-                    @csrf
-                    <!-- Bulk Actions Toolbar (Hidden by default, shown when items selected) -->
-                    <div id="bulkActions"
-                        class="hidden mb-6 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl border border-primary-100 dark:border-primary-800/50 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300">
-                        <div class="flex items-center space-x-3">
-                            <div
-                                class="w-10 h-10 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center text-primary-600 dark:text-primary-400">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                </svg>
-                            </div>
-                            <div>
-                                <span class="text-sm font-bold text-primary-900 dark:text-primary-100 line-clamp-1">
-                                    <span id="selectedCount">0</span> Kayıt Seçildi
-                                </span>
-                                <p class="text-[11px] text-primary-600 dark:text-primary-400 font-medium">Seçili
-                                    kayıtlar üzerinde hızlıca işlem yapın.</p>
-                            </div>
-                        </div>
 
-                        <div class="flex items-center space-x-2">
-                            <button type="submit"
-                                class="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-bold transition-all duration-200 shadow-lg shadow-primary-500/20 inline-flex items-center group">
-                                <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                    </path>
-                                </svg>
-                                Seçilenleri İndir (ZIP)
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr
-                                    class="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-                                    <th class="px-6 py-4 w-4">
-                                        <input type="checkbox" id="selectAll"
-                                            class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50">
-                                    </th>
-                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        Fatura No
-                                    </th>
-                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        Müşteri
-                                    </th>
-                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Durum
-                                    </th>
-                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Tutar
-                                    </th>
-                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Kalan
-                                    </th>
-                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Vade
-                                    </th>
-                                    <th
-                                        class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">
-                                        İşlemler</th>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
+
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    Fatura No
+                                </th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    Müşteri
+                                </th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Durum
+                                </th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Tutar
+                                </th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Kalan
+                                </th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Vade
+                                </th>
+                                <th
+                                    class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">
+                                    İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            @forelse($invoices as $invoice)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+
+                                    <td class="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white">
+                                        {{ $invoice->number }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if($invoice->customer)
+                                            <div class="text-sm font-semibold text-gray-900 dark:text-white">
+                                                {{ $invoice->customer->name }}
+                                            </div>
+                                            <div class="text-xs text-gray-500 tracking-tight">
+                                                {{ $invoice->customer->email }}
+                                            </div>
+                                        @else
+                                            <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ \App\Models\Invoice::getStatusColor($invoice->status) }}">
+                                            {{ \App\Models\Invoice::getStatusLabel($invoice->status) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-bold text-gray-900 dark:text-white">
+                                            {{ number_format($invoice->grand_total, 2) }} {{ $invoice->currency }}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div
+                                            class="text-sm font-semibold {{ $invoice->remaining_amount > 0 ? 'text-danger-600' : 'text-success-600' }}">
+                                            {{ number_format($invoice->remaining_amount, 2) }} {{ $invoice->currency }}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div
+                                            class="text-sm {{ $invoice->due_date < now() && $invoice->remaining_amount > 0 ? 'text-danger-600 font-bold' : 'text-gray-600 dark:text-gray-400' }}">
+                                            {{ $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '-' }}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end space-x-2">
+                                            <a href="{{ route('invoices.show', $invoice) }}"
+                                                class="inline-flex items-center justify-center w-8 h-8 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg transition-all duration-200 hover:scale-110 hover:bg-indigo-100 dark:hover:bg-indigo-900/40"
+                                                title="Detay">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                            </a>
+                                            <a href="{{ route('invoices.edit', $invoice) }}"
+                                                class="inline-flex items-center justify-center w-8 h-8 bg-emerald-50/50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-lg transition-all duration-200 hover:scale-110 hover:bg-emerald-100 dark:hover:bg-emerald-900/40"
+                                                title="Düzenle">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                                </svg>
+                                            </a>
+                                            <a href="{{ route('invoices.pdf', $invoice) }}" target="_blank"
+                                                class="inline-flex items-center justify-center w-8 h-8 bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-lg transition-all duration-200 hover:scale-110 hover:bg-amber-100 dark:hover:bg-amber-900/40"
+                                                title="PDF">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                @forelse($invoices as $invoice)
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                        <td class="px-6 py-4">
-                                            <input type="checkbox" name="ids[]" value="{{ $invoice->id }}"
-                                                class="row-checkbox rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50">
-                                        </td>
-                                        <td class="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white">
-                                            {{ $invoice->number }}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            @if($invoice->customer)
-                                                <div class="text-sm font-semibold text-gray-900 dark:text-white">
-                                                    {{ $invoice->customer->name }}
-                                                </div>
-                                                <div class="text-xs text-gray-500 tracking-tight">
-                                                    {{ $invoice->customer->email }}
-                                                </div>
-                                            @else
-                                                <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ \App\Models\Invoice::getStatusColor($invoice->status) }}">
-                                                {{ \App\Models\Invoice::getStatusLabel($invoice->status) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-sm font-bold text-gray-900 dark:text-white">
-                                                {{ number_format($invoice->grand_total, 2) }} {{ $invoice->currency }}
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div
-                                                class="text-sm font-semibold {{ $invoice->remaining_amount > 0 ? 'text-danger-600' : 'text-success-600' }}">
-                                                {{ number_format($invoice->remaining_amount, 2) }} {{ $invoice->currency }}
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div
-                                                class="text-sm {{ $invoice->due_date < now() && $invoice->remaining_amount > 0 ? 'text-danger-600 font-bold' : 'text-gray-600 dark:text-gray-400' }}">
-                                                {{ $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '-' }}
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <div class="flex items-center justify-end space-x-2">
-                                                <a href="{{ route('invoices.show', $invoice) }}"
-                                                    class="inline-flex items-center justify-center w-8 h-8 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg transition-all duration-200 hover:scale-110 hover:bg-indigo-100 dark:hover:bg-indigo-900/40"
-                                                    title="Detay">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="1.5"
-                                                            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    </svg>
-                                                </a>
-                                                <a href="{{ route('invoices.edit', $invoice) }}"
-                                                    class="inline-flex items-center justify-center w-8 h-8 bg-emerald-50/50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-lg transition-all duration-200 hover:scale-110 hover:bg-emerald-100 dark:hover:bg-emerald-900/40"
-                                                    title="Düzenle">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="1.5"
-                                                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                                    </svg>
-                                                </a>
-                                                <a href="{{ route('invoices.pdf', $invoice) }}" target="_blank"
-                                                    class="inline-flex items-center justify-center w-8 h-8 bg-amber-50/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-lg transition-all duration-200 hover:scale-110 hover:bg-amber-100 dark:hover:bg-amber-900/40"
-                                                    title="PDF">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="1.5"
-                                                            d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                                    </svg>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8">
-                                            <x-empty-state title="Fatura Kaydı Bulunmuyor"
-                                                message="Sistemde henüz kayıtlı fatura bulunmamaktadır. Yeni bir fatura ekleyerek başlayabilirsiniz."
-                                                cta="Yeni Fatura Ekle" link="{{ route('invoices.create') }}" />
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </form>
+                            @empty
+                                <tr>
+                                    <td colspan="8">
+                                        <x-empty-state title="Fatura Kaydı Bulunmuyor"
+                                            message="Sistemde henüz kayıtlı fatura bulunmamaktadır. Yeni bir fatura ekleyerek başlayabilirsiniz."
+                                            cta="Yeni Fatura Ekle" link="{{ route('invoices.create') }}" />
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
 
                 <div class="mt-6">
                     {{ $invoices->links() }}
@@ -286,42 +240,3 @@
         </div>
     </div>
 </x-app-layout>
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const selectAll = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('.row-checkbox');
-            const bulkActions = document.getElementById('bulkActions');
-            const selectedCount = document.getElementById('selectedCount');
-
-            function updateToolbar() {
-                const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-                if (checkedCount > 0) {
-                    bulkActions.classList.remove('hidden');
-                    selectedCount.textContent = checkedCount;
-                } else {
-                    bulkActions.classList.add('hidden');
-                    if (selectAll) selectAll.checked = false;
-                }
-            }
-
-            if (selectAll) {
-                selectAll.addEventListener('change', function () {
-                    checkboxes.forEach(cb => cb.checked = selectAll.checked);
-                    updateToolbar();
-                });
-            }
-
-            checkboxes.forEach(cb => {
-                cb.addEventListener('change', function () {
-                    updateToolbar();
-
-                    // If all are checked, check selectAll, otherwise uncheck it
-                    const allChecked = document.querySelectorAll('.row-checkbox:checked').length === checkboxes.length;
-                    if (selectAll) selectAll.checked = allChecked;
-                });
-            });
-        });
-    </script>
-@endpush
