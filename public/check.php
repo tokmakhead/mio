@@ -2,98 +2,128 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// ------------------------------------------------------------
-// MIONEX Real-World Boot Simulator (v9)
-// Mimics exactly what public/index.php does
-// ------------------------------------------------------------
-
-echo "<html><head><title>MIONEX Boot Simulator v9</title><style>
+echo "<html><head><title>MIONEX Maintenance Killer</title><style>
     body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
-    .box { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
+    .box { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
     .ok { color: green; font-weight: bold; }
     .fail { color: red; font-weight: bold; }
+    .warn { color: orange; font-weight: bold; }
     pre { background: #1e1e1e; color: #eee; padding: 12px; border-radius: 4px; font-size: 11px; overflow-x: auto; }
     .step { padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; }
+    h1 { color: #d9534f; }
 </style></head><body><div class='box'>";
 
-echo "<h1>MIONEX Boot Simulator (v9)</h1>";
-echo "<p>This script mimics <code>public/index.php</code> step by step.</p>";
+echo "<h1>🔪 MIONEX Maintenance Killer (v10)</h1>";
 
-// STEP 1
-echo "<div class='step'><b>Step 1: Cache Wipe</b> ";
-$wiped = 0;
-foreach (glob('../bootstrap/cache/*.php') as $f) {
-    @unlink($f);
-    $wiped++;
+// ─────────────────────────────────────────────────────────
+// STEP 1: Scan ALL storage/framework files
+// ─────────────────────────────────────────────────────────
+echo "<div class='step'><b>Step 1: Scan storage/framework (all files)</b><br/>";
+$storagePath = '../storage/framework';
+$allFiles = [];
+foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($storagePath, FilesystemIterator::SKIP_DOTS)) as $file) {
+    if ($file->isFile() && $file->getFilename() !== '.gitignore') {
+        $path = $file->getPathname();
+        $allFiles[] = [
+            'path' => $path,
+            'size' => $file->getSize(),
+            'perms' => substr(sprintf('%o', fileperms($path)), -4),
+            'writable' => is_writable($path) ? 'YES' : 'NO',
+        ];
+    }
 }
-if (file_exists('../storage/framework/maintenance.php'))
-    @unlink('../storage/framework/maintenance.php');
-echo "<span class='ok'>✅ Wiped $wiped cache files.</span></div>";
+if (empty($allFiles)) {
+    echo "<span class='ok'>✅ storage/framework is clean (no leftover files)</span>";
+} else {
+    echo "<pre>";
+    foreach ($allFiles as $f) {
+        echo $f['path'] . " [" . $f['size'] . " bytes, perms:" . $f['perms'] . ", writable:" . $f['writable'] . "]\n";
+    }
+    echo "</pre>";
+}
+echo "</div>";
 
-// STEP 2
-echo "<div class='step'><b>Step 2: Autoload</b> ";
+// ─────────────────────────────────────────────────────────
+// STEP 2: Nuclear wipe of ALL maintenance-related files
+// ─────────────────────────────────────────────────────────
+echo "<div class='step'><b>Step 2: Nuclear Maintenance Wipe</b><br/>";
+$patterns = [
+    '../storage/framework/maintenance.php',
+    '../storage/framework/maintenance.json',
+    '../storage/framework/down',
+    '../storage/framework/down.php',
+    '../storage/framework/down.json',
+];
+$deleted = [];
+$failed = [];
+foreach ($patterns as $p) {
+    if (file_exists($p)) {
+        if (@unlink($p)) {
+            $deleted[] = $p;
+        } else {
+            // Try to overwrite so it returns empty/no-op
+            if (@file_put_contents($p, '<?php // cleared')) {
+                $failed[] = $p . " (overwritten)";
+            } else {
+                $failed[] = $p . " (CANNOT delete or overwrite - permission denied!)";
+            }
+        }
+    }
+}
+if (empty($deleted) && empty($failed)) {
+    echo "<span class='ok'>✅ No maintenance files found.</span>";
+} else {
+    if (!empty($deleted))
+        echo "<p class='ok'>✅ Deleted: " . implode(', ', $deleted) . "</p>";
+    if (!empty($failed))
+        echo "<p class='warn'>⚠️ " . implode('<br/>', $failed) . "</p>";
+}
+echo "</div>";
+
+// ─────────────────────────────────────────────────────────
+// STEP 3: Bootstrap app + call artisan up
+// ─────────────────────────────────────────────────────────
+echo "<div class='step'><b>Step 3: Full Boot + Artisan 'up'</b><br/>";
 try {
     require_once '../vendor/autoload.php';
-    echo "<span class='ok'>✅ OK</span>";
-} catch (Throwable $e) {
-    echo "<span class='fail'>❌ " . $e->getMessage() . "</span>";
-    die();
-}
-echo "</div>";
-
-// STEP 3
-echo "<div class='step'><b>Step 3: Bootstrap App (same as index.php)</b> ";
-try {
     $app = require_once '../bootstrap/app.php';
-    echo "<span class='ok'>✅ App created (Laravel " . $app::VERSION . ")</span>";
-} catch (Throwable $e) {
-    echo "<span class='fail'>❌ " . $e->getMessage() . "</span>";
-    die();
-}
-echo "</div>";
-
-// STEP 4: Simulate handleRequest()
-echo "<div class='step'><b>Step 4: HTTP Kernel Bootstrap (what handleRequest() does)</b> ";
-try {
     $kernel = $app->make(\Illuminate\Contracts\Http\Kernel::class);
-    $request = \Illuminate\Http\Request::create('/', 'GET');
-
-    // This is what handleRequest internally calls before handling
     $kernel->bootstrap();
 
-    echo "<span class='ok'>✅ Kernel bootstrapped successfully!</span>";
+    // Bring app out of maintenance
+    $exitCode = \Illuminate\Support\Facades\Artisan::call('up');
+    echo "<span class='ok'>✅ Artisan 'up' executed. Exit code: $exitCode</span>";
+    echo "<pre>" . htmlspecialchars(\Illuminate\Support\Facades\Artisan::output()) . "</pre>";
 } catch (Throwable $e) {
-    echo "<span class='fail'>❌ FAILED HERE: " . $e->getMessage() . "</span>";
-    echo "<pre>" . $e->getFile() . " line " . $e->getLine() . "\n" . $e->getTraceAsString() . "</pre>";
-    echo "</div></div></body></html>";
-    exit;
+    echo "<span class='fail'>❌ " . $e->getMessage() . "</span>";
+    echo "<pre>" . $e->getFile() . ":" . $e->getLine() . "</pre>";
 }
 echo "</div>";
 
-// STEP 5: Check bindings after proper bootstrap
-echo "<div class='step'><b>Step 5: Services after proper bootstrap</b> ";
-$services = ['files', 'events', 'router', 'log', 'db', 'view', 'config', 'session', 'auth'];
-$status = [];
-foreach ($services as $s) {
-    $bound = $app->bound($s);
-    $status[$s] = $bound ? "<span class='ok'>✅</span>" : "<span class='fail'>❌ MISSING</span>";
-}
-echo "<table>";
-foreach ($status as $k => $v)
-    echo "<tr><td><b>$k</b></td><td>$v</td></tr>";
-echo "</table></div>";
-
-// STEP 6: Handle test request
-echo "<div class='step'><b>Step 6: Handle /ping Request</b> ";
+// ─────────────────────────────────────────────────────────
+// STEP 4: Test ping route AFTER maintenance removal
+// ─────────────────────────────────────────────────────────
+echo "<div class='step'><b>Step 4: Test / route after fix</b><br/>";
 try {
-    $request = \Illuminate\Http\Request::create('/ping', 'GET');
+    // Need a fresh app instance since the previous one may be in a weird state
+    $request = \Illuminate\Http\Request::create('/', 'GET');
     $response = $kernel->handle($request);
-    echo "<span class='ok'>✅ Status: " . $response->getStatusCode() . "</span>";
-    echo "<pre>" . htmlspecialchars($response->getContent()) . "</pre>";
+    $status = $response->getStatusCode();
+    if ($status === 200) {
+        echo "<span class='ok'>✅ Status: 200 - SITE IS LIVE!</span>";
+    } elseif ($status === 302) {
+        echo "<span class='ok'>✅ Status: 302 - Redirecting (probably to login) - SITE IS LIVE!</span>";
+        echo "<pre>Location: " . $response->headers->get('Location') . "</pre>";
+    } elseif ($status === 503) {
+        echo "<span class='fail'>❌ Status: 503 - Still in maintenance. Something is REGENERATING the maintenance file.</span>";
+    } else {
+        echo "<span class='warn'>⚠️ Status: $status</span>";
+        echo "<pre>" . htmlspecialchars(substr($response->getContent(), 0, 500)) . "</pre>";
+    }
 } catch (Throwable $e) {
     echo "<span class='fail'>❌ " . $e->getMessage() . "</span>";
 }
 echo "</div>";
 
-echo "<p>✅ Simulation complete. <a href='/'>Try Dashboard</a></p>";
+echo "<p>Done. <a href='/'>Go to Dashboard</a></p>";
 echo "</div></body></html>";
