@@ -15,7 +15,7 @@ class DashboardController extends Controller
             // Cache Key based on default currency
             $siteSettings = \App\Models\SystemSetting::first();
             $defaultCurrency = $siteSettings->default_currency ?? 'TRY';
-            $cacheKey = 'dashboard_stats_v2_' . $defaultCurrency; // Versioned cache key
+            $cacheKey = 'dashboard_stats_v3_' . $defaultCurrency; // Updated version to force cache refresh after type change
 
             $dashboardData = \Illuminate\Support\Facades\Cache::remember($cacheKey, 1800, function () use ($defaultCurrency) {
                 $financeService = new \App\Services\FinanceService();
@@ -95,6 +95,11 @@ class DashboardController extends Controller
 
             $dashboardData['announcements'] = $announcements;
             $dashboardData['defaultCurrency'] = $defaultCurrency;
+
+            // Type cast to Collection if they are arrays (happens during cache serialization)
+            $dashboardData['currencySummary'] = collect($dashboardData['currencySummary']);
+            $dashboardData['revenueMetrics'] = collect($dashboardData['revenueMetrics']);
+            $dashboardData['mrrMetrics'] = collect($dashboardData['mrrMetrics']);
 
             return view('dashboard', $dashboardData);
 

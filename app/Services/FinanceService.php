@@ -73,7 +73,7 @@ class FinanceService
      * Get global financial summary (Receivables and Payables) grouped by currency.
      * This replaces inefficient PHP-side summation in controllers.
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     public function getGlobalSummary()
     {
@@ -99,7 +99,7 @@ class FinanceService
             $result[$currency]['net'] += (float) $row->balance;
         }
 
-        return $result;
+        return collect($result);
     }
 
     /**
