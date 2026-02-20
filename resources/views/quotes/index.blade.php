@@ -158,13 +158,13 @@
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse($quotes as $quote)
                                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-150">
+                                        <td class="px-4 py-4 w-4">
+                                            <input type="checkbox" name="ids[]" value="{{ $quote->id }}"
+                                                class="row-checkbox rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50">
+                                        </td>
                                         <td class="px-4 py-4">
-                                            <div class="flex items-center space-x-2">
-                                                <input type="checkbox" name="ids[]" value="{{ $quote->id }}"
-                                                    class="row-checkbox rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 mr-2">
-                                                <span
-                                                    class="font-mono text-sm font-bold text-gray-900 dark:text-white">{{ $quote->number }}</span>
-                                            </div>
+                                            <span
+                                                class="font-mono text-sm font-bold text-gray-900 dark:text-white">{{ $quote->number }}</span>
                                         </td>
                                         <td class="px-4 py-4">
                                             @if($quote->customer)
