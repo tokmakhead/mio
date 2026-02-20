@@ -12,11 +12,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        /*
         $middleware->web(append: [
             \App\Http\Middleware\PreventDemoWrites::class,
             \App\Http\Middleware\EnsureAppIsLicensed::class,
             \App\Http\Middleware\SetLocale::class,
         ]);
+        */
 
         $middleware->validateCsrfTokens(except: [
             'install/*',
