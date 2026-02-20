@@ -11,6 +11,11 @@ Route::get('/ping', function () {
     return 'pong';
 });
 
+Route::get('/up-now', function () {
+    Artisan::call('up');
+    return 'System is now ONLINE! <a href="/">Go to Dashboard</a>';
+});
+
 Route::middleware(['auth', 'can:manage-settings'])->get('/fix-config', function () {
     Artisan::call('config:clear');
     Artisan::call('cache:clear');
