@@ -4,6 +4,11 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Log;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,70 +25,69 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Fix MySQL utf8mb4 index key length issue
-        Schema::defaultStringLength(191);
+        try {
+            // Fix MySQL utf8mb4 index key length issue
+            Schema::defaultStringLength(191);
 
-        // Force HTTPS in production (Railway)
-        if (config('app.env') === 'production') {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
-        }
-
-        // Model Observers
-        \App\Models\Invoice::observe(\App\Observers\InvoiceObserver::class);
-        \App\Models\Payment::observe(\App\Observers\PaymentObserver::class);
-
-        // Activity Logging for Login/Logout
-        \Illuminate\Support\Facades\Event::listen(
-            \Illuminate\Auth\Events\Login::class,
-            function ($event) {
-                \App\Models\ActivityLog::create([
-                    'actor_user_id' => $event->user->id,
-                    'action' => 'user.login',
-                    'metadata' => ['ip' => request()->ip()],
-                ]);
+            // Force HTTPS in production (Railway)
+            if (config('app.env') === 'production') {
+                URL::forceScheme('https');
             }
-        );
 
-        \Illuminate\Support\Facades\Event::listen(
-            \Illuminate\Auth\Events\Logout::class,
-            function ($event) {
-                if ($event->user) {
+            // Model Observers
+            if (class_exists(\App\Models\Invoice::class) && class_exists(\App\Observers\InvoiceObserver::class)) {
+                \App\Models\Invoice::observe(\App\Observers\InvoiceObserver::class);
+            }
+            if (class_exists(\App\Models\Payment::class) && class_exists(\App\Observers\PaymentObserver::class)) {
+                \App\Models\Payment::observe(\App\Observers\PaymentObserver::class);
+            }
+
+            // Activity Logging for Login/Logout
+            Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
+                try {
                     \App\Models\ActivityLog::create([
                         'actor_user_id' => $event->user->id,
-                        'action' => 'user.logout',
+                        'action' => 'user.login',
+                        'metadata' => ['ip' => request()->ip()],
                     ]);
+                } catch (\Exception $e) {
                 }
-            }
-        );
-
-        // Email Logging
-        \Illuminate\Support\Facades\Event::listen(
-            \Illuminate\Mail\Events\MessageSent::class,
-            function ($event) {
-                $message = $event->message;
-
-                $to = [];
-                foreach ($message->getTo() as $address) {
-                    $to[] = $address->getAddress();
-                }
-
-                \App\Models\EmailLog::create([
-                    'to' => implode(', ', $to),
-                    'subject' => $message->getSubject(),
-                    'body' => $message->getHtmlBody() ?? $message->getTextBody(), // Symfony Mailer
-                    'status' => 'sent',
-                    'sent_at' => now(),
-                ]);
-            }
-        );
-
-        // Share System Settings with all views
-        try {
-            $hasSystemSettingsTable = \Illuminate\Support\Facades\Cache::rememberForever('schema_has_system_settings', function () {
-                return \Illuminate\Support\Facades\Schema::hasTable('system_settings');
             });
 
-            if ($hasSystemSettingsTable) {
+            Event::listen(\Illuminate\Auth\Events\Logout::class, function ($event) {
+                try {
+                    if ($event->user) {
+                        \App\Models\ActivityLog::create([
+                            'actor_user_id' => $event->user->id,
+                            'action' => 'user.logout',
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                }
+            });
+
+            // Email Logging
+            Event::listen(\Illuminate\Mail\Events\MessageSent::class, function ($event) {
+                try {
+                    $message = $event->message;
+                    $to = [];
+                    foreach ($message->getTo() as $address) {
+                        $to[] = $address->getAddress();
+                    }
+
+                    \App\Models\EmailLog::create([
+                        'to' => implode(', ', $to),
+                        'subject' => $message->getSubject(),
+                        'body' => $message->getHtmlBody() ?? $message->getTextBody(),
+                        'status' => 'sent',
+                        'sent_at' => now(),
+                    ]);
+                } catch (\Exception $e) {
+                }
+            });
+
+            // Share System Settings with all views
+            if (Schema::hasTable('system_settings')) {
                 $siteSettings = \App\Models\SystemSetting::firstOrCreate(['id' => 1]);
 
                 // Force MIONEX branding if defaults are present
@@ -91,18 +95,14 @@ class AppServiceProvider extends ServiceProvider
                     $siteSettings->update(['site_name' => 'MIONEX']);
                 }
 
-                $hasBrandSettingsTable = \Illuminate\Support\Facades\Cache::rememberForever('schema_has_brand_settings', function () {
-                    return \Illuminate\Support\Facades\Schema::hasTable('brand_settings');
-                });
-
-                if ($hasBrandSettingsTable) {
+                if (Schema::hasTable('brand_settings')) {
                     $brandTitle = \App\Models\BrandSetting::where('key', 'site_title')->first();
                     if (!$brandTitle || $brandTitle->value === 'Mioly' || $brandTitle->value === 'Laravel') {
                         \App\Models\BrandSetting::updateOrCreate(['key' => 'site_title'], ['value' => 'MIONEX']);
                     }
                 }
 
-                \Illuminate\Support\Facades\View::share('siteSettings', $siteSettings);
+                View::share('siteSettings', $siteSettings);
 
                 // Dynamic Configuration Boot
                 config([
@@ -112,39 +112,31 @@ class AppServiceProvider extends ServiceProvider
                 date_default_timezone_set(config('app.timezone'));
                 app()->setLocale(config('app.locale'));
 
-                $brandSettings = \Illuminate\Support\Facades\Cache::rememberForever('brand_settings_all', function () {
-                    return \App\Models\BrandSetting::all()->pluck('value', 'key')->toArray();
+                $brandSettings = Cache::rememberForever('brand_settings_all', function () {
+                    try {
+                        return \App\Models\BrandSetting::all()->pluck('value', 'key')->toArray();
+                    } catch (\Exception $e) {
+                        return [];
+                    }
                 });
-                \Illuminate\Support\Facades\View::share('brandSettings', $brandSettings);
+                View::share('brandSettings', $brandSettings);
             }
-        } catch (\Exception $e) {
-            // Table doesn't exist yet (Installer mode)
-        }
 
-        // Share Brand Settings
-        try {
-            $hasBrandSettingsTable = \Illuminate\Support\Facades\Cache::rememberForever('schema_has_brand_settings', function () {
-                return \Illuminate\Support\Facades\Schema::hasTable('brand_settings');
-            });
-
-            if ($hasBrandSettingsTable) {
-                \Illuminate\Support\Facades\View::composer('*', function ($view) {
-                    $brandSettings = \Illuminate\Support\Facades\Cache::rememberForever('brand_settings_all', function () {
-                        return \App\Models\BrandSetting::all()->pluck('value', 'key');
-                    });
+            // Share Brand Settings additionally via composer (safe)
+            if (Schema::hasTable('brand_settings')) {
+                View::composer('*', function ($view) {
+                    try {
+                        $brandSettings = Cache::rememberForever('brand_settings_all', function () {
+                            return \App\Models\BrandSetting::all()->pluck('value', 'key')->toArray();
+                        });
+                        $view->with('brandSettings', $brandSettings);
+                    } catch (\Exception $e) {
+                    }
                 });
             }
-        } catch (\Exception $e) {
-            // Table doesn't exist yet
-        }
 
-        // Load SMTP Settings from Database
-        try {
-            $hasEmailSettingsTable = \Illuminate\Support\Facades\Cache::rememberForever('schema_has_email_settings', function () {
-                return \Illuminate\Support\Facades\Schema::hasTable('email_settings');
-            });
-
-            if ($hasEmailSettingsTable) {
+            // Load SMTP Settings from Database
+            if (Schema::hasTable('email_settings')) {
                 $emailSettings = \App\Models\EmailSetting::first();
                 if ($emailSettings && $emailSettings->host) {
                     config([
@@ -158,8 +150,9 @@ class AppServiceProvider extends ServiceProvider
                     ]);
                 }
             }
+
         } catch (\Exception $e) {
-            // Ignore during migration or if table missing
+            Log::error('AppServiceProvider boot error: ' . $e->getMessage());
         }
     }
 }
