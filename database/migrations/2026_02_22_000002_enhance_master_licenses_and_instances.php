@@ -19,12 +19,17 @@ return new class extends Migration {
         // 2. Create master_license_instances table
         Schema::create('master_license_instances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('master_license_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('master_license_id');
             $table->string('domain')->nullable();
             $table->string('ip_address')->nullable();
             $table->string('version')->nullable();
             $table->timestamp('last_heard_at')->nullable();
             $table->timestamps();
+
+            $table->foreign('master_license_id')
+                ->references('id')
+                ->on('master_licenses')
+                ->onDelete('cascade');
 
             $table->index(['master_license_id', 'domain']);
         });
