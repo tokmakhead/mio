@@ -23,7 +23,12 @@
                                         placeholder="Müşteri aramaya başlayın..." autocomplete="off">
                                         <option value="">Müşteri Seçiniz...</option>
                                         @foreach($customers as $customer)
-                                            <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
+                                            <option value="{{ $customer->id }}" 
+                                                data-text="{{ $customer->name }}"
+                                                data-name="{{ $customer->name }}"
+                                                data-email="{{ $customer->email }}"
+                                                data-tax_number="{{ $customer->tax_or_identity_number }}"
+                                                {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
                                                 {{ $customer->name }}
                                             </option>
                                         @endforeach
@@ -236,6 +241,7 @@
                         valueField: 'id',
                         labelField: 'text',
                         searchField: ['name', 'email', 'tax_number'],
+                        dataAttr: 'data-custom', // Forces use of custom data attributes if needed
                         preload: true,
                         load: function (query, callback) {
                             var url = '{{ route("customers.api_search") }}?q=' + encodeURIComponent(query);

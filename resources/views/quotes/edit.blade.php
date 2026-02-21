@@ -24,7 +24,12 @@
                                         placeholder="Müşteri aramaya başlayın..." autocomplete="off">
                                         <option value="">Müşteri Seçiniz...</option>
                                         @foreach($customers as $customer)
-                                            <option value="{{ $customer->id }}" {{ old('customer_id', $quote->customer_id) == $customer->id ? 'selected' : '' }}>
+                                            <option value="{{ $customer->id }}"
+                                                data-text="{{ $customer->name }}"
+                                                data-name="{{ $customer->name }}"
+                                                data-email="{{ $customer->email }}"
+                                                data-tax_number="{{ $customer->tax_or_identity_number }}"
+                                                {{ old('customer_id', $quote->customer_id) == $customer->id ? 'selected' : '' }}>
                                                 {{ $customer->name }}
                                             </option>
                                         @endforeach
