@@ -13,11 +13,11 @@
         @foreach($announcements as $announcement)
             @if(($announcement['display_mode'] ?? 'banner') === 'feed')
                 <div class="announcement-item w-full py-2 px-4 text-center shadow-md z-50
-                                            @if($announcement['type'] == 'info') bg-blue-600 text-white
-                                            @elseif($announcement['type'] == 'success') bg-green-600 text-white
-                                            @elseif($announcement['type'] == 'warning') bg-yellow-400 text-gray-900
-                                            @elseif($announcement['type'] == 'danger') bg-red-600 text-white
-                                            @else bg-gray-800 text-white @endif"
+                                                        @if($announcement['type'] == 'info') bg-blue-600 text-white
+                                                        @elseif($announcement['type'] == 'success') bg-green-600 text-white
+                                                        @elseif($announcement['type'] == 'warning') bg-yellow-400 text-gray-900
+                                                        @elseif($announcement['type'] == 'danger') bg-red-600 text-white
+                                                        @else bg-gray-800 text-white @endif"
                     data-id="{{ $announcement['id'] ?? $loop->index }}" style="display:none;">
                     <div class="max-w-7xl mx-auto flex items-center justify-center gap-3">
                         <span class="font-bold uppercase tracking-widest text-xs bg-black/20 px-2 py-0.5 rounded">🚨 Flaş
@@ -35,13 +35,13 @@
                     </div>
                 </div>
             @elseif(($announcement['display_mode'] ?? 'banner') === 'modal')
-                <div class="announcement-item fixed inset-0 z-[200] items-center justify-center p-4" role="dialog" aria-modal="true"
-                    data-id="{{ $announcement['id'] ?? $loop->index }}" style="display:none;">
+                <div class="announcement-item fixed inset-0 z-[9999] items-center justify-center p-4" role="dialog"
+                    aria-modal="true" data-id="{{ $announcement['id'] ?? $loop->index }}" style="display:none;">
                     {{-- Backdrop --}}
-                    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm"
+                    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]"
                         onclick="dismissAnnouncement(this, '{{ $announcement['id'] ?? $loop->index }}')"></div>
                     {{-- Modal card --}}
-                    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 z-10">
+                    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 z-[9999]">
                         @if($announcement['is_dismissible'])
                             <button onclick="dismissAnnouncement(this, '{{ $announcement['id'] ?? $loop->index }}')"
                                 class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
@@ -52,11 +52,11 @@
                         @endif
                         <div class="flex items-start gap-4">
                             <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
-                                                        @if($announcement['type'] == 'info') bg-blue-100 text-blue-600
-                                                        @elseif($announcement['type'] == 'success') bg-green-100 text-green-600
-                                                        @elseif($announcement['type'] == 'warning') bg-yellow-100 text-yellow-600
-                                                        @elseif($announcement['type'] == 'danger') bg-red-100 text-red-600
-                                                        @else bg-gray-100 text-gray-600 @endif">
+                                                                    @if($announcement['type'] == 'info') bg-blue-100 text-blue-600
+                                                                    @elseif($announcement['type'] == 'success') bg-green-100 text-green-600
+                                                                    @elseif($announcement['type'] == 'warning') bg-yellow-100 text-yellow-600
+                                                                    @elseif($announcement['type'] == 'danger') bg-red-100 text-red-600
+                                                                    @else bg-gray-100 text-gray-600 @endif">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -97,11 +97,11 @@
                     @foreach($announcements as $announcement)
                         @if(($announcement['display_mode'] ?? 'banner') === 'banner')
                             <div class="announcement-item rounded-md p-4 border-l-4 shadow-sm relative group
-                                                                    @if($announcement['type'] == 'info') bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500
-                                                                    @elseif($announcement['type'] == 'success') bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-500
-                                                                    @elseif($announcement['type'] == 'warning') bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500
-                                                                    @elseif($announcement['type'] == 'danger') bg-red-50 border-red-400 dark:bg-red-900/20 dark:border-red-500
-                                                                    @else bg-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-500 @endif"
+                                                                                @if($announcement['type'] == 'info') bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500
+                                                                                @elseif($announcement['type'] == 'success') bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-500
+                                                                                @elseif($announcement['type'] == 'warning') bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500
+                                                                                @elseif($announcement['type'] == 'danger') bg-red-50 border-red-400 dark:bg-red-900/20 dark:border-red-500
+                                                                                @else bg-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-500 @endif"
                                 data-id="{{ $announcement['id'] ?? $loop->index }}" style="display: none;">
 
                                 <div class="flex">
@@ -137,20 +137,22 @@
                                         @endif
                                     </div>
                                     <div class="ml-3 pr-8">
-                                        <h3 class="text-sm font-medium 
-                                                                                @if($announcement['type'] == 'info') text-blue-800 dark:text-blue-200
-                                                                                @elseif($announcement['type'] == 'success') text-green-800 dark:text-green-200
-                                                                                @elseif($announcement['type'] == 'warning') text-yellow-800 dark:text-yellow-200
-                                                                                @elseif($announcement['type'] == 'danger') text-red-800 dark:text-red-200
-                                                                                @else text-gray-800 dark:text-gray-200 @endif">
+                                        <h3
+                                            class="text-sm font-medium 
+                                                                                            @if($announcement['type'] == 'info') text-blue-800 dark:text-blue-200
+                                                                                            @elseif($announcement['type'] == 'success') text-green-800 dark:text-green-200
+                                                                                            @elseif($announcement['type'] == 'warning') text-yellow-800 dark:text-yellow-200
+                                                                                            @elseif($announcement['type'] == 'danger') text-red-800 dark:text-red-200
+                                                                                            @else text-gray-800 dark:text-gray-200 @endif">
                                             {{ $announcement['title'] }}
                                         </h3>
-                                        <div class="mt-2 text-sm 
-                                                                                @if($announcement['type'] == 'info') text-blue-700 dark:text-blue-300
-                                                                                @elseif($announcement['type'] == 'success') text-green-700 dark:text-green-300
-                                                                                @elseif($announcement['type'] == 'warning') text-yellow-700 dark:text-yellow-300
-                                                                                @elseif($announcement['type'] == 'danger') text-red-700 dark:text-red-300
-                                                                                @else text-gray-700 dark:text-gray-300 @endif">
+                                        <div
+                                            class="mt-2 text-sm 
+                                                                                            @if($announcement['type'] == 'info') text-blue-700 dark:text-blue-300
+                                                                                            @elseif($announcement['type'] == 'success') text-green-700 dark:text-green-300
+                                                                                            @elseif($announcement['type'] == 'warning') text-yellow-700 dark:text-yellow-300
+                                                                                            @elseif($announcement['type'] == 'danger') text-red-700 dark:text-red-300
+                                                                                            @else text-gray-700 dark:text-gray-300 @endif">
                                             <p>{{ $announcement['message'] }}</p>
                                         </div>
                                     </div>
@@ -161,11 +163,11 @@
                                         <button type="button"
                                             onclick="dismissAnnouncement(this, '{{ $announcement['id'] ?? $loop->index }}')"
                                             class="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2
-                                                                                            @if($announcement['type'] == 'info') text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/40
-                                                                                            @elseif($announcement['type'] == 'success') text-green-500 hover:bg-green-100 dark:hover:bg-green-900/40
-                                                                                            @elseif($announcement['type'] == 'warning') text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900/40
-                                                                                            @elseif($announcement['type'] == 'danger') text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40
-                                                                                            @else text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/40 @endif">
+                                                                                                            @if($announcement['type'] == 'info') text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/40
+                                                                                                            @elseif($announcement['type'] == 'success') text-green-500 hover:bg-green-100 dark:hover:bg-green-900/40
+                                                                                                            @elseif($announcement['type'] == 'warning') text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900/40
+                                                                                                            @elseif($announcement['type'] == 'danger') text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40
+                                                                                                            @else text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/40 @endif">
                                             <span class="sr-only">Kapat</span>
                                             <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                                 fill="currentColor">
@@ -346,9 +348,9 @@
                                         <td class="px-6 py-4 text-right">
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                                                                                                                                            @if($service->days_until_expiry < 30) bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400
-                                                                                                                                            @elseif($service->days_until_expiry < 60) bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400
-                                                                                                                                            @else bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400 @endif">
+                                                                                                                                                @if($service->days_until_expiry < 30) bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400
+                                                                                                                                                @elseif($service->days_until_expiry < 60) bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400
+                                                                                                                                                @else bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400 @endif">
                                                 {{ $service->days_until_expiry }} gün
                                             </span>
                                         </td>
@@ -427,20 +429,20 @@
                                                 <div>
                                                     <span
                                                         class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-800 
-                                                                                                                                                    @php
-                                                                                                                                                        $color = 'bg-gray-400';
-                                                                                                                                                        if (str_contains($activity->action, 'created'))
-                                                                                                                                                            $color = 'bg-green-500';
-                                                                                                                                                        if (str_contains($activity->action, 'updated'))
-                                                                                                                                                            $color = 'bg-blue-500';
-                                                                                                                                                        if (str_contains($activity->action, 'deleted'))
-                                                                                                                                                            $color = 'bg-red-500';
-                                                                                                                                                        if (str_contains($activity->action, 'sent'))
-                                                                                                                                                            $color = 'bg-primary-500';
-                                                                                                                                                        if (str_contains($activity->action, 'login'))
-                                                                                                                                                            $color = 'bg-primary-500';
-                                                                                                                                                    @endphp
-                                                                                                                                                    {{ $color }}">
+                                                                                                                                                        @php
+                                                                                                                                                            $color = 'bg-gray-400';
+                                                                                                                                                            if (str_contains($activity->action, 'created'))
+                                                                                                                                                                $color = 'bg-green-500';
+                                                                                                                                                            if (str_contains($activity->action, 'updated'))
+                                                                                                                                                                $color = 'bg-blue-500';
+                                                                                                                                                            if (str_contains($activity->action, 'deleted'))
+                                                                                                                                                                $color = 'bg-red-500';
+                                                                                                                                                            if (str_contains($activity->action, 'sent'))
+                                                                                                                                                                $color = 'bg-primary-500';
+                                                                                                                                                            if (str_contains($activity->action, 'login'))
+                                                                                                                                                                $color = 'bg-primary-500';
+                                                                                                                                                        @endphp
+                                                                                                                                                        {{ $color }}">
                                                         @php
                                                             $icon = 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z';
                                                             if (str_contains($activity->action, 'invoice'))
