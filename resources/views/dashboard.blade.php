@@ -31,7 +31,7 @@
                     </div>
                 </div>
             @elseif(($announcement['display_mode'] ?? 'banner') === 'modal')
-                <div class="announcement-item fixed inset-0 z-[200] hidden" role="dialog" aria-modal="true" data-id="{{ $announcement['id'] ?? $loop->index }}">
+                <div class="announcement-item fixed inset-0 z-[200]" role="dialog" aria-modal="true" data-id="{{ $announcement['id'] ?? $loop->index }}" style="display:none;">
                     <div class="flex items-center justify-center min-h-screen px-4">
                         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="dismissAnnouncement(this, '{{ $announcement['id'] ?? $loop->index }}')"></div>
                         <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 z-10">
@@ -554,15 +554,28 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             const dismissed = JSON.parse(localStorage.getItem('dismissed_announcements') || '[]');
+
             document.querySelectorAll('.announcement-item').forEach(item => {
                 const id = item.getAttribute('data-id');
-                if (dismissed.includes(id)) {
+                if (dismissed.includes(id.toString())) {
                     item.remove();
+                    return;
+                }
+
+                // Determine correct display value based on type
+                const isModal = item.classList.contains('fixed') && item.getAttribute('role') === 'dialog';
+                const isFeed = !isModal && item.classList.contains('fixed') === false && !item.closest('#announcement-container')?.parentElement;
+
+                item.style.transition = 'opacity 0.3s ease';
+
+                if (isModal) {
+                    // Modal: needs flex to centre its content
+                    item.style.display = 'flex';
+                } else if (item.classList.contains('fixed')) {
+                    item.style.display = 'flex';
                 } else {
-                    item.style.display = item.classList.contains('fixed') ? 'block' : 'block';
-                    if (item.classList.contains('fixed')) {
-                        item.classList.remove('hidden');
-                    }
+                    // Banner & Feed: block
+                    item.style.display = 'block';
                 }
             });
 
