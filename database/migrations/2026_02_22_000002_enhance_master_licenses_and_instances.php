@@ -10,10 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        // 1. Update master_licenses table
+        // 1. Update master_licenses table (with existence checks for partial failure recovery)
         Schema::table('master_licenses', function (Blueprint $table) {
-            $table->boolean('is_strict')->default(false)->after('status');
-            $table->integer('activation_limit')->default(1)->after('is_strict');
+            if (!Schema::hasColumn('master_licenses', 'is_strict')) {
+                $table->boolean('is_strict')->default(false)->after('status');
+            }
+            if (!Schema::hasColumn('master_licenses', 'activation_limit')) {
+                $table->integer('activation_limit')->default(1)->after('is_strict');
+            }
         });
 
         // 2. Create master_license_instances table
