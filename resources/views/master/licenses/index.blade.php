@@ -21,9 +21,9 @@
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kod (Lisans Anahtarı)</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Müşteri</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Domain / IP</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tür</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Durum</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aktivasyon</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tür / Fiyat</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Durum & Sinyal</th>
                             <th scope="col" class="relative px-6 py-3">
                                 <span class="sr-only">İşlemler</span>
                             </th>
@@ -41,20 +41,55 @@
                                     <div class="text-sm text-gray-500">{{ $license->client_email }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900 dark:text-white">{{ $license->domain ?? '-' }}</div>
-                                    <div class="text-xs text-gray-500">{{ $license->ip_address ?? 'Not Activated' }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                        {{ ucfirst($license->type) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($license->status === 'active')
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Active</span>
-                                    @else
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">{{ ucfirst($license->status) }}</span>
+                                    <div class="flex items-center">
+                                        <div class="text-sm text-gray-900 dark:text-white mr-2">{{ $license->instances_count }} / {{ $license->activation_limit }}</div>
+                                        <a href="{{ route('master.licenses.instances', $license->id) }}" class="text-blue-600 hover:text-blue-900 text-xs">(Detaylar)</a>
+                                    </div>
+                                    @if($license->is_strict)
+                                        <span class="text-[10px] bg-red-100 text-red-600 px-1 rounded uppercase font-bold">Strict</span>
                                     @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="px-2 inline-flex text-[10px] leading-4 font-bold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 w-fit uppercase">
+                                            {{ $license->type }}
+                                        <span class="text-[10px] text-gray-500 font-medium">
+                                            @if($license->price > 0)
+                                                {{ number_format($license->price, 2) }} {{ $license->currency }}
+                                                <span class="opacity-50">/{{ $license->billing_cycle === 'one-time' ? 'L' : ($license->billing_cycle === 'monthly' ? 'M' : 'Y') }}</span>
+                                            @else
+                                                Ücretsiz
+                                            @endif
+                                        </span>
+                                        <div class="flex gap-1">
+                                            @if($license->features)
+                                                @foreach($license->features as $feat => $val)
+                                                    @if($val)
+                                                        <span class="w-2 h-2 rounded-full bg-indigo-500" title="{{ $feat }}"></span>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex flex-col gap-1">
+                                        @if($license->status === 'active')
+                                            @if($license->isExpired())
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">Süresi Doldu</span>
+                                            @elseif($license->isTrial())
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Deneme (Trial)</span>
+                                            @else
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aktif</span>
+                                            @endif
+                                        @else
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">{{ ucfirst($license->status) }}</span>
+                                        @endif
+                                        
+                                        @if($license->last_sync_at)
+                                            <span class="text-[10px] text-gray-400">Son Sinyal: {{ $license->last_sync_at->diffForHumans() }}</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if($license->status !== 'cancelled')

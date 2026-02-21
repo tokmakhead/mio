@@ -28,6 +28,7 @@ class MasterApiController extends Controller
         $licenseCode = $request->license_code;
         $domain = $request->domain;
         $ip = $request->ip;
+        $version = $request->input('version');
 
         // Find License
         $license = MasterLicense::where('code', $licenseCode)->first();
@@ -50,39 +51,55 @@ class MasterApiController extends Controller
             ], 403);
         }
 
-        // 3. License Expired
-        if ($license->expires_at && Carbon::parse($license->expires_at)->isPast()) {
+        // 3. License Expired or Trial Ended
+        if ($license->isExpired()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'License Expired',
+                'message' => 'License has expired or trial period has ended.',
                 'code' => 'LICENSE_EXPIRED'
             ], 403);
         }
 
-        // 4. Domain Check (Optional binding)
-        if ($license->domain && $domain && $license->domain !== $domain) {
-            // Allow localhost for dev (or maybe not, strict mode?)
-            if (!str_contains($domain, 'localhost') && !str_contains($domain, '127.0.0.1')) {
+        // 4. Domain & IP Management (Advanced Logic)
+        $instance = $license->instances()->where('domain', $domain)->first();
+
+        if ($instance) {
+            // Update existing instance
+            $instance->update([
+                'ip_address' => $ip,
+                'version' => $version,
+                'last_heard_at' => now(),
+            ]);
+        } else {
+            // Check limits for new activation
+            $currentCount = $license->instances()->count();
+            if ($currentCount >= $license->activation_limit) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Domain Mismatch',
-                    'code' => 'DOMAIN_MISMATCH'
+                    'message' => 'Activation Limit Reached (' . $license->activation_limit . ')',
+                    'code' => 'LIMIT_REACHED'
                 ], 403);
             }
+
+            if ($license->is_strict && $license->domain && $license->domain !== $domain) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'License is strictly bound to another domain.',
+                    'code' => 'STRICT_DOMAIN_MISMATCH'
+                ], 403);
+            }
+
+            // Create new instance
+            $license->instances()->create([
+                'domain' => $domain,
+                'ip_address' => $ip,
+                'version' => $version,
+                'last_heard_at' => now(),
+            ]);
         }
 
-        // 5. IP Check (Optional binding)
-        // Only bind if not set yet? Or strictly check?
-        // For now, let's just log or update the last known IP/Domain if empty
-        if (empty($license->domain) && $domain && !str_contains($domain, 'localhost')) {
-            $license->domain = $domain;
-            $license->save();
-        }
-
-        if (empty($license->ip_address) && $ip) {
-            $license->ip_address = $ip;
-            $license->save();
-        }
+        // Update last sync
+        $license->update(['last_sync_at' => now()]);
 
         // Success Response
         return response()->json([
@@ -92,6 +109,8 @@ class MasterApiController extends Controller
                 'type' => $license->type,
                 'client' => $license->client_name,
                 'expires_at' => $license->expires_at,
+                'is_trial' => $license->isTrial(),
+                'features' => $license->features ?? [], // Entitlements
             ]
         ]);
     }
@@ -125,7 +144,7 @@ class MasterApiController extends Controller
                 'update_available' => true,
                 'version' => $latestRelease->version,
                 'release_notes_html' => $latestRelease->release_notes, // Send HTML notes
-                'download_url' => url($latestRelease->file_path), // Full URL
+                'download_url' => route('master.releases.download', $latestRelease->id), // Secure tracked download
                 'is_critical' => (bool) $latestRelease->is_critical,
                 'published_at' => $latestRelease->published_at,
             ]);
@@ -141,17 +160,33 @@ class MasterApiController extends Controller
     /**
      * Get Announcements
      */
-    public function announcements()
+    public function announcements(Request $request)
     {
-        $now = now();
-        $announcements = MasterAnnouncement::where(function ($q) use ($now) {
-            $q->whereNull('start_date')->orWhere('start_date', '<=', $now);
-        })
-            ->where(function ($q) use ($now) {
-                $q->whereNull('end_date')->orWhere('end_date', '>=', $now);
-            })
-            ->latest()
-            ->get();
+        // 1. Identify License (via Header or Parameter - Header is safer as it's signed)
+        // In verifyLicense we log the instance. We can use the signature or a passed license key.
+        $licenseKey = $request->header('X-Mio-License-Key');
+        $license = null;
+
+        if ($licenseKey) {
+            $license = MasterLicense::where('code', $licenseKey)->first();
+        }
+
+        // 2. Fetch active announcements
+        $query = MasterAnnouncement::active();
+
+        // 3. Apply targeting logic
+        $query->where(function ($q) use ($license) {
+            $q->where('target_type', 'all');
+
+            if ($license) {
+                $q->orWhere(function ($sq) use ($license) {
+                    $sq->where('target_type', 'license')
+                        ->where('master_license_id', $license->id);
+                });
+            }
+        });
+
+        $announcements = $query->orderByDesc('is_priority')->latest()->get();
 
         return response()->json($announcements);
     }

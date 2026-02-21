@@ -22,7 +22,7 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Versiyon</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Yayınlanma Tarihi</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tür</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Dosya</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">İndirme</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Notlar</th>
                             <th scope="col" class="relative px-6 py-3">
                                 <span class="sr-only">İşlemler</span>
@@ -51,7 +51,12 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                     <div class="text-sm text-gray-500 font-mono">{{ Str::limit($release->file_path, 20) }}</div>
+                                    <div class="flex items-center">
+                                        <span class="text-sm text-gray-900 dark:text-white font-bold mr-2">{{ $release->download_count }}</span>
+                                        <a href="{{ route('master.releases.download', $release->id) }}" class="p-1 bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 transition">
+                                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0L8 8m4-4v12"></path></svg>
+                                        </a>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
                                      <div class="text-sm text-gray-500 max-w-xs truncate">{{ strip_tags($release->release_notes) }}</div>

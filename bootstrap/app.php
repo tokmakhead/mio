@@ -12,10 +12,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->alias([
+            'master_admin' => \App\Http\Middleware\EnsureMasterAdmin::class,
+        ]);
+
         $middleware->web(append: [
             \App\Http\Middleware\PreventDemoWrites::class,
             \App\Http\Middleware\EnsureAppIsLicensed::class,
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\SecurityHeaders::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

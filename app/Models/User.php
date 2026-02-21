@@ -22,6 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_master',
+        'master_role',
         'demo_readonly',
     ];
 
@@ -45,6 +47,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_master' => 'boolean',
             'demo_readonly' => 'boolean',
         ];
     }
@@ -55,5 +58,44 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is master
+     */
+    public function isMaster(): bool
+    {
+        return (bool) $this->is_master;
+    }
+
+    /**
+     * Check for specific Master Panel permissions
+     */
+    public function hasMasterPermission($permission): bool
+    {
+        if (!$this->isMaster())
+            return false;
+
+        $role = $this->master_role ?? 'super_admin'; // Default existing ones to super for safety
+
+        if ($role === 'super_admin')
+            return true;
+
+        $permissions = [
+            'manager' => [
+                'manage_licenses',
+                'manage_releases',
+                'view_logs',
+            ],
+            'support' => [
+                'view_licenses',
+                'manage_announcements',
+            ]
+        ];
+
+        $allowed = $permissions[$role] ?? [];
+
+        // Handle plural/singular or specific actions
+        return in_array($permission, $allowed);
     }
 }

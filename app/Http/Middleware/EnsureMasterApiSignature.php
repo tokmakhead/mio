@@ -15,15 +15,38 @@ class EnsureMasterApiSignature
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // For development/simulation, we'll check for a 'X-Master-Key' header
-        // In production, this would be a HMAC signature.
-        $masterKey = config('app.master_api_key', 'mionex_master_secret_2026');
+        $signature = $request->header('X-Mio-Signature');
+        $timestamp = $request->header('X-Mio-Timestamp');
+        $nonce = $request->header('X-Mio-Nonce');
 
-        if ($request->header('X-Master-Key') !== $masterKey) {
+        if (!$signature || !$timestamp || !$nonce) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized API Access',
-                'code' => 'UNAUTHORIZED_API'
+                'message' => 'Missing Security Headers',
+                'code' => 'MISSING_HEADERS'
+            ], 401);
+        }
+
+        // Check timestamp (allow 5 min drift)
+        if (abs(time() - (int) $timestamp) > 300) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Request Expired',
+                'code' => 'EXPIRED_REQUEST'
+            ], 401);
+        }
+
+        $masterSecret = config('app.master_api_key', 'mionex_master_secret_2026');
+
+        // signature = hash_hmac('sha256', timestamp . nonce . payload, secret)
+        $payload = $request->getContent();
+        $expectedSignature = hash_hmac('sha256', $timestamp . $nonce . $payload, $masterSecret);
+
+        if (!hash_equals($expectedSignature, $signature)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid Security Signature',
+                'code' => 'INVALID_SIGNATURE'
             ], 401);
         }
 

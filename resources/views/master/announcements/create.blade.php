@@ -99,17 +99,84 @@
                             </div>
                         </div>
 
+                        <!-- Target & Mode -->
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+                            <div>
+                                <label for="target_type"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Hedef Kitle</label>
+                                <select name="target_type" id="target_type" onchange="toggleLicenseSelect()"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="all">Tüm Müşteriler (Global)</option>
+                                    <option value="license">Belirli Bir Lisans</option>
+                                </select>
+                            </div>
+
+                            <div id="license_select_container" class="hidden">
+                                <label for="master_license_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Hedef Lisans</label>
+                                <select name="master_license_id" id="master_license_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    @foreach($licenses as $lic)
+                                        <option value="{{ $lic->id }}">{{ $lic->code }} ({{ $lic->client_name }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="display_mode"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Görünüm Modu</label>
+                                <select name="display_mode" id="display_mode"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="banner">Banner (Üst Bant)</option>
+                                    <option value="modal">Modal (Popup Pencere)</option>
+                                    <option value="feed">Feed (Haber Akışı)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Flags -->
+                        <div class="flex flex-wrap gap-6">
+                            <div class="flex items-center">
+                                <input id="is_active" name="is_active" type="checkbox" checked value="1"
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                <label for="is_active" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">Aktif
+                                    Yayın</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="is_dismissible" name="is_dismissible" type="checkbox" checked value="1"
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                <label for="is_dismissible"
+                                    class="ml-2 block text-sm text-gray-900 dark:text-gray-300">Kapatılabilir</label>
+                            </div>
+                            <div
+                                class="flex items-center px-4 py-2 border border-red-200 bg-red-50 dark:bg-red-900/10 rounded-lg">
+                                <input id="is_priority" name="is_priority" type="checkbox" value="1"
+                                    class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+                                <label for="is_priority"
+                                    class="ml-2 block text-sm font-bold text-red-700 dark:text-red-400">🚨 Flaş Haber /
+                                    Kritik Duyuru</label>
+                            </div>
+                        </div>
+
                         <!-- Javascript for reliable selection -->
                         <script>
+                            function toggleLicenseSelect() {
+                                const type = document.getElementById('target_type').value;
+                                const container = document.getElementById('license_select_container');
+                                if (type === 'license') {
+                                    container.classList.remove('hidden');
+                                } else {
+                                    container.classList.add('hidden');
+                                }
+                            }
+
                             function selectType(label) {
                                 // Reset all
                                 document.querySelectorAll('#typeSelector label').forEach(lbl => {
                                     const box = lbl.querySelector('.selection-box');
                                     const icon = lbl.querySelector('.check-icon');
-                                    const input = lbl.querySelector('input');
-
-                                    // Reset syles
-                                    box.classList.remove('border-blue-500', 'bg-blue-50', 'bg-blue-900/20', 'border-green-500', 'bg-green-50', 'bg-green-900/20', 'border-yellow-500', 'bg-yellow-50', 'bg-yellow-900/20', 'border-red-500', 'bg-red-50', 'bg-red-900/20');
+                                    box.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20', 'border-green-500', 'bg-green-50', 'dark:bg-green-900/20', 'border-yellow-500', 'bg-yellow-50', 'dark:bg-yellow-900/20', 'border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
                                     box.classList.add('border-gray-200', 'dark:border-gray-700');
                                     icon.classList.add('hidden');
                                 });

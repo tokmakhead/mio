@@ -7,65 +7,65 @@ MIONEX sisteminin kalbi olacak, tüm istemci kurulumlarını yöneten ve denetle
 
 ---
 
-## 🛡️ Aşama 1: Güvenlik Sertleştirmesi & İzolasyon
+## ✅ Aşama 1: Güvenlik Sertleştirmesi & İzolasyon [TAMAMLANDI]
 Master Panel, müşteri panellerinden tamamen izole edilmelidir.
 - **Master Guard:** Master Panel kullanıcılarını varsayılan `users` tablosundan ayırmak veya özel bir `role` middleware'i ile korumak.
 - **API Güvenliği:** `MasterApiController` üzerindeki tüm isteklere `MASTER_API_SECRET` veya benzeri bir imza doğrulama (Signing) mekanizması eklenmesi.
 - **Giriş Güvenliği:** Brute-force koruması ve Master Panel girişleri için IP kısıtlama opsiyonu.
 
-## 🔑 Aşama 2: Gelişmiş Lisans Yönetimi
+## ✅ Aşama 2: Gelişmiş Lisans Yönetimi [TAMAMLANDI]
 Lisans sistemi "üret ve ver" mantığından, "yönet ve denetle" mantığına geçmelidir.
 - **Domain & IP Bağlama (Strict Mode):** Lisansın hangi domain veya IP'de aktif olduğunu gösteren ve izinsiz taşınmaları engelleyen "Strict Mode" özelliği.
 - **Lisans Tipleri:** Standart, Premium, Enterprise ve Süreli (Subscription) lisans desteği.
 - **Aktivasyon Geçmişi:** Bir lisansın hangi tarihlerde, hangi sunucularda aktif edildiğini gösteren log sistemi.
 - **Özel Dosya Kilidi (Phone Home):** Belirli aralıklarla Master Panel'e "hayattayım" sinyali gönderen sessiz kontrol mekanizması.
 
-## 🚀 Aşama 3: Versiyon & Güncelleme Merkezi
+## ✅ Aşama 3: Versiyon & Güncelleme Merkezi [TAMAMLANDI]
 Sistemin güncelliğini merkezi olarak yönetme yeteneği.
 - **Sürüm Paketleme:** Yeni sürümlerin `.zip` olarak yüklenebilmesi ve sürümler arası "Delta Update" (sadece değişen dosyalar) hazırlığı.
 - **Otomatik Değişim Günlüğü (Changelog):** Sürüm notlarının Markdown formatında müşterilere sunulması.
 - **Güncelleme Takibi:** Hangi müşterinin hangi sürümde olduğunu gösteren canlı izleme paneli.
 
-## 📢 Aşama 4: Küresel İletişim & Duyuru
+## ✅ Aşama 4: Küresel İletişim & Duyuru [TAMAMLANDI]
 Müşterilere anlık bilgi geçişi.
 - **Hedefli Duyurular:** Sadece belirli müşteri gruplarına veya belirli dildeki müşterilere duyuru gönderme.
 - **Acil Durum Modu:** Kritik bir güvenlik açığı durumunda tüm panellere anlık "Güncelleme Zorunluluğu" bildirimi düşürme.
 - **Sistem Bakım Bildirimi:** Planlı teknik çalışmaların tüm kullanıcı arayüzlerinde otomatik görünmesi.
 
-## 🕹️ Aşama 5: Teknik Gözetim & Sistem Sağlığı (Health Monitoring)
+## ✅ Aşama 5: Teknik Gözetim & Sistem Sağlığı [TAMAMLANDI]
 "Uçtan uca izlenebilirlik" için teknik denetim modülleri:
 - **Merkezi Sunucu Metrikleri:** Master sunucusunun CPU, RAM, Disk ve ağ trafiğini anlık grafiklerle (ApexCharts vb.) izleme.
 - **Micro-Service Status:** Lisans doğrulama API'sı, Update CDN ve E-posta kuyruklarının anlık durumları (Operational / Degraded).
 - **Uptime Monitor:** Müşteri panellerinin (ana domainler) hayatta olup olmadığını kontrol eden dahili ping servisi.
 - **Laravel Doctor:** Master sistemin `.env` yapılandırması, PHP eklentileri ve dosya sistemi yetkilerinin teknik denetimi.
 
-## 🛡️ Aşama 6: Gelişmiş Güvenlik & Denetim (Security Hub)
+## ✅ Aşama 6: Gelişmiş Güvenlik & Denetim [TAMAMLANDI]
 Master Panel'in kendisini ve dağıtılan yazılımları korumak için:
 - **Master Audit Logs:** Master Panel'de kim, hangi lisansı oluşturdu, hangi sürümü sildi? Tüm eylemlerin IP ve User-Agent bazlı kaydı.
 - **2FA (İki Faktörlü Doğrulama):** Master Admin girişleri için Google Authenticator veya e-posta kodu desteği.
 - **Master IP Whitelist:** Sadece sizin belirlediğiniz IP'lerden Master Panel'e giriş yapılabilmesi.
 - **Brute-Force & Bot Koruma:** Hatalı giriş denemelerinde hesabı kilitleme ve anlık bildirim sistemi.
 
-## 🔑 Aşama 7: Granüler Lisans & Entitlement Yönetimi
+## ✅ Aşama 7: Granüler Lisans & Entitlement Yönetimi [TAMAMLANDI]
 Lisansları sadece bir 'kod' olmaktan çıkarıp, esnek bir yönetim aracına dönüştürme:
 - **Modül Bazlı Kilitleme:** Belirli modülleri (örn. Analiz Merkezi) lisansa göre açıp kapatabilme özelliği (Feature Flags).
 - **Aktivasyon Limiti:** Bir lisansın toplamda kaç farklı sunucuda/domainde aktif edilebileceğini sınırlama.
 - **Süreli Deneme (Trial) Yönetimi:** Lisansların belirli bir gün sonunda otomatik pasife alınması ve "Süre Bitimine Yakın" uyarıları.
 - **Domain Binding (Strict Mode):** Lisansın sadece kaydedilen domainde çalışmasını sağlayan ve "Clone" koruması yapan imza mekanizması.
 
-## 📈 Aşama 8: Finansal İstihbarat & Analitik (Business Intelligence)
+## ✅ Aşama 8: Finansal İstihbarat & Analitik [TAMAMLANDI]
 Sistemin ticari başarısını izleyin:
 - **Global Satış Haritası:** Dünyadaki aktif müşteri lokasyonlarının interaktif harita (Heatmap) üzerinde gösterimi.
 - **Gelir Projeksiyonu:** Mevcut aktif aboneliklerden gelecek ay beklenen tahmini kazanç.
 - **Churn Rate:** İptal edilen lisansların oranı ve "Neden İptal Ettiler?" geri bildirim sistemi.
 - **Döviz Bazlı Raporlama:** Tüm gelirlerin TRY, USD, EUR bazında anlık kurlarla konsolide raporlanması.
 
-## 📢 Aşama 9: Global İletişim & Otomasyon
+## ✅ Aşama 9: Global İletişim & Otomasyon [TAMAMLANDI]
 - **Hedefli Duyuru Sistemi:** Sürüme, dile veya lisans tipine göre filtrelenmiş kullanıcı bildirimleri.
 - **Acil Durum (Broadcast):** Tüm müşteri panellerine aynı anda "Flaş Haber" veya "Bakım Bildirimi" gönderme kutusu.
 - **Auto-Cleanup Task:** Eski logları, geçici dosyaları ve kullanılmayan oturumları periyodik temizleyen zamanlanmış görev yönetimi.
 
-## 🛠️ Aşama 10: Master Bakım & Veri Güvenliği
+## ✅ Aşama 10: Master Bakım & Veri Güvenliği [TAMAMLANDI]
 - **One-Click Backup:** Tüm Master veritabanını ve yüklü sürümleri `.zip` olarak yedekleme (Yedeklerin buluta otomatik yüklenmesi).
 - **SQL Console (Safe):** Master veritabanında sadece select/update yapabilen, güvenli ve loglanan bir SQL yönetim aracı.
 - **Log Tail:** `laravel.log` dosyasını sayfa yenilemeden canlı (websocket benzeri) izleme alanı.

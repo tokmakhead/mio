@@ -183,31 +183,41 @@ require __DIR__ . '/auth.php';
 
 // MASTER MANAGEMENT PANEL (Simulator)
 // Public Master Routes (Login)
-Route::group(['prefix' => 'master', 'as' => 'master.', 'middleware' => ['web']], function () {
+Route::group(['prefix' => 'master', 'as' => 'master.', 'middleware' => ['web', 'throttle:5,1']], function () {
     Route::get('/login', [\App\Http\Controllers\MasterController::class, 'showLogin'])->name('login');
     Route::post('/login', [\App\Http\Controllers\MasterController::class, 'authenticate'])->name('login.action');
     Route::post('/logout', [\App\Http\Controllers\MasterController::class, 'logout'])->name('logout');
 });
 
 // Protected Master Routes
-Route::group(['prefix' => 'master', 'as' => 'master.', 'middleware' => ['web', 'auth']], function () {
+Route::group(['prefix' => 'master', 'as' => 'master.', 'middleware' => ['web', 'auth', 'master_admin']], function () {
     Route::get('/', [App\Http\Controllers\MasterController::class, 'index'])->name('dashboard');
 
     // Licenses
-    Route::get('/licenses', [App\Http\Controllers\MasterController::class, 'licenses'])->name('licenses.index');
-    Route::get('/licenses/create', [App\Http\Controllers\MasterController::class, 'createLicense'])->name('licenses.create');
-    Route::post('/licenses', [App\Http\Controllers\MasterController::class, 'storeLicense'])->name('licenses.store');
-    Route::post('/licenses/{id}/cancel', [App\Http\Controllers\MasterController::class, 'cancelLicense'])->name('licenses.cancel');
+    Route::get('/licenses', [App\Http\Controllers\MasterController::class, 'licenses'])->name('licenses.index')->middleware('master_admin:view_licenses');
+    Route::get('/licenses/create', [App\Http\Controllers\MasterController::class, 'createLicense'])->name('licenses.create')->middleware('master_admin:manage_licenses');
+    Route::get('/licenses/{id}/instances', [App\Http\Controllers\MasterController::class, 'showLicenseInstances'])->name('licenses.instances')->middleware('master_admin:view_licenses');
+    Route::post('/licenses', [App\Http\Controllers\MasterController::class, 'storeLicense'])->name('licenses.store')->middleware('master_admin:manage_licenses');
+    Route::post('/licenses/{id}/cancel', [App\Http\Controllers\MasterController::class, 'cancelLicense'])->name('licenses.cancel')->middleware('master_admin:manage_licenses');
 
     // Releases
-    Route::get('/releases', [App\Http\Controllers\MasterController::class, 'releases'])->name('releases.index');
-    Route::get('/releases/create', [App\Http\Controllers\MasterController::class, 'createRelease'])->name('releases.create');
-    Route::post('/releases', [App\Http\Controllers\MasterController::class, 'storeRelease'])->name('releases.store');
-    Route::get('/releases/{id}', [App\Http\Controllers\MasterController::class, 'showRelease'])->name('releases.show');
+    Route::get('/releases', [App\Http\Controllers\MasterController::class, 'releases'])->name('releases.index')->middleware('master_admin:manage_releases');
+    Route::get('/releases/create', [App\Http\Controllers\MasterController::class, 'createRelease'])->name('releases.create')->middleware('master_admin:manage_releases');
+    Route::post('/releases', [App\Http\Controllers\MasterController::class, 'storeRelease'])->name('releases.store')->middleware('master_admin:manage_releases');
+    Route::get('/releases/{id}', [App\Http\Controllers\MasterController::class, 'showRelease'])->name('releases.show')->middleware('master_admin:manage_releases');
+    Route::get('/releases/{id}/download', [App\Http\Controllers\MasterController::class, 'downloadRelease'])->name('releases.download')->middleware('master_admin:manage_releases');
 
     // Announcements
-    Route::get('/announcements', [App\Http\Controllers\MasterController::class, 'announcements'])->name('announcements.index');
-    Route::get('/announcements/create', [App\Http\Controllers\MasterController::class, 'createAnnouncement'])->name('announcements.create');
-    Route::post('/announcements', [App\Http\Controllers\MasterController::class, 'storeAnnouncement'])->name('announcements.store');
-    Route::delete('/announcements/{id}', [App\Http\Controllers\MasterController::class, 'destroyAnnouncement'])->name('announcements.destroy');
+    Route::get('/announcements', [App\Http\Controllers\MasterController::class, 'announcements'])->name('announcements.index')->middleware('master_admin:manage_announcements');
+    Route::get('/announcements/create', [App\Http\Controllers\MasterController::class, 'createAnnouncement'])->name('announcements.create')->middleware('master_admin:manage_announcements');
+    Route::post('/announcements', [App\Http\Controllers\MasterController::class, 'storeAnnouncement'])->name('announcements.store')->middleware('master_admin:manage_announcements');
+    Route::delete('/announcements/{id}', [App\Http\Controllers\MasterController::class, 'destroyAnnouncement'])->name('announcements.destroy')->middleware('master_admin:manage_announcements');
+
+    // Security Logs
+    Route::get('/logs', [App\Http\Controllers\MasterController::class, 'logs'])->name('logs.index')->middleware('master_admin:view_logs');
+
+    // Admin management (Super Admin Only)
+    Route::get('/admins', [App\Http\Controllers\MasterController::class, 'admins'])->name('admins.index')->middleware('master_admin:super_admin');
+    Route::get('/admins/create', [App\Http\Controllers\MasterController::class, 'createAdmin'])->name('admins.create')->middleware('master_admin:super_admin');
+    Route::post('/admins', [App\Http\Controllers\MasterController::class, 'storeAdmin'])->name('admins.store')->middleware('master_admin:super_admin');
 });

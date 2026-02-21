@@ -38,35 +38,65 @@
                     Dashboard
                 </a>
 
-                <a href="{{ route('master.licenses.index') }}"
-                    class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('master.licenses.*') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11.542 16.742a2 2 0 01-.442.558l-1.332 1.332a2 2 0 01-.987.496l-3.374.844a.75.75 0 01-.929-.929l.844-3.374a2 2 0 01.496-.987l1.332-1.332a2 2 0 01.558-.442L14.058 8.257A6 6 0 0120 14z">
-                        </path>
-                    </svg>
-                    Lisans Yönetimi
-                </a>
+                @if(auth()->user()->hasMasterPermission('view_licenses'))
+                    <a href="{{ route('master.licenses.index') }}"
+                        class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('master.licenses.*') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11.542 16.742a2 2 0 01-.442.558l-1.332 1.332a2 2 0 01-.987.496l-3.374.844a.75.75 0 01-.929-.929l.844-3.374a2 2 0 01.496-.987l1.332-1.332a2 2 0 01.558-.442L14.058 8.257A6 6 0 0120 14z">
+                            </path>
+                        </svg>
+                        Lisans Yönetimi
+                    </a>
+                @endif
 
-                <a href="{{ route('master.releases.index') }}"
-                    class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('master.releases.*') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
-                        </path>
-                    </svg>
-                    Sürüm & Depo
-                </a>
+                @if(auth()->user()->hasMasterPermission('manage_releases'))
+                    <a href="{{ route('master.releases.index') }}"
+                        class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('master.releases.*') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                            </path>
+                        </svg>
+                        Sürüm & Depo
+                    </a>
+                @endif
 
-                <a href="{{ route('master.announcements.index') }}"
-                    class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('master.announcements.*') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z">
-                        </path>
-                    </svg>
-                    Duyurular
-                </a>
+                @if(auth()->user()->hasMasterPermission('manage_announcements'))
+                    <a href="{{ route('master.announcements.index') }}"
+                        class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('master.announcements.*') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z">
+                            </path>
+                        </svg>
+                        Duyurular
+                    </a>
+                @endif
+
+                @if(auth()->user()->hasMasterPermission('view_logs'))
+                    <a href="{{ route('master.logs.index') }}"
+                        class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('master.logs.*') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        Güvenlik Günlükleri
+                    </a>
+                @endif
+
+                @if(auth()->user()->master_role === 'super_admin' || !auth()->user()->master_role)
+                    <a href="{{ route('master.admins.index') }}"
+                        class="flex items-center px-4 py-3 rounded-lg {{ request()->routeIs('master.admins.*') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }} transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                        Yöneticiler
+                    </a>
+                @endif
             </nav>
 
             <div class="p-4 bg-gray-950 border-t border-gray-800">
@@ -192,6 +222,7 @@
             modal.querySelector('div.transform').classList.remove('scale-100');
         }
     </script>
+    @stack('scripts')
 </body>
 
 </html>

@@ -160,6 +160,11 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
+            // Rate Limiting for Master API
+            \Illuminate\Support\Facades\RateLimiter::for('master', function (\Illuminate\Http\Request $request) {
+                return \Illuminate\Cache\RateLimiting\Limit::perMinute(60)->by($request->ip());
+            });
+
         } catch (\Exception $e) {
             Log::error('AppServiceProvider boot error: ' . $e->getMessage());
         }

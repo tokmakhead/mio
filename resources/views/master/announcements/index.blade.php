@@ -33,7 +33,10 @@
                                 Tip</th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Tarih Aralığı</th>
+                                Hedef</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Görünüm</th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Durum</th>
@@ -46,7 +49,11 @@
                         @forelse($announcements as $announcement)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-bold text-gray-900 dark:text-white">{{ $announcement->title }}
+                                    <div class="flex items-center gap-2">
+                                        <div class="text-sm font-bold text-gray-900 dark:text-white">{{ $announcement->title }}</div>
+                                        @if($announcement->is_priority)
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] uppercase font-black bg-red-600 text-white animate-pulse">Flaş</span>
+                                        @endif
                                     </div>
                                     <div class="text-xs text-gray-500 truncate max-w-xs">
                                         {{ Str::limit($announcement->message, 50) }}
@@ -74,18 +81,22 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900 dark:text-white">
-                                        {{ $announcement->start_date ? \Carbon\Carbon::parse($announcement->start_date)->format('d.m.Y') : 'Hemen' }}
-                                        -
-                                        {{ $announcement->end_date ? \Carbon\Carbon::parse($announcement->end_date)->format('d.m.Y') : 'Süresiz' }}
+                                        @if($announcement->target_type === 'all')
+                                            <span class="text-gray-500">Herkes</span>
+                                        @else
+                                            <span class="text-indigo-600 font-bold">{{ $announcement->license->code ?? 'N/A' }}</span>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="flex items-center">
-                                        <span
-                                            class="h-2.5 w-2.5 rounded-full {{ $announcement->created_at->diffInDays(now()) < 7 ? 'bg-green-400' : 'bg-gray-300' }} mr-2"></span>
-                                        <span
-                                            class="text-sm text-gray-500">{{ $announcement->created_at->diffForHumans() }}</span>
-                                    </span>
+                                    <span class="text-xs uppercase font-bold text-gray-500">{{ $announcement->display_mode }}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($announcement->is_active)
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aktif</span>
+                                    @else
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Pasif</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button
