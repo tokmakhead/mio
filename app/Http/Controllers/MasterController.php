@@ -326,7 +326,7 @@ class MasterController extends Controller
 
         if (\Illuminate\Support\Facades\Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended(route('master.dashboard'));
+            return redirect()->route('master.dashboard');
         }
 
         return back()->withErrors([
