@@ -45,7 +45,7 @@
                 <div class="flex flex-wrap gap-2">
                     @foreach($availableCurrencies as $curr)
                         <a href="{{ route('reports.revenue', ['period' => $period, 'currency' => $curr]) }}"
-                            class="px-4 py-2 rounded-lg text-sm font-bold transition-all {{ $currency == $curr ? 'bg-amber-500 text-white shadow-lg' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300' }}">
+                            class="px-4 py-2 rounded-lg text-sm font-bold transition-all {{ $currency == $curr ? 'bg-primary-600 text-white shadow-lg' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300' }}">
                             {{ $curr }}
                         </a>
                     @endforeach
@@ -64,7 +64,7 @@
                     value="{{ $financeService->formatCurrency($totalPending, $currency) }}" tone="warning"
                     icon='<svg class="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' />
                 <x-kpi-card title="Ort. Fatura ({{ $currency }})"
-                    value="{{ $financeService->formatCurrency($averageInvoice, $currency) }}" tone="indigo"
+                    value="{{ $financeService->formatCurrency($averageInvoice, $currency) }}" tone="accent"
                     icon='<svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>' />
             </div>
 
@@ -112,7 +112,7 @@
                                     <td class="px-6 py-4 text-sm text-right font-mono text-green-600">
                                         {{ $financeService->formatCurrency($data['collected'], $currency) }}
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-right font-mono text-amber-600">
+                                    <td class="px-6 py-4 text-sm text-right font-mono text-warning-600">
                                         {{ $financeService->formatCurrency($data['pending'], $currency) }}
                                     </td>
                                     <td class="px-6 py-4 text-sm text-right font-mono text-gray-500">
