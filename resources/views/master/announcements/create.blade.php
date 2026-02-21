@@ -150,12 +150,14 @@
                                     class="ml-2 block text-sm text-gray-900 dark:text-gray-300">Kapatılabilir</label>
                             </div>
                             <div
-                                class="flex items-center px-4 py-2 border border-red-200 bg-red-50 dark:bg-red-900/10 rounded-lg">
+                                class="flex items-center px-4 py-2 border border-amber-200 bg-amber-50 dark:bg-amber-900/10 rounded-lg">
                                 <input id="is_priority" name="is_priority" type="checkbox" value="1"
-                                    class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+                                    class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
                                 <label for="is_priority"
-                                    class="ml-2 block text-sm font-bold text-red-700 dark:text-red-400">🚨 Flaş Haber /
-                                    Kritik Duyuru</label>
+                                    class="ml-2 block text-sm font-bold text-amber-700 dark:text-amber-400">🔴 Öncelikli
+                                    <span class="font-normal text-amber-600 dark:text-amber-500">(Listenin üstünde
+                                        göster)</span>
+                                </label>
                             </div>
                         </div>
 
