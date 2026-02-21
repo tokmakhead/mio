@@ -11,9 +11,15 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('master_licenses', function (Blueprint $table) {
-            $table->decimal('price', 10, 2)->default(0)->after('type');
-            $table->string('currency', 3)->default('USD')->after('price');
-            $table->string('billing_cycle')->default('one-time')->after('currency'); // one-time, monthly, yearly
+            if (!Schema::hasColumn('master_licenses', 'price')) {
+                $table->decimal('price', 10, 2)->default(0)->after('type');
+            }
+            if (!Schema::hasColumn('master_licenses', 'currency')) {
+                $table->string('currency', 3)->default('USD')->after('price');
+            }
+            if (!Schema::hasColumn('master_licenses', 'billing_cycle')) {
+                $table->string('billing_cycle')->default('one-time')->after('currency'); // one-time, monthly, yearly
+            }
         });
     }
 

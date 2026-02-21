@@ -11,7 +11,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('master_role')->nullable()->after('is_master'); // super_admin, manager, support
+            if (!Schema::hasColumn('users', 'master_role')) {
+                $table->string('master_role')->nullable()->after('is_master'); // super_admin, manager, support
+            }
         });
     }
 

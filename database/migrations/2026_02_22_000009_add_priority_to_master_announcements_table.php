@@ -11,7 +11,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('master_announcements', function (Blueprint $table) {
-            $table->boolean('is_priority')->default(false)->after('is_dismissible'); // High priority broadcast
+            if (!Schema::hasColumn('master_announcements', 'is_priority')) {
+                $table->boolean('is_priority')->default(false)->after('is_dismissible'); // High priority broadcast
+            }
         });
     }
 
