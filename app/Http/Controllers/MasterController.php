@@ -344,42 +344,52 @@ class MasterController extends Controller
 
     private function getMemoryUsage()
     {
-        if (PHP_OS_FAMILY === 'Windows') {
-            return "N/A (Win)";
+        if (PHP_OS_FAMILY === 'Windows' || !function_exists('shell_exec')) {
+            return "N/A";
         }
-        $free = shell_exec('free');
-        if (!$free)
+
+        try {
+            $free = @shell_exec('free');
+            if (!$free)
+                return "N/A";
+            $free = (string) trim($free);
+            $free_arr = explode("\n", $free);
+            if (!isset($free_arr[1]))
+                return "N/A";
+            $mem = explode(" ", $free_arr[1]);
+            $mem = array_filter($mem);
+            $mem = array_merge($mem);
+            if (!isset($mem[2]) || !isset($mem[1]))
+                return "N/A";
+            $memory_usage = $mem[2] / $mem[1] * 100;
+            return round($memory_usage, 1) . '%';
+        } catch (\Exception $e) {
             return "N/A";
-        $free = (string) trim($free);
-        $free_arr = explode("\n", $free);
-        if (!isset($free_arr[1]))
-            return "N/A";
-        $mem = explode(" ", $free_arr[1]);
-        $mem = array_filter($mem);
-        $mem = array_merge($mem);
-        if (!isset($mem[2]) || !isset($mem[1]))
-            return "N/A";
-        $memory_usage = $mem[2] / $mem[1] * 100;
-        return round($memory_usage, 1) . '%';
+        }
     }
 
     private function getServerLoad()
     {
-        if (PHP_OS_FAMILY === 'Windows') {
-            return "N/A (Win)";
+        if (PHP_OS_FAMILY === 'Windows' || !function_exists('sys_getloadavg')) {
+            return "N/A";
         }
-        $load = sys_getloadavg();
+        $load = @sys_getloadavg();
         return $load ? $load[0] . ' (1m)' : "N/A";
     }
 
     private function getDiskUsage()
     {
-        $disktotal = disk_total_space('/');
-        if (!$disktotal)
+        try {
+            $path = base_path();
+            $disktotal = @disk_total_space($path);
+            if (!$disktotal)
+                return "N/A";
+            $diskfree = @disk_free_space($path);
+            $diskused = $disktotal - $diskfree;
+            $diskusage = ($diskused / $disktotal) * 100;
+            return round($diskusage, 1) . '%';
+        } catch (\Exception $e) {
             return "N/A";
-        $diskfree = disk_free_space('/');
-        $diskused = $disktotal - $diskfree;
-        $diskusage = ($diskused / $disktotal) * 100;
-        return round($diskusage, 1) . '%';
+        }
     }
 }
