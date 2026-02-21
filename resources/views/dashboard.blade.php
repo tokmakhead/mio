@@ -31,35 +31,36 @@
                     </div>
                 </div>
             @elseif(($announcement['display_mode'] ?? 'banner') === 'modal')
-                <div class="announcement-item fixed inset-0 z-[200]" role="dialog" aria-modal="true" data-id="{{ $announcement['id'] ?? $loop->index }}" style="display:none;">
-                    <div class="flex items-center justify-center min-h-screen px-4">
-                        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="dismissAnnouncement(this, '{{ $announcement['id'] ?? $loop->index }}')"></div>
-                        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 z-10">
-                            @if($announcement['is_dismissible'])
-                                <button onclick="dismissAnnouncement(this, '{{ $announcement['id'] ?? $loop->index }}')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                </button>
-                            @endif
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
-                                    @if($announcement['type'] == 'info') bg-blue-100 text-blue-600
-                                    @elseif($announcement['type'] == 'success') bg-green-100 text-green-600
-                                    @elseif($announcement['type'] == 'warning') bg-yellow-100 text-yellow-600
-                                    @elseif($announcement['type'] == 'danger') bg-red-100 text-red-600
-                                    @else bg-gray-100 text-gray-600 @endif">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                </div>
-                                <div class="flex-1 pr-4">
-                                    <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1">{{ $announcement['title'] }}</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $announcement['message'] }}</p>
-                                </div>
+                <div class="announcement-item fixed inset-0 z-[200] items-center justify-center p-4" role="dialog" aria-modal="true" data-id="{{ $announcement['id'] ?? $loop->index }}" style="display:none;">
+                    {{-- Backdrop --}}
+                    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="dismissAnnouncement(this, '{{ $announcement['id'] ?? $loop->index }}')"></div>
+                    {{-- Modal card --}}
+                    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 z-10 max-h-[90vh] overflow-y-auto">
+                        @if($announcement['is_dismissible'])
+                            <button onclick="dismissAnnouncement(this, '{{ $announcement['id'] ?? $loop->index }}')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        @endif
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
+                                @if($announcement['type'] == 'info') bg-blue-100 text-blue-600
+                                @elseif($announcement['type'] == 'success') bg-green-100 text-green-600
+                                @elseif($announcement['type'] == 'warning') bg-yellow-100 text-yellow-600
+                                @elseif($announcement['type'] == 'danger') bg-red-100 text-red-600
+                                @else bg-gray-100 text-gray-600 @endif">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
-                            <div class="mt-5 flex justify-end">
-                                <button type="button" onclick="dismissAnnouncement(this, '{{ $announcement['id'] ?? $loop->index }}')" class="px-5 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold transition-colors">Tamam, Anladım</button>
+                            <div class="flex-1 pr-4">
+                                <h3 class="text-base font-bold text-gray-900 dark:text-white mb-2">{{ $announcement['title'] }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{{ $announcement['message'] }}</p>
                             </div>
+                        </div>
+                        <div class="mt-5 flex justify-end">
+                            <button type="button" onclick="dismissAnnouncement(this, '{{ $announcement['id'] ?? $loop->index }}')" class="px-5 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold transition-colors">Tamam, Anladım</button>
                         </div>
                     </div>
                 </div>
+
             @endif
         @endforeach
     @endif
