@@ -20,8 +20,9 @@
                                     <label
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Müşteri
                                         *</label>
-                                    <select name="customer_id" required
-                                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary-500 focus:border-primary-500">
+                                    <select name="customer_id" id="customer_select" required
+                                        placeholder="Müşteri aramaya başlayın..." autocomplete="off">
+                                        <option value="">Müşteri Seçiniz...</option>
                                         @foreach($customers as $customer)
                                             <option value="{{ $customer->id }}" {{ old('customer_id', $quote->customer_id) == $customer->id ? 'selected' : '' }}>
                                                 {{ $customer->name }}
@@ -213,7 +214,42 @@
     </div>
 
     @push('scripts')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
         <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (document.getElementById('customer_select')) {
+                    new TomSelect('#customer_select', {
+                        valueField: 'id',
+                        labelField: 'text',
+                        searchField: ['name', 'email', 'tax_number'],
+                        preload: true,
+                        load: function (query, callback) {
+                            var url = '{{ route("customers.api_search") }}?q=' + encodeURIComponent(query);
+                            fetch(url)
+                                .then(response => response.json())
+                                .then(json => {
+                                    callback(json);
+                                }).catch(() => {
+                                    callback();
+                                });
+                        },
+                        placeholder: 'Müşteri adı, e-posta veya vergi no...',
+                        render: {
+                            option: function (item, escape) {
+                                return `<div>
+                                                    <span class="font-bold">${escape(item.name)}</span>
+                                                    <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
+                                                </div>`;
+                            },
+                            item: function (item, escape) {
+                                return `<div>${escape(item.name)}</div>`;
+                            }
+                        }
+                    });
+                }
+            });
+
             function quoteForm() {
                 return {
                     items: @json($quote->items->map(fn($i) => [
@@ -237,10 +273,10 @@
                         const option = select.options[select.selectedIndex];
                         this.items[index].service_id = serviceId;
                         this.items[index].unit_price = parseFloat(option.getAttribute('data-price'));
-                        
+
                         const vatRate = parseInt(option.getAttribute('data-vat-rate')) || 20;
                         const descriptionTemplate = option.getAttribute('data-description-template');
-                        
+
                         this.items[index].vat_rate = vatRate;
 
                         // Use description template if available, otherwise default to service name

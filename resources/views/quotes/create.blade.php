@@ -22,6 +22,11 @@
                                     <select name="customer_id" id="customer_select" required
                                         placeholder="Müşteri aramaya başlayın..." autocomplete="off">
                                         <option value="">Müşteri Seçiniz...</option>
+                                        @foreach($customers as $customer)
+                                            <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
+                                                {{ $customer->name }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                     @error('customer_id') <p class="mt-1 text-xs text-danger-600">{{ $message }}</p>
                                     @enderror
@@ -222,6 +227,8 @@
     </div>
 
     @push('scripts')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 if (document.getElementById('customer_select')) {
@@ -229,6 +236,7 @@
                         valueField: 'id',
                         labelField: 'text',
                         searchField: ['name', 'email', 'tax_number'],
+                        preload: true,
                         load: function (query, callback) {
                             var url = '{{ route("customers.api_search") }}?q=' + encodeURIComponent(query);
                             fetch(url)
@@ -243,9 +251,9 @@
                         render: {
                             option: function (item, escape) {
                                 return `<div>
-                                                <span class="font-bold">${escape(item.name)}</span>
-                                                <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
-                                            </div>`;
+                                                    <span class="font-bold">${escape(item.name)}</span>
+                                                    <span class="text-xs text-gray-500 block">${escape(item.email)}</span>
+                                                </div>`;
                             },
                             item: function (item, escape) {
                                 return `<div>${escape(item.name)}</div>`;
