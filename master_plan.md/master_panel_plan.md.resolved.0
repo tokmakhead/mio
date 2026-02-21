@@ -1,0 +1,47 @@
+# Master Panel Geliştirme Planı (Merkezi Kontrol Merkezi)
+
+MIONEX sisteminin kalbi olacak, tüm istemci kurulumlarını yöneten ve denetleyen merkezi panelin (Master Panel) profesyonel seviyeye taşınması için hazırlanan yol haritasıdır.
+
+## Mevcut Durum Özeti
+Şu an sistemde temel bir `/master` arayüzü ve buna bağlı API uç noktaları (`verify-license`, `check-update`) bulunmaktadır. Ancak bu yapı henüz prototip aşamasındadır; güvenlik, ölçeklenebilirlik ve analiz yetenekleri kısıtlıdır.
+
+---
+
+## 🛡️ Aşama 1: Güvenlik Sertleştirmesi & İzolasyon
+Master Panel, müşteri panellerinden tamamen izole edilmelidir.
+- **Master Guard:** Master Panel kullanıcılarını varsayılan `users` tablosundan ayırmak veya özel bir `role` middleware'i ile korumak.
+- **API Güvenliği:** [MasterApiController](file:///d:/MIONEX/app/Http/Controllers/MasterApiController.php#11-159) üzerindeki tüm isteklere `MASTER_API_SECRET` veya benzeri bir imza doğrulama (Signing) mekanizması eklenmesi.
+- **Giriş Güvenliği:** Brute-force koruması ve Master Panel girişleri için IP kısıtlama opsiyonu.
+
+## 🔑 Aşama 2: Gelişmiş Lisans Yönetimi
+Lisans sistemi "üret ve ver" mantığından, "yönet ve denetle" mantığına geçmelidir.
+- **Domain & IP Bağlama (Strict Mode):** Lisansın hangi domain veya IP'de aktif olduğunu gösteren ve izinsiz taşınmaları engelleyen "Strict Mode" özelliği.
+- **Lisans Tipleri:** Standart, Premium, Enterprise ve Süreli (Subscription) lisans desteği.
+- **Aktivasyon Geçmişi:** Bir lisansın hangi tarihlerde, hangi sunucularda aktif edildiğini gösteren log sistemi.
+- **Özel Dosya Kilidi (Phone Home):** Belirli aralıklarla Master Panel'e "hayattayım" sinyali gönderen sessiz kontrol mekanizması.
+
+## 🚀 Aşama 3: Versiyon & Güncelleme Merkezi
+Sistemin güncelliğini merkezi olarak yönetme yeteneği.
+- **Sürüm Paketleme:** Yeni sürümlerin `.zip` olarak yüklenebilmesi ve sürümler arası "Delta Update" (sadece değişen dosyalar) hazırlığı.
+- **Otomatik Değişim Günlüğü (Changelog):** Sürüm notlarının Markdown formatında müşterilere sunulması.
+- **Güncelleme Takibi:** Hangi müşterinin hangi sürümde olduğunu gösteren canlı izleme paneli.
+
+## 📢 Aşama 4: Küresel İletişim & Duyuru
+Müşterilere anlık bilgi geçişi.
+- **Hedefli Duyurular:** Sadece belirli müşteri gruplarına veya belirli dildeki müşterilere duyuru gönderme.
+- **Acil Durum Modu:** Kritik bir güvenlik açığı durumunda tüm panellere anlık "Güncelleme Zorunluluğu" bildirimi düşürme.
+- **Sistem Bakım Bildirimi:** Planlı teknik çalışmaların tüm kullanıcı arayüzlerinde otomatik görünmesi.
+
+## 📊 Aşama 5: Master Dashboard & Analiz
+Tüm ekosistemin röntgeni.
+- **Canlı Metrikler:** Toplam aktif kurulum sayısı, son 24 saatteki aktivasyonlar, en çok kullanılan PHP sürümleri.
+- **Finansal Takip:** Lisans satışlarından gelen gelirin (eğer entegre edilirse) Master Panel üzerinden izlenmesi.
+- **Hata Yakalama (Global Logs):** İstemci panellerinde oluşan kritik hataların (anonimleştirilmiş olarak) Master Panel'de toplanması (Hata takip entegrasyonu).
+
+---
+
+## ✅ Uygulama Öncelikleri
+1. **Güvenlik:** Rotaların ve API geçitlerinin korunması.
+2. **Lisanslama:** Key generator ve domain binding mantığının sağlamlaştırılması.
+3. **UI/UX:** Master Panel'in MIONEX tasarım diline (Premium Minimalist) güncellenmesi.
+4. **Güncelleme Mekanizması:** İndirme ve versiyon eşleşme mantığının hatasızlaştırılması.

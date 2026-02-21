@@ -214,13 +214,37 @@ class SettingsController extends Controller
             'default_currency' => 'required|string',
             'default_vat_rate' => 'required|numeric',
             'withholding_rate' => 'required|numeric',
+            'timezone' => 'required|string',
+            'locale' => 'required|string',
         ]);
 
         $settings->update($data);
 
-        // Decoupled: Do not sync to BrandSetting 'site_title'
+        // Sync Branding & Company Details from the same form
+        if ($request->filled('site_title')) {
+            BrandSetting::updateOrCreate(['key' => 'site_title'], ['value' => $request->site_title]);
+        }
 
-        return back()->with('success', 'Site ayarları güncellendi.');
+        $companyFields = [
+            'company_address',
+            'company_phone',
+            'company_email',
+            'company_mersis',
+            'company_tax_id',
+            'company_tax_office'
+        ];
+
+        foreach ($companyFields as $field) {
+            if ($request->has($field)) {
+                BrandSetting::updateOrCreate(['key' => $field], ['value' => $request->input($field)]);
+            }
+        }
+
+        // Clear all relevant caches to ensure propagation
+        \Illuminate\Support\Facades\Cache::forget('brand_settings_all');
+        \Artisan::call('view:clear');
+
+        return back()->with('success', 'Site ve firma ayarları güncellendi.');
     }
 
     // Financial Settings
@@ -536,7 +560,7 @@ class SettingsController extends Controller
         }
 
         // Clear all relevant caches
-        \Illuminate\Support\Facades\Cache::forget('brand_settings');
+        \Illuminate\Support\Facades\Cache::forget('brand_settings_all');
         \Artisan::call('view:clear');
 
         return back()->with('success', 'Marka ayarları başarıyla güncellendi.');

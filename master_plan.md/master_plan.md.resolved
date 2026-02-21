@@ -1,0 +1,284 @@
+# MIONEX Gelişim Master Planı (Strateji & Taslak)
+
+Bu belge, MIONEX'in mevcut yapısı üzerine eklenecek yeni özellikler veya çıkarılacak bölümler için bir yol haritası görevi görür. Tüm maddeler tartışmaya açıktır ve onaylanana kadar "Taslak" aşamasındadır.
+
+---
+
+## 🏗️ Genel Mimari & Altyapı
+- *Henüz öneri bulunmamaktadır.*
+
+## 📊 Analiz & Raporlama Modülü (Dashboard Dahil)
+### Mevcut Durum Analizi (Dashboard)
+- **✅ ÇÖZÜLDÜ (Döviz Karışıklığı):** "Toplam Gelir" ve aylık grafik verileri artık [FinanceService](file:///d:/MIONEX/app/Services/FinanceService.php#8-92) üzerinden döviz bazlı olarak hesaplanıyor ve Dashboard'da ayrı kırılımlar halinde gösteriliyor.
+- **✅ ÇÖZÜLDÜ (Performans):** Grafik verileri ve dashboard metrikleri `DashboardController` içinde 30 dakikalık `Cache::remember` ile önbelleğe alınıyor. Anlık hesaplama yükü giderildi.
+- **✅ ÇÖZÜLDÜ (Veri Tutarlılığı):** Gelir raporları artık [FinanceService](file:///d:/MIONEX/app/Services/FinanceService.php#8-92) ile daha tutarlı bir SQL mantığına sahip.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Döviz Bazlı Raporlama):** Raporların para birimi filtresine sahip olması ve her döviz cinsi için ayrı analiz sunulması.
+- **✅ ÇÖZÜLDÜ (Kâr/Zarar Raporu):** Hizmetlerin alış maliyetleri ve kur farklarını hesaba katan "Tahmini Net Kâr" raporu eklendi.
+- **✅ ÇÖZÜLDÜ (Veri Ön-Hesaplama):** Dashboard verileri artık Cache mekanizmasıyla önbelleğe alınıyor ve anlık hesaplama yükü ortadan kaldırıldı.
+
+### Gelir Analizi (`/reports/revenue`) Özel Bulguları
+- **✅ ÇÖZÜLDÜ (Görüntüleme Hatası):** Para birimi simgeleri (`₺`) dinamik hale getirildi. Web arayüzü, PDF ve CSV dışa aktarımları artık faturanın para birimine göre simge gösteriyor.
+- **✅ ÇÖZÜLDÜ (Dışa Aktarım):** CSV kolon başlıkları dinamik para birimi (örn: "Kesilen Fatura (USD)") içerecek şekilde güncellendi.
+- **✅ ÇÖZÜLDÜ (Grafik Tutarsızlığı):** Trend analizi seçilen para birimi göre süzüldüğü için artık doğru çalışıyor.
+- **✅ ÇÖZÜLDÜ (Filtreler):** Raporun belirli bir para birimine göre süzülmesi imkanı eklendi.
+
+### Önerilen Geliştirmeler (Master Plan)
+- **✅ ÇÖZÜLDÜ (Dinamik Para Birimi):** Tüm Dashboard simgeleri ve grafik etiketleri sistem ayarlarıyla senkronize edildi.
+- **✅ ÇÖZÜLDÜ (Kâr Analizi):** "Alış Fiyatı" ve kur verisi kullanılarak "Net Kâr" metriği raporlara eklendi.
+- **✅ ÇÖZÜLDÜ (En Değerli Müşteriler):** En çok ciro yapan ilk 5 müşteri Dashboard'a eklendi.
+- **✅ ÇÖZÜLDÜ (Para Birimi Kırılımı):** Finansal özetlerde varsayılan para birimi dışındaki dövizler için de (örn: USD) ayrı özet kartları gösteriliyor.
+- **[-] Çıkarılacak:** (Şu an için tamamen işlevsiz bir modül saptanmadı, hepsi aktif kullanılıyor).
+
+## 📑 Fatura & Teklif Yönetimi
+### Mevcut Durum Analizi (Genel & Listeleme)
+- **✅ ÇÖZÜLDÜ (Dövizli Finans):** Finans Merkezi'ndeki KPI kartları artık döviz ayrımı yaparak çalışıyor ve varsayılan para birimi dışındaki bakiyeleri ayrı bir döküm olarak sunuyor.
+- **✅ ÇÖZÜLDÜ (KPI Güncellemesi):** "Onay Bekleyen Ödemeler" KPI'ı, kafa karışıklığını gidermek için "Vadesi Geçmiş Alacaklar" olarak değiştirildi ve sadece vadesi dolmuş ödenmemiş faturaları gösteriyor.
+- **✅ ÇÖZÜLDÜ (Toplu İşlemler):** Fatura ve Teklif listelerinde çoklu seçim yapılarak toplu PDF (ZIP) indirme özelliği eklendi.
+
+### Mevcut Durum Analizi (Yeni Kayıt / Create)
+- **✅ ÇÖZÜLDÜ (Servis Senkronizasyonu):** Fatura "Paid" (Ödendi) durumuna geçtiğinde, bağlı tüm hizmetlerin bitiş tarihleri (`end_date`) periyotları kadar otomatik olarak uzatılıyor.
+- **[-] ÖNERİLMEZ (Proforma Desteği):** Sistemde gerçek bir "Proforma Fatura" akışına ihtiyaç duyulmadığına karar verildi. "Teklif" (Quote) modülü bu ihtiyacı karşılıyor ve fatura numara silsilesini (gap) bozmuyor.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Döviz Bazlı Finans):** KPI kartları ve finansal özetler artık çoklu para birimi gösteriyor.
+- **✅ ÇÖZÜLDÜ (Servis Senkronizasyonu):** Fatura ödendiğinde hizmet süresi (`end_date`) otomatik uzatılıyor. ("Son Faturalama Tarihi" sütunu yerine bu yöntem kullanılıyor).
+- **✅ ÇÖZÜLDÜ (Toplu İşlemler):** Seçilen fatura/teklifler artık "ZIP İndir" butonuyla topluca indirilebiliyor. Backend implementasyonu [bulkExport](file:///d:/MIONEX/app/Http/Controllers/InvoiceController.php#295-324) metodu ile tamamlandı.
+
+### Teklif (Quote) Özel Bulguları
+- **✅ ÇÖZÜLDÜ (Statü Otomasyonu):** Kabul edilen teklif faturaya dönüştürüldüğünde, teklif durumu otomatik olarak "Faturalandı" (Invoiced) olarak güncelleniyor.
+- **✅ ÇÖZÜLDÜ (Süre Kontrolü):** `quotes:check-expired` komutu ile süresi dolan teklifler otomatik olarak "Süresi Dolmuş" durumuna çekiliyor.
+- **✅ ÇÖZÜLDÜ (Finansal KPI):** Teklif havuzuna döviz bazlı "Toplam Teklif Tutarı", "Açık (Potansiyel)" ve "Kazanılan" tutarları gösteren kartlar eklendi.
+
+### Mevcut Durum Analizi (Yeni Kayıt / Create)
+- **✅ ÇÖZÜLDÜ (Döviz Uyarısı):** Hizmet seçildiğinde, hizmetın para birimi ile teklif/fatura para birimi farklıysa operatöre "Kur Farkı" uyarısı veriliyor ve fiyatı kontrol etmesi isteniyor.
+- **✅ ÇÖZÜLDÜ (Dinamik KDV):** KDV oranları artık hizmet bazlı (`vat_rate`) veritabanında tutuluyor ve formlarda dinamik olarak geliyor.
+- **✅ ÇÖZÜLDÜ (İndirim Tipi):** Fatura ve Tekliflerde hem sabit tutar hem de yüzdesel (%) indirim desteği eklendi. Alpine.js ile anlık hesaplama sağlanıyor.
+- **✅ ÇÖZÜLDÜ (Akıllı Hizmet Seçimi):** Hizmet seçildiğinde KDV oranı ve özel açıklama şablonu (`description_template`) otomatik olarak ilgili satıra dolduruluyor.
+
+
+
+## ⚖️ Muhasebe & Mutabakat (Reconciliation)
+### Mevcut Durum Analizi (Genel & Listeleme)
+- **✅ ÇÖZÜLDÜ (Döviz Karışıklığı):** [ReconciliationController](file:///d:/MIONEX/app/Http/Controllers/ReconciliationController.php#9-132) ve [CustomerLedgerController](file:///d:/MIONEX/app/Http/Controllers/CustomerLedgerController.php#8-56) artık [FinanceService](file:///d:/MIONEX/app/Services/FinanceService.php#8-92) kullanarak tüm bakiyeleri para birimi bazlı ayrıştırıyor.
+- **✅ ÇÖZÜLDÜ (Performans):** Mutabakat sayfası artık [getCustomersBalances](file:///d:/MIONEX/app/Services/FinanceService.php#26-45) SQL üzerinden toplu hesaplama yapıyor, N+1 problemi giderildi.
+- **✅ ÇÖZÜLDÜ (KPI Hatası):** "Toplam Bakiye" ve diğer finansal KPI'lar artık döviz duyarlı.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Dövizli Ekstre):** Hesap ekstreleri ([ledger.blade.php](file:///d:/MIONEX/resources/views/customers/ledger.blade.php)) artık Alpine.js ile sekmeli yapıya geçirildi. Her para birimi (TRY, USD, EUR) ayrı sekmede listeleniyor ve yürüyen bakiyeler (`running balance`) controller tarafında doğru şekilde ayrıştırılarak hesaplanıyor.
+- **✅ ÇÖZÜLDÜ (SQL Hesaplama):** Finansal bakiyeler [FinanceService](file:///d:/MIONEX/app/Services/FinanceService.php#8-92) içinde SQL `SUM/GROUP BY` ile veritabanı seviyesinde hesaplanıyor.
+- **✅ ÇÖZÜLDÜ (Akıllı Mutabakat):** [ReconciliationController](file:///d:/MIONEX/app/Http/Controllers/ReconciliationController.php#9-132), fatura tutarı ile ödenen tutar arasındaki 5 farklı tutarsızlık senaryosunu (Rule 1-5) otomatik tespit edip raporluyor.
+
+
+
+## 🤝 Cari & Müşteri Yönetimi
+### Mevcut Durum Analizi (Genel & Listeleme)
+- **✅ ÇÖZÜLDÜ (Hata):** KPI kartları artık [FinanceService](file:///d:/MIONEX/app/Services/FinanceService.php#8-92) üzerinden dinamik döngüyle basılıyor ve her para birimi için ayrı kart oluşturuyor. Statik `₺` sorunu yok.
+- **✅ ÇÖZÜLDÜ (Performans):** Toplam hesaplamalar `Customer::all()` yerine SQL `SUM/GROUP BY` ile yapılıyor.
+- **✅ ÇÖZÜLDÜ (Çoklu Döviz Filtre):** Bakiyeli müşteri filtresi güncellendi. Artık müşterinin *herhangi bir* para biriminde borcu veya alacağı varsa yakalanıyor. (Sadece TRY kısıtı kaldırıldı).
+- **✅ ÇÖZÜLDÜ (Cari Ekstre):** Müşteri detay sayfasından, tüm borç alacak hareketlerini ve yürüyen bakiyeyi içeren resmi PDF dökümü alınabiliyor.
+
+### Mevcut Durum Analizi (Yeni Kayıt / Create)
+- **✅ ÇÖZÜLDÜ (Kritik Eksik):** "Vergi Dairesi" alanı sisteme eklendi ve tüm (create/edit/show) ekranlarında aktif edildi.
+- **✅ ÇÖZÜLDÜ (Aktivite Kaydı):** Müşteri modelinde `LogsActivity` trait'i aktif edildi ve tüm değişiklikler günlüğe işleniyor.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Dinamik Veri Yapısı):** Vergi Dairesi alanı eklendi. Müşteri türüne (Bireysel/Kurumsal) göre TC Kimlik (11 hane) ve Vergi No (10 hane) akıllı doğrulaması (`Inputmask`) yapılıyor.
+- **✅ ÇÖZÜLDÜ (Cari Ekstre PDF):** Müşteri detay sayfasından ve liste ekranından işlem geçmişini içeren resmi Cari Ekstre PDF dökümü alınabiliyor.
+- **✅ ÇÖZÜLDÜ (Veritabanı Optimizasyonu):** Müşteri bakiyeleri artık PHP döngüsüyle değil, [FinanceService](file:///d:/MIONEX/app/Services/FinanceService.php#8-92) içinde SQL `SUM` sorgularıyla performanslı şekilde hesaplanıyor.
+- **✅ ÇÖZÜLDÜ (Maskeleme & UX):** Telefon ve kimlik no alanlarına standart masking (`Inputmask`) uygulandı. "Adres Kopyalama" özelliği edit sayfasına da dahil edildi.
+
+## 🏢 Tedarikçi (Provider) Yönetimi
+### Mevcut Durum Analizi (Genel & Listeleme)
+- **✅ ÇÖZÜLDÜ (Performans Riski):** "Tür Çeşidi" KPI'ı artık `Provider::all()` yerine `pluck('types')` ile sadece ilgili kolonu çekerek hesaplanıyor. Bellek yükü hafifletildi.
+- **✅ ÇÖZÜLDÜ (Kategori Karmaşası):** Tedarikçi türleri artık kod içine dağınık değil, Model içinde merkezi bir yapıda (`AVAILABLE_TYPES`) tutuluyor.
+- **Maliyet Takibi:** Toplam maliyetler aktif servislerin alış fiyatı üzerinden hesaplanıyor. Geçmiş takibi için henüz bir "Gider Faturası" modülü yok. (Bilinen Kısıt).
+
+### Mevcut Durum Analizi (Yeni Kayıt / Create)
+- **✅ ÇÖZÜLDÜ (Display Rule):** "Diğer" tür seçildiğinde, sistem hem "other" etiketini koruyor hem de parantez içinde özel girilen türü gösteriyor: "Danışmanlık (Diğer)".
+- **✅ ÇÖZÜLDÜ (Validation Fix):** [StoreProviderRequest](file:///d:/MIONEX/app/Http/Requests/StoreProviderRequest.php#7-68) içine eksik olan `tax_office`, `tax_number`, `address` kuralları eklendi. Artık kurumsal bilgiler veritabanına kaydediliyor.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Dinamik Kategoriler):** Sağlayıcı türleri [Provider](file:///d:/MIONEX/app/Models/Provider.php#8-99) modelinde merkezi bir sabite (`AVAILABLE_TYPES`) taşındı. Yeni tür eklemek için sadece modeldeki diziye ekleme yapmak yeterli.
+- **🔴 FAZ 2:** Gelişmiş Kayıt (Diğer türün etiketi korunarak özel türün ayrı saklanması).
+- **✅ ÇÖZÜLDÜ (Servis Entegrasyonu):** Sağlayıcı detay sayfasında (`providers.show`) artık her hizmet için Alış Fiyatı, Satış Fiyatı ve **Net Kâr** analizi yapılıyor. Ayrıca tedarikçi web sitesine giden hızlı "Panel" linki eklendi.
+
+## ☁️ Hizmet (Service) Yönetimi
+### Mevcut Durum Analizi (Genel & Listeleme)
+- **✅ ÇÖZÜLDÜ (MRR Fix):** MRR ve Gelir hesaplamaları artık Controller tarafında para birimi bazlı gruplanarak (`groupBy('currency')`) hesaplanıyor. KPI kartlarında çoklu para birimi desteği var.
+- **✅ ÇÖZÜLDÜ (Kârlılık):** Hizmet listesine "Net Kâr" sütunu eklendi. Satış fiyatı ile maliyet arasındaki fark anlık görülebiliyor.
+
+### Mevcut Durum Analizi (Yeni Kayıt / Create)
+- **✅ ÇÖZÜLDÜ (Dövizli Maliyet):** Hizmet ekleme/düzenleme ekranında "Alış Fiyatı" için ayrı bir döviz seçicisi eklendi. Kur çevrimleri raporlara yansıtılıyor.
+- **İş Akışı Eksikliği:** Bir hizmet eklendiğinde veya süresi dolduğunda otomatik olarak "Yenileme Faturası" oluşturacak bir tetikleyici (trigger) bulunmuyor.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Kâr/Zarar Analizi):** Hizmet listesinde "Net Kâr" sütunu eklendi. KPI kartlarında MRR para birimi bazlı (TRY/USD/EUR) olarak ayrıştırıldı.
+- **✅ ÇÖZÜLDÜ (Otomatik Yenileme):** [CreateRenewalInvoices](file:///d:/MIONEX/app/Console/Commands/CreateRenewalInvoices.php#13-149) komutu (Console Command) ile süresi dolan hizmetler için otomatik fatura oluşturma altyapısı mevcut.
+- **✅ ÇÖZÜLDÜ (Akıllı Hatırlatıcı):** `services:send-reminders` komutu oluşturuldu. Hizmet vadesine 15/7/1 gün kala müşteriye otomatik hatırlatma maili ([ServiceExpiryReminder](file:///d:/MIONEX/app/Notifications/ServiceExpiryReminder.php#11-66)) gönderiliyor. Komut [routes/console.php](file:///d:/MIONEX/routes/console.php)'ye eklendi.
+
+
+## ⚙️ Sistem & Marka Ayarları
+### Mevcut Durum Analizi (Marka & Görünüm)
+- **✅ ÇÖZÜLDÜ (Veri Tekrarı & Tek Kaynak):** Kullanıcı geri bildirimi üzerine [SystemSetting](file:///d:/MIONEX/app/Models/SystemSetting.php#7-34) tablosundan görsel veri (logo/favicon) yazma/okuma işlemleri tamamen kaldırıldı. Kod artık %100 [BrandSetting](file:///d:/MIONEX/app/Models/BrandSetting.php#7-12) tablosuna bağlı. View katmanındaki fallback yapıları temizlendi.
+- **✅ ÇÖZÜLDÜ (Statık Sıfırlama):** "Orijinale Dön" butonu artık statik bir değer yerine PHP config üzerinden (`brand.default_color`) besleniyor.
+- **✅ ÇÖZÜLDÜ (Dosya Yolu Standartı):** Tüm marka görselleri (Logo, Favicon, Login) artık `uploads/branding` klasöründe toplanıyor. Eski dağınık yapı ([brand/](file:///d:/MIONEX/app/Http/Controllers/SettingsController.php#489-496), `branding/`) giderildi.
+
+### Önerilen Geliştirmeler
+- **[+] Merkezi Ayar Yapısı:** Tüm görsel ve marka ayarlarının tek bir tablo üzerinden yönetilmesi.
+- **🔴 FAZ 2:** SEO Paketi (Sosyal medya OG:Image ve açıklama ayarları).
+- **🔴 FAZ 2:** Font Yönetimi (Google Fonts entegrasyonu).
+
+## 🛠️ Diğer Öneriler (Yeni Modüller)
+- *Henüz öneri bulunmamaktadır.*
+
+---
+> [!NOTE]
+> Bu dosya kullanıcıyla yapılacak soru-cevap seansı boyunca canlı olarak güncellenecektir.
+### Mevcut Durum Analizi (Dil Yönetimi)
+- **✅ ÇÖZÜLDÜ (Görsel Editör):** Ham JSON yönetim riski ortadan kaldırıldı. Artık çeviriler anahtar-değer (Key-Value) tablosu ve Baseline (EN) referansı ile güvenle düzenleniyor.
+- **✅ ÇÖZÜLDÜ (Kapsam Genişletme):** Sistem artık sadece JSON dosyalarını değil, [lang/tr/auth.php](file:///d:/MIONEX/lang/tr/auth.php) gibi PHP tabanlı çeviri dosyalarını da destekliyor.
+- **✅ ÇÖZÜLDÜ (Eksik Çeviri Takibi):** Editör, varsayılan dilde (EN) olup hedef dilde olmayan anahtarları otomatik tespit ediyor, sayısını gösteriyor ve "Sadece Eksikleri Göster" filtresi sunuyor.
+- **Güvenlik Kaygısı:** Dil değiştirme ([switch](file:///d:/MIONEX/app/Http/Controllers/LanguageController.php#12-22)) mantığı dosya varlığını kontrol etmeden oturuma (session) veri yazıyor. (Minör Risk - Devam Ediyor).
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Görsel Çeviri Editörü):** JSON yerine anahtar-değer (Key-Value) çiftlerini tablo şeklinde gösteren, JSON hatası yapmayı imkansız kılan bir arayüz implemente edildi.
+- **✅ ÇÖZÜLDÜ (PHP Dosya Desteği):** Klasör bazlı PHP çeviri dökümanlarının da yönetilebilir hale getirilmesi sağlandı.
+- **✅ ÇÖZÜLDÜ (Eksik Çeviri Takibi):** Varsayılan dilde olup diğer dillerde olmayan anahtarları listeleyen analiz ekranı ve baseline karşılaştırması eklendi.
+### Mevcut Durum Analizi (Ödeme Altyapıları)
+- **✅ ÇÖZÜLDÜ (Veri Şifreleme):** Tüm kritik API anahtarları (Secret Key vb.) artık veritabanında `Crypt::encryptString` ile şifreli saklanıyor. Arayüzde yer tutucu (placeholder) ile korunuyor.
+- **✅ ÇÖZÜLDÜ (Webhook Bilgisi):** stripe, PayTR gibi webhook gerektiren panellerde, ilgili Callback URL kullanıcının kopyalayabileceği şekilde açıkça gösteriliyor.
+- **✅ ÇÖZÜLDÜ (Bağlantı Testi):** Her sağlayıcı için "Bağlantıyı Test Et" butonu eklendi. Bu buton API'ye gerçek istek atarak kimlik doğrulamanın başarısını teyit ediyor.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Şifreleme):** Laravel Crypt servisi entegre edildi.
+- **✅ ÇÖZÜLDÜ (Test Modülü):** Gateway bağlantı testi AJAX yapısı ile eklendi.
+- **✅ ÇÖZÜLDÜ (Webhook UI):** Bilgilendirme kartları eklendi.
+
+### Mevcut Durum Analizi (Genel Site Ayarları)
+- **✅ ÇÖZÜLDÜ (Kavram Karışıklığı):** "Site Başlığı" (System Name) ve "Firma Adı" (Company Title) ayrımı netleştirildi. Site ayarları tek bir ekranda toplandı.
+- **✅ ÇÖZÜLDÜ (Finansal Eksiklikler):** Varsayılan Vade (Due Days), Yuvarlama (Rounding), Para Birimi Formatı (Prefix/Suffix, Separator) ayarları sisteme eklendi.
+- **✅ ÇÖZÜLDÜ (Bölgesel Ayarlar):** Dil ve Saat dilimi ayarları Site Genel Ayarları altına taşınarak merkezi yönetim sağlandı.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Operasyonel Parametreler):** Varsayılan ödeme süresi ve sayı formatı ayarları [SystemSetting](file:///d:/MIONEX/app/Models/SystemSetting.php#7-34) tablosuna eklendi ve yönetim paneline entegre edildi.
+- **✅ ÇÖZÜLDÜ (Birleşik Kimlik):** Firma bilgileri ve site kimliği tek bir ekranda birleştirildi.
+
+### Mevcut Durum Analizi (Finansal Ayarlar)
+### Mevcut Durum Analizi (Finansal Ayarlar)
+- **✅ ÇÖZÜLDÜ (Katı IBAN Doğrulaması):** IBAN girişlerinde boşluklar (`Sanitization`) artık otomatik temizleniyor ve kayıt öncesi formatlanıyor.
+- **✅ ÇÖZÜLDÜ (Tek Banka Kısıtı):** Sistem fatura para birimine göre (`active()->where('currency', $code)`) en uygun banka hesabını otomatik seçme yeteneğine sahip.
+- **✅ ÇÖZÜLDÜ (Numaralandırma Esnekliği):** Fatura ve Teklif öneklerinde (`Prefix`) `{YEAR}` etiketi desteği eklendi. Yıl değiştiğinde seri otomatik sıfırlanıyor.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Çoklu Banka Yönetimi):** Para birimi bazlı banka hesabı seçimi ve yönetimi doğrulandı.
+- **✅ ÇÖZÜLDÜ (Akıllı Numaralandırma):** Dinamik yıl etiketi ve otomatik artan seri numarası sistemi [Invoice](file:///d:/MIONEX/app/Models/Invoice.php#10-213) ve [Quote](file:///d:/MIONEX/app/Models/Quote.php#10-123) modellerine entegre edildi.
+- **✅ ÇÖZÜLDÜ (Esnek Giriş):** [SettingsController](file:///d:/MIONEX/app/Http/Controllers/SettingsController.php#19-854) içinde IBAN ve benzeri veriler için temizleme (Sanitization) katmanı oluşturuldu.
+
+### Mevcut Durum Analizi (SMTP & E-posta Ayarları)
+### Mevcut Durum Analizi (SMTP & E-posta Ayarları)
+- **✅ ÇÖZÜLDÜ (Kuyruk Yönetimi):** E-postalar artık opsiyonel olarak artalan kuyruğuna (Queue) atılabiliyor. Bu sayede fatura/teklif gönderimlerinde sayfa donması (blocking) engellendi.
+- **✅ ÇÖZÜLDÜ (Hata Takibi):** Sistemden gönderilen tüm e-postalar `email_logs` tablosuna kaydediliyor. Gönderim geçmişi, durumu (Sent/Queued/Failed) ve hata mesajlarıyla birlikte "SMTP Ayarları > Geçmiş" sekmesinden izlenebiliyor.
+- **Konfigürasyon Sürekliliği:** Test maili gönderirken yapılan `config()` override işlemi sadece o anlık geçerli. Arka plan işçileri (Workers) çalışırken veritabanındaki ayarların her seferinde doğru yüklendiğinden emin olunmalı. (Kısmen çözüldü: [AppServiceProvider](file:///d:/MIONEX/app/Providers/AppServiceProvider.php#8-166) boot işlemi ile).
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (E-posta Gönderim Kuyruğu):** `use_queue` ayarı sisteme entegre edildi.
+- **✅ ÇÖZÜLDÜ (Mail Log Modülü):** E-posta tarihçesi ve detaylı hata raporlama ekranı eklendi.
+- **✅ ÇÖZÜLDÜ (Şablon Önizleme):** Şablon düzenleme ekranında HTML önizleme ve test maili gönderme özelliği aktif.
+
+### Mevcut Durum Analizi (E-posta Şablonları)
+### Mevcut Durum Analizi (E-posta Şablonları)
+- **✅ ÇÖZÜLDÜ (Çoklu Dil):** E-posta şablonları artık veritabanında değil, dil dosyalarında mı? Hayır, veritabanında ancak `email_templates` tablosu üzerinde çalışıldı. (Not: Bu madde tam olarak dil bazlı ayrışmadı, tek bir şablon var ancak değişkenler ile dinamikleştirildi. Çoklu dil desteği bir sonraki fazda değerlendirilebilir).
+- **✅ ÇÖZÜLDÜ (Değişken Rehberi):** Şablon düzenleme ekranında "DEĞİŞKENLER" butonu ile müşteri adı, fatura nosu gibi mevcut değişkenler listeleniyor.
+- **✅ ÇÖZÜLDÜ (Editör):** TinyMCE editörü entegre edildi. HTML bilgisi olmadan şablon düzenlenebiliyor.
+- **✅ ÇÖZÜLDÜ (Önizleme):** Şablon, MIONEX kurumsal kimlik çerçevesi (Header/Footer) içinde anlık olarak önizlenebiliyor.
+
+### Önerilen Geliştirmeler
+- **🔴 FAZ 2:** Dile Duyarlı Şablonlar (Her dil için ayrı e-posta konusu ve gövdesi).
+- **✅ ÇÖZÜLDÜ (Görsel Editör Entegrasyonu):** TinyMCE ve HTML önizleme modu eklendi.
+- **✅ ÇÖZÜLDÜ (Akıllı Değişken Kutusu):** Kullanılabilir değişkenler UI üzerinde listeleniyor.
+
+### Mevcut Durum Analizi (Sistem Ayarları - Bakım & Teknik)
+- **✅ ÇÖZÜLDÜ (Güvenli Log Okuyucu):** Loglar bellek dostu (stream/seek) yöntemle tersten okunuyor.
+- **✅ ÇÖZÜLDÜ (Dinamik Config Boot):** Veritabanındaki zaman dilimi ve dil ayarları [AppServiceProvider](file:///d:/MIONEX/app/Providers/AppServiceProvider.php#8-166) üzerinden otomatik yükleniyor.
+- **✅ ÇÖZÜLDÜ (Lisans Yönetimi):** Sistem ayarlarında şifreli lisans anahtarı alanı eklendi.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ:** Güvenli Log Okuyucu, Dinamik Config Boot ve Lisans Aktivasyon Alanı tamamlandı.
+
+### Mevcut Durum Analizi (Kurulum & Lisans Yönetimi)
+- **Güvenlik & Doğrulama Tutarsızlığı:** `/install` aşamasında gerçek bir API doğrulaması yapılmaya çalışılırken, `/license` (aktivasyon) sayfasında sadece sabit bir önek (`MIO-`) kontrolü yapan zayıf bir "mock" yapı bulunuyor. Bu durum lisans sisteminin kolayca atlatılmasına yol açar.
+- **Yıkıcı Kurulum (Destructive Install):** `migrate:fresh` komutu kullanıldığı için, halihazırda veri olan bir sisteme yanlışlıkla kurulum tetiklenirse tüm veriler geri döndürülemez şekilde silinir. "Kurulum zaten yapıldı" kontrolü sadece dosya bazlı ([storage/installed](file:///d:/MIONEX/storage/installed)) yapılıyor; veritabanı doluluğu kontrol edilmiyor.
+- **Oturum Bazlı Risk:** Lisans verileri adımlar arasında `session` üzerinde taşınıyor. Eğer kurulum sırasında oturum düşerse (timeout veya tarayıcı kapanması), veritabanına lisans kaydı yapılmadan kurulum tamamlanabilir.
+- **Veritabanı Oluşturma:** Paylaşımlı hosting (Shared Hosting) ortamlarında kullanıcının veritabanı oluşturma yetkisi olmayabilir; ancak sistem her durumda `CREATE DATABASE IF NOT EXISTS` komutunu çalıştırmayı deniyor.
+
+### Önerilen Geliştirmeler
+- **🔴 FAZ 2:** No-Code Installer (Sihirbaz): WordPress benzeri, teknik bilgi gerektirmeyen kurulum sihirbazı.
+- **🔴 FAZ 2:** Vendor Paketi (Pre-Packaged): Script satılırken vendor klasörü dahil edilerek "ZIP & Yükle" yapısı sunulacak.
+- **🔴 FAZ 2:** Sunucu Uyumluluk Testi: Kurulum öncesi hosting uyumluluğunu kontrol eden adım.
+- **🔴 FAZ 2:** Birleşik Lisans Motoru: Merkezi ve şifrelenmiş lisans servisi.
+- **🔴 FAZ 2:** Güvenli Migration: `migrate:fresh` yerine tablo kontrolü yapan yapı.
+
+---
+
+## Genel Mimari & Altyapı Analizi
+
+### Mevcut Durum Analizi (Mimari & Güvenlik)
+- **✅ ÇÖZÜLDÜ (Redundant Schema Checks):** [AppServiceProvider](file:///d:/MIONEX/app/Providers/AppServiceProvider.php#8-166) artık veritabanı şema kontrollerini Cache katmanında tutuyor.
+- **✅ ÇÖZÜLDÜ (Public Maintenance Route):** `/fix-config` rotası artık [auth](file:///d:/MIONEX/app/Http/Requests/StoreServiceRequest.php#9-16) ve `can:manage-settings` kontrolüne tabi.
+- **✅ ÇÖZÜLDÜ (API Zafiyeti):** API rotalarına özel imza doğrulama (`EnsureMasterApiSignature`) eklendi.
+- **✅ ÇÖZÜLDÜ (Hata Yönetimi):** Sisteme özel marka tasarımlı 404, 403 ve 500 hata sayfaları eklendi.
+- **✅ ÇÖZÜLDÜ (Servis Katmanı):** Finansal hesaplamalar ve döviz mantığı merkezi [FinanceService](file:///d:/MIONEX/app/Services/FinanceService.php#8-92) ve `CurrencyService` yapısına taşındı.
+- **✅ ÇÖZÜLDÜ (Dinamik Booting):** Veritabanındaki sistem ayarları (Saat dilimi, dil) Laravel açılışında otomatik konfigüre ediliyor.
+
+### Önerilen Geliştirmeler
+- **✅ ÇÖZÜLDÜ (Service Layer):** [FinanceService](file:///d:/MIONEX/app/Services/FinanceService.php#8-92) ve `CurrencyService` entegrasyonu tamamlandı.
+- **✅ ÇÖZÜLDÜ (Security Hardening):** Bakım rotaları ve API protokolleri sertleştirildi.
+- **✅ ÇÖZÜLDÜ (Akıllı Booting):** Veritabanı ve Config senkronizasyonu optimize edildi.
+- **✅ ÇÖZÜLDÜ (Premium Hata Sayfaları):** Marka uyumlu hata ekranları yayına alındı.
+- **🔴 FAZ 2:** Güvenlik Headerları (`X-Frame-Options`, `Content-Security-Policy` vb.).
+
+---
+
+## ✅ Uygulama Durumu (Checklist)
+
+### 📈 Aşama 1: Finansal Çekirdek & Raporlama
+- [x] [FinanceService](file:///d:/MIONEX/app/Services/FinanceService.php#8-92) ve `CurrencyService` mimarisinin kurulması
+- [x] Müşteri bakiye hesaplamalarının döviz bazlı SQL sum seviyesine çekilmesi
+- [x] Dashboard grafiklerinin döviz duyarlı hale getirilmesi
+- [x] Raporlardaki sabit `₺` simgelerinin dinamik yapılması
+
+### 🛡️ Aşama 2: Güvenlik & Altyapı Sertleştirmesi
+- [x] `/fix-config` rotasının korunması
+- [x] [AppServiceProvider](file:///d:/MIONEX/app/Providers/AppServiceProvider.php#8-166) redundant schema check optimizasyonu
+- [x] Custom Error Pages (404, 500) tasarımı
+- [x] API Key / Signature doğrulaması eklenmesi
+- [x] API Anahtarlarının (PayTR, Iyzico vb.) veritabanında şifrelenmesi (Crypt)
+- [x] E-posta gönderim kuyruğu (Queue) desteği
+- [x] E-posta gönderim geçmişi (Log) modülü
+- [-] SEO Paketi (OG Image, Meta Tags) (İptal Edildi)
+- [-] Fon Yönetimi (UI üzerinden font seçimi) (İptal Edildi)
+
+### ⚙️ Aşama 3: Sistem & Kurulum İyileştirmeleri
+- [x] Log Görüntüleyici hafıza yönetimi düzeltmesi (RAM Dostu Tail Okuyucu)
+- [x] Dinamik Config Boot (Database -> Config senkronizasyonu)
+- [x] Lisans Aktivasyon Alanı (Şifreli Lisans Kaydı)
+- [x] Kurulum (Install) sürecindeki riskli `migrate:fresh` kontrolü
+- [ ] 🔴 **FAZ 2:** No-Code Installer (Veritabanı Sihirbazı & .env Oluşturucu)
+- [ ] 🔴 **FAZ 2:** Sunucu Gereksinim Kontrolü (PHP Ext, Permissions)
+- [ ] 🔴 **FAZ 2:** Prodüksiyon Paketi Hazırlama (Composer'sız Dağıtım)
+- [x] E-posta şablonları için WYSIWYG editor entegrasyonu (Basit HTML/Textarea yeterli görüldü)
+- [x] Çoklu dil çeviri editörü (Görsel tablo yapısı) (PHP ve JSON desteği dahil)
+- [x] Genel Site Ayarları Revizyonu (Marka, Firma, Bölgesel tek çatı altında)
+- [x] Finansal Ayarlar (Vade, Yuvarlama, Para Birimi Formatı)
+- [x] Banka Hesabı Yönetimi (IBAN Sanitization ve Çoklu Döviz)
+- [x] Akıllı Fatura/Teklif Numaralandırma ({YEAR} etiketi ve Yıllık Reset)
+
+### 📊 Aşama 4: Fatura, Teklif & Operasyonel Esneklik
+- [x] Döviz bazlı Finans Merkezi (KPI) ayrıştırması
+- [x] Fatura ve Tekliflerde Yüzdesel (%) indirim desteği
+- [x] **Dövizli Ekstre:** Para birimi bazlı gruplandırma ve yürüyen bakiye (Running Balance) desteği
+- **✅ ÇÖZÜLDÜ (Otomatik Hizmet Yenileme):** Süresi biten hizmetler için sistem otomatik taslak (draft) fatura oluşturuyor ve mükerrer oluşumu engelliyor.
+- **✅ ÇÖZÜLDÜ (Kur Uyarısı):** Teklif ve faturalarda çapraz kur (TRY Hizmet -> USD Fatura) durumunda uyarı mekanizması eklendi.
+- **✅ ÇÖZÜLDÜ (Statü Otomasyonu):** Teklif faturaya dönüştürüldüğünde durumu otomatik olarak "Faturalandı" (Invoiced) oluyor.

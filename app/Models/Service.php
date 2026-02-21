@@ -24,7 +24,7 @@ class Service extends Model
         'price',
         'buying_price',
         'start_date',
-        'expiry_date',
+        'end_date',
         'buying_currency',
         'vat_rate',
         'description_template',

@@ -196,6 +196,20 @@
                                 <p class="mt-1 text-sm text-danger-600 dark:text-danger-400">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <!-- VAT Rate -->
+                        <div>
+                            <label for="vat_rate"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                KDV Oranı (%) *
+                            </label>
+                            <input type="number" name="vat_rate" id="vat_rate"
+                                value="{{ old('vat_rate', $service->vat_rate) }}" required min="0" max="100"
+                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary-500 focus:ring-primary-500 @error('vat_rate') border-danger-500 @enderror">
+                            @error('vat_rate')
+                                <p class="mt-1 text-sm text-danger-600 dark:text-danger-400">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <!-- Start Date & End Date -->
